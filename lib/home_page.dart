@@ -30,7 +30,7 @@ class _HomePage extends State<HomePage> {
                   child: Text(
                     'Sair',
                     style: TextStyle(
-                      fontSize: 20,
+                      fontSize: 35,
                       color: Colors.black38
 
                     ),

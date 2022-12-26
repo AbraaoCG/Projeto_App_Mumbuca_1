@@ -69,7 +69,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     Container(
                       padding: EdgeInsets.only(
-                          bottom: 10, top: 5, left: 30, right: 30),
+                          bottom: 34, top: 16, left: 30, right: 30),
                       margin: EdgeInsets.symmetric(vertical: 5, horizontal: 25),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(35.0)),
@@ -78,11 +78,13 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       child: TextFormField(
                         controller: email,
+                        style: TextStyle(fontSize: 35),
                         decoration: InputDecoration(
                           labelText: "Email",
+                          icon: Icon(Icons.person),
                           labelStyle: TextStyle(
                             color: Colors.blueGrey,
-                            fontSize: 20,
+                            fontSize: 25,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
@@ -97,7 +99,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     Container(
                       padding: EdgeInsets.only(
-                          bottom: 10, top: 5, left: 30, right: 30),
+                          bottom: 34, top: 16, left: 30, right: 30),
                       margin: EdgeInsets.symmetric(vertical: 10, horizontal: 25),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.all(Radius.circular(35.0)),
@@ -107,11 +109,13 @@ class _LoginPageState extends State<LoginPage> {
                       child: TextFormField(
                         controller: senha,
                         obscureText: true,
+                        style: TextStyle(fontSize: 35),
                         decoration: InputDecoration(
                           labelText: "Senha",
+                          icon: Icon(Icons.key),
                           labelStyle: TextStyle(
                             color: Colors.blueGrey,
-                            fontSize: 20,
+                            fontSize: 25,
                             fontWeight: FontWeight.w400,
                           ),
                         ),
@@ -164,11 +168,11 @@ class _LoginPageState extends State<LoginPage> {
                               return AlertDialog(
                                 title: Text(
                                     'Procedimento necessário',
-                                  style: TextStyle(fontSize: 30),
+                                  style: TextStyle(fontSize: 40),
                                     textAlign: TextAlign.center),
                                 content: Text(
                                     'Por favor, procure um administrador na sede do banco para recuperar suas credenciais.',
-                                  style: TextStyle(fontSize: 25),
+                                  style: TextStyle(fontSize: 30),
                                     textAlign: TextAlign.start),
                                 actions: [
                                   ElevatedButton(
