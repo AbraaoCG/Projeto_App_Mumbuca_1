@@ -63,6 +63,7 @@ class ResetPasswordPage extends StatelessWidget {
                           // autofocus: true,
                           controller: emailController,
                           keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.done,
                           decoration: InputDecoration(
                             labelText: "E-mail",
                             labelStyle: TextStyle(
@@ -73,9 +74,9 @@ class ResetPasswordPage extends StatelessWidget {
                           ),
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           validator: (email) =>
-                              email != null && EmailValidator.validate(email)
+                              email != null && !EmailValidator.validate(email)
                                   ? 'Insira um E-mail válido'
-                                  : 'Belo E-mail',
+                                  : null,
                           style: TextStyle(fontSize: 20),
                         ),
             ),
