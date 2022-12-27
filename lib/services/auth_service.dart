@@ -26,7 +26,7 @@ class AuthService extends ChangeNotifier{
   login(String email, String senha) async {
     try{
       await _auth.signInWithEmailAndPassword(email: email, password: senha);
-      _getUser();
+
     } on FirebaseAuthException catch(e){
       if (e.code == 'user-not-found'){
         throw AuthException('Email não registrado. Busque o Administrador do Aplicativo para realizar o cadastro');
@@ -41,10 +41,6 @@ class AuthService extends ChangeNotifier{
     _getUser();
   }
 
-  _getUser(){
-    usuario = _auth.currentUser;
-    notifyListeners();
-  }
   registrar(String email, String senha) async {
     try{
     await _auth.createUserWithEmailAndPassword(email: email, password: senha);
@@ -57,5 +53,21 @@ class AuthService extends ChangeNotifier{
         throw AuthException('Email já está em uso.');
       }
     }
+  }
+
+  resetPassword(String emailController) async {
+    try {
+      await _auth
+          .sendPasswordResetEmail(email: emailController);
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'user-not-found') {
+        throw AuthException('Email Invalido.');
+      }
+    }
+  }
+
+  _getUser(){
+    usuario = _auth.currentUser;
+    notifyListeners();
   }
 }

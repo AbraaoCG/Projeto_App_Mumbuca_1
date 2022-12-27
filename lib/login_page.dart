@@ -1,10 +1,11 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: non_constant_identifier_names
 
-// import 'package:appmumbuca/reset_password_page.dart';
 import 'package:flutter/material.dart';
 import 'package:appmumbuca/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:appmumbuca/reset_password_page.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -165,25 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                           showDialog(
                             context: context,
                             builder: (context) {
-                              return AlertDialog(
-                                title: Text(
-                                    'Procedimento necessário',
-                                  style: TextStyle(fontSize: 40),
-                                    textAlign: TextAlign.center),
-                                content: Text(
-                                    'Por favor, procure um administrador na sede do banco para recuperar suas credenciais.',
-                                  style: TextStyle(fontSize: 30),
-                                    textAlign: TextAlign.start),
-                                actions: [
-                                  ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                    },
-                                    child: Text('OK'),
-                                  ),
-                                ],
-
-                              );
+                              return const ResetPasswordPage();
                             },
                           );
                         },
