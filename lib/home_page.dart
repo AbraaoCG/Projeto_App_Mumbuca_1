@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:appmumbuca/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:appmumbuca/login_page.dart';
 
 class HomePage extends StatefulWidget{
   const HomePage({Key? key}) : super(key: key);
@@ -21,7 +22,14 @@ class _HomePage extends State<HomePage> {
         child: Container(
           padding: EdgeInsets.all(24.0),
           child: OutlinedButton(
-            onPressed: () => context.read<AuthService>().logout(),
+            onPressed: () async {
+              await context.read<AuthService>().logout();
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => LoginPage(),
+                ),
+              );
+            },
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: const [
