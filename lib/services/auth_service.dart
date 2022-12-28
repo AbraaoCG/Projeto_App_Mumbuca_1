@@ -61,7 +61,11 @@ class AuthService extends ChangeNotifier{
           .sendPasswordResetEmail(email: emailController);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        throw AuthException('Email Invalido.');
+        throw AuthException('Não existe um usuário cadastrado com esse email. Por favor, use outro email e tente novamente.');
+      } else if (e.code == 'invalid-email'){
+        throw AuthException('O email está incorreto. Escreva-o no formato padrão (exemplo: email@email.com).');
+      } else if (emailController == ''){
+        throw AuthException('Para recuperar a senha, é preciso inserir um email válido.');
       }
     }
   }

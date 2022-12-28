@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:appmumbuca/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:appmumbuca/reset_password_page.dart';
+import 'package:appmumbuca/home_page.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -28,12 +29,19 @@ class _LoginPageState extends State<LoginPage> {
 
   login() async {
     try {
-      await context.read<AuthService>().login(email.text, senha.text);
+      await context.read<AuthService>().login(email.text, senha.text).then((_) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => HomePage(),
+          ),
+        );
+      });
     } on AuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
+
 
   registrar() async {
     // Método posicionado aqui, porém na verdade deverá ser

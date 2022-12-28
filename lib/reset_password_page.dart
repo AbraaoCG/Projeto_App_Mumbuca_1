@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: non_constant_identifier_names
 
+import 'package:appmumbuca/login_page.dart';
 import 'package:appmumbuca/services/auth_service.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -18,16 +19,41 @@ class _ResetPasswordPage extends State<ResetPasswordPage> {
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
 
-
-  resetPassword() async{
+  resetPassword() async {
     try {
       await context.read<AuthService>().resetPassword(emailController.text);
+      if (emailController.text != null && emailController.text != '') {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('E-mail Enviado!'),
+              content: Text(
+                'Um e-mail de redefinição de senha foi enviado para o endereço de e-mail fornecido. Não esqueça de verificar seu SPAM ou lixo eletrônico.',
+              ),
+                actions: <Widget>[
+                  ElevatedButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => LoginPage(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
     } on AuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message)));
-
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
