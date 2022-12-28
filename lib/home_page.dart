@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:appmumbuca/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:appmumbuca/account_page.dart';
+
 
 class HomePage extends StatefulWidget{
   const HomePage({Key? key}) : super(key: key);
@@ -16,7 +18,6 @@ class _HomePage extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: AppBar(
           backgroundColor: Color(0XFFB71717),
           toolbarHeight: 100,
@@ -35,7 +36,6 @@ class _HomePage extends State<HomePage> {
                 fontFamily: 'Montserrat',
                 fontWeight: FontWeight.bold,
               ),
-
             )
           ]
         ),
@@ -44,22 +44,22 @@ class _HomePage extends State<HomePage> {
           IconButton(
             iconSize: 60,
             icon: Icon(Icons.account_circle_rounded),
-          onPressed: () {
-            // código para abrir tela de configurações
+          onPressed: () { // Abrir Tela de conta
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AccountPage()),
+            );
+
           },
-            alignment: Alignment.centerLeft,
         ),
           IconButton(
             iconSize: 60,
             icon: Icon(Icons.settings),
             onPressed: () {// código para abrir tela de configurações
             },
-            alignment: Alignment.centerLeft,
           ),
-
         ]
       ),
-      // resto do seu código aqui...
     );
     ;
   }

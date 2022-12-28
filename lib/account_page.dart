@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:appmumbuca/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:appmumbuca/login_page.dart';
+
 
 class AccountPage extends StatefulWidget{
   const AccountPage({Key? key}) : super(key: key);
@@ -13,6 +15,20 @@ class AccountPage extends StatefulWidget{
 
 class _AccountPage extends State<AccountPage> {
 
+  logout() async {
+    try {
+      await context.read<AuthService>().logout().then((_) {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => LoginPage(),
+          ),
+        );
+      });
+    } on AuthException catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message)));
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +37,7 @@ class _AccountPage extends State<AccountPage> {
           child: Container(
             padding: EdgeInsets.all(24.0),
             child: OutlinedButton(
-              onPressed: () => context.read<AuthService>().logout(),
+              onPressed: () => logout(),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
