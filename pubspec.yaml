@@ -35,6 +35,8 @@ dependencies:
   firebase_core: ^2.4.0
   firebase_auth: ^4.2.2
   email_validator: ^2.1.16
+  cloud_firestore: ^4.3.0
+
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -96,10 +98,17 @@ flutter:
 
   assets:
     - assets/logo_login.png
+    - assets/LogoMumbuca.png
     - assets/reset-password-icon.png
+    - assets/fonts/Montserrat-VariableFont_wght.ttf
 
   fonts:
     - family: HomepageB
       fonts:
       - asset: assets/fonts/HomepageBaukasten-Book.ttf
       - asset: assets/fonts/HomepageBaukasten-Bold.ttf
+    - family: Montserrat
+      fonts:
+        - asset: assets/fonts/HomepageBaukasten-Bold.ttf
+        - asset: assets/fonts/HomepageBaukasten-Book.ttf
+        - asset: assets/fonts/Montserrat-VariableFont_wght.ttf
