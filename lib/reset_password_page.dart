@@ -1,14 +1,59 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: non_constant_identifier_names
+
+import 'package:appmumbuca/login_page.dart';
+import 'package:appmumbuca/services/auth_service.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 
-class ResetPasswordPage extends StatelessWidget {
-  ResetPasswordPage({super.key});
+class ResetPasswordPage extends StatefulWidget {
+  const ResetPasswordPage({Key? key}) : super(key: key);
+
+  @override
+  State<ResetPasswordPage> createState() => _ResetPasswordPage();
+}
+
+class _ResetPasswordPage extends State<ResetPasswordPage> {
   final formKey = GlobalKey<FormState>();
   final emailController = TextEditingController();
+
+  resetPassword() async {
+    try {
+      await context.read<AuthService>().resetPassword(emailController.text);
+      if (emailController.text != null && emailController.text != '') {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('E-mail Enviado!'),
+              content: Text(
+                'Um e-mail de redefinição de senha foi enviado para o endereço de e-mail fornecido. Não esqueça de verificar seu SPAM ou lixo eletrônico.',
+              ),
+                actions: <Widget>[
+                  ElevatedButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => LoginPage(),
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+        }
+    } on AuthException catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text(e.message)));
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -57,29 +102,29 @@ class ResetPasswordPage extends StatelessWidget {
           SizedBox(
             height: 10,
           ),
-            Form(
-              key: formKey,
-                child: TextFormField(
-                          // autofocus: true,
-                          controller: emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.done,
-                          decoration: InputDecoration(
-                            labelText: "E-mail",
-                            labelStyle: TextStyle(
-                              color: Colors.black38,
-                              fontSize: 20,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (email) =>
-                              email != null && !EmailValidator.validate(email)
-                                  ? 'Insira um E-mail válido'
-                                  : null,
-                          style: TextStyle(fontSize: 20),
-                        ),
+          Form(
+            key: formKey,
+            child: TextFormField(
+              // autofocus: true,
+              controller: emailController,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.done,
+              decoration: InputDecoration(
+                labelText: "E-mail",
+                labelStyle: TextStyle(
+                  color: Colors.black38,
+                  fontSize: 20,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (email) =>
+              email != null && !EmailValidator.validate(email)
+                  ? 'Insira um E-mail válido'
+                  : null,
+              style: TextStyle(fontSize: 20),
             ),
+          ),
           SizedBox(
             height: 30,
           ),
@@ -99,21 +144,13 @@ class ResetPasswordPage extends StatelessWidget {
                   side: const BorderSide(width: 1.0, color: Colors.white),
                   shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.all(
-                    Radius.circular(50),
-                  ))),
+                        Radius.circular(50),
+                      ))),
             ),
           ),
         ]),
       ),
     );
   }
-  Future resetPassword() async{
-    try {
-      await FirebaseAuth.instance
-          .sendPasswordResetEmail(email: emailController.text.trim());
-    } on FirebaseAuthException catch (e) {
-      print(e);
-    }
-  }
-}
 
+}
