@@ -11,7 +11,6 @@ import 'package:appmumbuca/my_app.dart';
 import 'package:appmumbuca/packages/firebase_options.dart';
 
 
-
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   // Wait Firebase
@@ -19,7 +18,6 @@ void main() async{
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   runApp(
       MultiProvider(
         providers: [
@@ -28,7 +26,6 @@ void main() async{
         child: const MyApp()
       ),
   );
-
   // Inicializar Firebase e gerar variáveis com dados úteis.
   FirebaseFirestore.instance;
   var Forms_collection = FirebaseFirestore.instance.collection('Formulários');
@@ -47,5 +44,4 @@ void main() async{
   F1P1R1.set({
     'resposta_codigo' : 2
   });
-
 }

@@ -23,7 +23,6 @@ class HomePage extends StatefulWidget{
 
 class _HomePage extends State<HomePage> {
 
-
     getLength(snapshot){
       var length = 0;
       Forms_collection.get().then((value) => {
@@ -60,7 +59,7 @@ class _HomePage extends State<HomePage> {
                 Text(
                   "Banco Mumbuca Pesquisas",
                   style: TextStyle(
-                    fontSize: 24,
+                    fontSize: 30,
                     fontFamily: 'Montserrat',
                     fontWeight: FontWeight.bold,
                   ),
@@ -155,6 +154,13 @@ class _HomePage extends State<HomePage> {
 
                   )
                   ),
+                    child: Column(
+                      children: [
+                        Text(document['Nome_Formulário'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                        Text("Data de Criação: " +document['Data_Criação'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                      ],
+                    )
+                  )
                 );
             }).toList(),
           );
@@ -272,7 +278,6 @@ class GradientAppBar extends StatelessWidget {
           style: TextStyle(fontSize: 20.0, color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
-
     );
   }
 }
