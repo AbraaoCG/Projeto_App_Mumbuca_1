@@ -105,24 +105,49 @@ class _HomePage extends State<HomePage> {
                       ),
                     width: MediaQuery.of(context).size.width / 1.2,
                     height: MediaQuery.of(context).size.height / 6,
-                    child: Column(
-                      children: [
-                        Text(document['Nome_Formulário'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                        Text("Data de Criação: " +document['Data_Criação'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                        Container(
-                          width: 500,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
-                            },
-                            child: Text("Deletar Formulário"),
+                      child: Column(
+                        children: [
+                          Text(document['Nome_Formulário'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                          Text("Data de Criação: " +document['Data_Criação'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Padding(
+                                padding: EdgeInsets.all(5),
+                             child: Container(
+                                width: 200,
+                                height: 50,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
+                                  },
+                                  child: Text("Deletar Formulário", textScaleFactor: 1.4),
 
-                          ),
-                        )
-                      ],
-                    )
+                                ),
+                              ),
+                              ),
+                              Padding(
+                                padding: EdgeInsets.all(5),
+                              child: Container(
+                                width: 200,
+                                height: 50,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
+                                  },
+                                  child: Text("Editar Formulário", textScaleFactor: 1.5),
+
+                                ),
+                              ),
+                              )
+                            ]
+                          )
+
+
+                      ]
+
                   )
+                  ),
                 );
             }).toList(),
           );
@@ -137,7 +162,15 @@ class _HomePage extends State<HomePage> {
               "Nome_Formulário" : "Novo Formulário",
               "Data_Criação" : DateTime.now().day.toString() + "/" + DateTime.now().month.toString() + "/" + DateTime.now().year.toString(),
             };
-            FirebaseFirestore.instance.collection("Formulários").add(data);
+            var teste = FirebaseFirestore.instance.collection("Formulários").doc("FormExemplo").id;
+            print(teste);
+            var docid1 = FirebaseFirestore.instance.collection("Formulários").add(data);
+            print(docid1);
+            var docid2 = FirebaseFirestore.instance.collection("Formulários").doc(docid1.toString())
+                .collection("Perguntas").add({"Enunciado" : "Novo Enunciado"});
+            FirebaseFirestore.instance.collection("Formulários").doc(docid1.toString())
+                .collection("Perguntas").doc(docid2.toString()).collection("Respostas")
+                .add({"resposta_codigo" : 0});
           },
           color: Colors.red,
           iconSize: 100,
