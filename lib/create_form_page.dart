@@ -4,7 +4,6 @@
 // import 'dart:html';
 //import 'dart:html';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:appmumbuca/services/auth_service.dart';
@@ -17,87 +16,28 @@ final Forms_collection = FirebaseFirestore.instance.collection('Formulários');
 class HomePage extends StatefulWidget{
   const HomePage({Key? key}) : super(key: key);
 
-
   @override
   State<HomePage> createState() => _HomePage();
 }
 
 class _HomePage extends State<HomePage> {
-  var isAdmin = false;
-
-    checkAdmin(){
-      final User_collection = FirebaseFirestore.instance.collection('testeusuarios');
-      var User_email = "";
-      final FirebaseAuth _auth = FirebaseAuth.instance;
-      _auth.authStateChanges()
-          .listen((User? user){
-            if (user != null){
-              User_email = user.email!;
-            }
-        });
-      User_collection.get().then((QuerySnapshot snapshot) => {
-        snapshot.docs.forEach((DocumentSnapshot doc) {
-          if (doc['email'] == User_email){
-            if (doc['acesso'] == 'Administrador'){
-              isAdmin = true;
-
-            }
-          }
-        })
-      });
-      return isAdmin;
-    }
-    getLength(snapshot){
-      var length = 0;
-      Forms_collection.get().then((value) => {
-        length = value.docs.length,
-      });
-      return length;
-    }
-    getForms(){
-      final Form_List = [];
-      Forms_collection.get().then((QuerySnapshot snapshot) => {
-        snapshot.docs.forEach((DocumentSnapshot doc) {
-          print(doc['Nome_Formulário']);
-        })
-      });
-    }
-    Widget adminButtons(document) {
-
-      return isAdmin == true
-          ?
-      Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              width: 200,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
-                },
-                child: Text("Deletar Formulário", textScaleFactor: 1.4),
-
-              ),
-            ),
-            Container(
-              width: 200,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
-                },
-                child: Text("Editar Formulário", textScaleFactor: 1.5),
-
-              ),
-            ),
-          ]
-      )
-          : Container();
-    }
 
 
-    @override
+  getLength(snapshot){
+    var length = 0;
+    Forms_collection.get().then((value) => {
+      length = value.docs.length,
+    });
+    return length;
+  }
+  getForms(){
+    final Form_List = [];
+    Forms_collection.get().then((QuerySnapshot snapshot) => {
+      snapshot.docs.forEach((DocumentSnapshot doc) {
+        print(doc['Nome_Formulário']);
+      })
+    });    }
+  @override
   void initState(){
     getForms();
     super.initState();
@@ -147,16 +87,15 @@ class _HomePage extends State<HomePage> {
           ]
       ),
       body: StreamBuilder(
-        stream: Forms_collection.snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
-          if (!snapshot.hasData){
-            return Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-          checkAdmin();
-          return ListView(
-            children: snapshot.data!.docs.map((document){
+          stream: Forms_collection.snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+            if (!snapshot.hasData){
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return ListView(
+              children: snapshot.data!.docs.map((document){
                 return Center(
                   child: Container(
                       padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -166,26 +105,57 @@ class _HomePage extends State<HomePage> {
                         shape: BoxShape.rectangle,
                         color: Color(0xB1B71717),
                       ),
-                    width: MediaQuery.of(context).size.width / 1.2,
-                    height: MediaQuery.of(context).size.height / 6,
+                      width: MediaQuery.of(context).size.width / 1.2,
+                      height: MediaQuery.of(context).size.height / 6,
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Text(document['Nome_Formulário'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                          Text("Data de Criação: " +document['Data_Criação'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                          children: [
+                            Text(document['Nome_Formulário'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                            Text("Data de Criação: " +document['Data_Criação'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(5),
+                                    child: Container(
+                                      width: 200,
+                                      height: 50,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
+                                        },
+                                        child: Text("Deletar Formulário", textScaleFactor: 1.4),
 
-                          adminButtons(document)
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(5),
+                                    child: Container(
+                                      width: 200,
+                                      height: 50,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
+                                        },
+                                        child: Text("Editar Formulário", textScaleFactor: 1.5),
 
-                      ]
+                                      ),
+                                    ),
+                                  )
+                                ]
+                            )
 
-                  )
+
+                          ]
+
+                      )
                   ),
                 );
-            }).toList(),
-          );
-        }
+              }).toList(),
+            );
+          }
 
-    ),
+      ),
       floatingActionButton: Container (
         //color: Colors.redAccent,
         child: IconButton(
@@ -195,7 +165,9 @@ class _HomePage extends State<HomePage> {
               "Data_Criação" : DateTime.now().day.toString() + "/" + DateTime.now().month.toString() + "/" + DateTime.now().year.toString(),
             };
             var teste = FirebaseFirestore.instance.collection("Formulários").doc("FormExemplo").id;
+            print(teste);
             var docid1 = FirebaseFirestore.instance.collection("Formulários").add(data);
+            print(docid1);
             var docid2 = FirebaseFirestore.instance.collection("Formulários").doc(docid1.toString())
                 .collection("Perguntas").add({"Enunciado" : "Novo Enunciado"});
             FirebaseFirestore.instance.collection("Formulários").doc(docid1.toString())
@@ -205,11 +177,11 @@ class _HomePage extends State<HomePage> {
           color: Colors.red,
           iconSize: 100,
           icon: Icon(Icons.add_circle_rounded),
-      
-      ),
+
+        ),
       ),
     );
-    }
+  }
 }
 
 
@@ -223,19 +195,19 @@ class _Survey extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return Container(
-      child: Column(
-        children: [
-          Text(
-            "",
-            style: TextStyle(
-              fontSize: 30,
-              fontFamily: 'Montserrat',
-              fontWeight: FontWeight.bold,
+        child: Column(
+          children: [
+            Text(
+              "",
+              style: TextStyle(
+                fontSize: 30,
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          ),
 
-        ],
-      )
+          ],
+        )
     );
   }
 
