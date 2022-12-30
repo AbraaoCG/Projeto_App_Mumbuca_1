@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: non_constant_identifier_names
+
 // import 'dart:html';
 //import 'dart:html';
 
@@ -20,6 +21,7 @@ class HomePage extends StatefulWidget{
 }
 
 class _HomePage extends State<HomePage> {
+
 
     getLength(snapshot){
       var length = 0;
@@ -215,7 +217,9 @@ class GradientAppBar extends StatelessWidget {
   final String title;
   final double barHeight = 50.0;
 
+
   const GradientAppBar(this.title, {super.key});
+
 
   @override
   Widget build(BuildContext context) {
@@ -223,7 +227,6 @@ class GradientAppBar extends StatelessWidget {
         .of(context)
         .padding
         .top;
-
     return Container(
       padding: EdgeInsets.only(top: statusbarHeight),
       height: statusbarHeight + barHeight,
@@ -242,6 +245,7 @@ class GradientAppBar extends StatelessWidget {
           style: TextStyle(fontSize: 20.0, color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
+
     );
   }
 }
