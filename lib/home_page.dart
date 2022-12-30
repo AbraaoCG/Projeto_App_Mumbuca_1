@@ -156,30 +156,52 @@ class _HomePage extends State<HomePage> {
         }
 
     ),
-      floatingActionButton: Container (
-        //color: Colors.redAccent,
-        child: IconButton(
-          onPressed: () {
-            var data = {
-              "Nome_Formulário" : "Novo Formulário",
-              "Data_Criação" : DateTime.now().day.toString() + "/" + DateTime.now().month.toString() + "/" + DateTime.now().year.toString(),
-            };
-            var teste = FirebaseFirestore.instance.collection("Formulários").doc("FormExemplo").id;
-            print(teste);
-            var docid1 = FirebaseFirestore.instance.collection("Formulários").add(data);
-            print(docid1);
-            var docid2 = FirebaseFirestore.instance.collection("Formulários").doc(docid1.toString())
-                .collection("Perguntas").add({"Enunciado" : "Novo Enunciado"});
-            FirebaseFirestore.instance.collection("Formulários").doc(docid1.toString())
-                .collection("Perguntas").doc(docid2.toString()).collection("Respostas")
-                .add({"resposta_codigo" : 0});
-          },
-          color: Colors.red,
-          iconSize: 100,
-          icon: Icon(Icons.add_circle_rounded),
-      
-      ),
-      ),
+      floatingActionButton: StreamBuilder(
+          stream: Forms_collection.snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          return Container(
+            //color: Colors.redAccent,
+           child: IconButton(
+            onPressed: () {
+              var data = {
+                "Nome_Formulário": "Novo Formulário",
+                "Data_Criação": DateTime
+                    .now()
+                    .day
+                    .toString() + "/" + DateTime
+                    .now()
+                    .month
+                    .toString() + "/" + DateTime
+                    .now()
+                    .year
+                    .toString(),
+              };
+              var doc1 = FirebaseFirestore.instance.collection("Formulários").doc();
+              doc1.set(data);
+              var doc1id = doc1.id;
+              print(doc1id);
+              var doc2 = FirebaseFirestore.instance.collection("Formulários")
+                      .doc(doc1id.toString())
+                      .collection("Perguntas")
+                      .doc();
+              doc2.set({"Enunciado": "Novo Enunciado", "tipo_pergunta": "0"});
+              var doc2id = doc2.id;
+                //  var docid2 = snapshot.data!.docs.last.id;
+                FirebaseFirestore.instance.collection("Formulários").doc(
+                    doc1id.toString())
+                    .collection("Perguntas").doc(doc2id.toString())
+                    .collection(
+                    "Respostas")
+                    .add({"resposta_codigo": 0});
+            },
+            color: Colors.red,
+            iconSize: 100,
+            icon: Icon(Icons.add_circle_rounded),
+
+          ),
+        );
+      }
+    ),
     );
     }
 }
