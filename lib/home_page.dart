@@ -40,12 +40,10 @@ class _HomePage extends State<HomePage> {
           if (doc['email'] == User_email){
             if (doc['acesso'] == 'Administrador'){
               isAdmin = true;
-
             }
           }
         })
       });
-      return isAdmin;
     }
     getLength(snapshot){
       var length = 0;
@@ -63,9 +61,7 @@ class _HomePage extends State<HomePage> {
       });
     }
     Widget adminButtons(document) {
-
-      return isAdmin == true
-          ?
+      return isAdmin == true ?
       Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -95,12 +91,10 @@ class _HomePage extends State<HomePage> {
       )
           : Container();
     }
-
-
     @override
   void initState(){
-    getForms();
-    super.initState();
+      checkAdmin();
+      super.initState();
   }
   Widget build(BuildContext context) {
     return Scaffold(
@@ -154,7 +148,7 @@ class _HomePage extends State<HomePage> {
               child: CircularProgressIndicator(),
             );
           }
-          checkAdmin();
+
           return ListView(
             children: snapshot.data!.docs.map((document){
                 return Center(

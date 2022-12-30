@@ -13,15 +13,14 @@ import 'package:appmumbuca/account_page.dart';
 
 final Forms_collection = FirebaseFirestore.instance.collection('Formulários');
 
-class HomePage extends StatefulWidget{
-  const HomePage({Key? key}) : super(key: key);
+class CreateForm extends StatefulWidget{
+  const CreateForm({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePage();
+  State<CreateForm> createState() => _CreateForm();
 }
 
-class _HomePage extends State<HomePage> {
-
+class _CreateForm extends State<CreateForm> {
 
   getLength(snapshot){
     var length = 0;
@@ -30,18 +29,21 @@ class _HomePage extends State<HomePage> {
     });
     return length;
   }
+
   getForms(){
     final Form_List = [];
     Forms_collection.get().then((QuerySnapshot snapshot) => {
       snapshot.docs.forEach((DocumentSnapshot doc) {
         print(doc['Nome_Formulário']);
       })
-    });    }
+    });
+  }
   @override
   void initState(){
     getForms();
     super.initState();
   }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey,
