@@ -7,6 +7,10 @@ import 'package:provider/provider.dart';
 import 'package:appmumbuca/reset_password_page.dart';
 import 'package:appmumbuca/home_page.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:appmumbuca/register_page.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -27,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
   }
 
-  login() async {
+  void login() async {
     try {
       await context.read<AuthService>().login(email.text, senha.text).then((_) {
         Navigator.of(context).push(
@@ -41,7 +45,6 @@ class _LoginPageState extends State<LoginPage> {
           .showSnackBar(SnackBar(content: Text(e.message)));
     }
   }
-
 
   registrar() async {
     // Método posicionado aqui, porém na verdade deverá ser
@@ -192,6 +195,37 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
+
+                    Container(
+                      padding: EdgeInsets.only(
+                        top: 24.0,
+                        left: 24.0,
+                        right: 24.0,
+                      ),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return const CreateUserPage();
+                            },
+                          );
+                        },
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Padding(
+                              padding: EdgeInsets.all(16.0),
+                              child: Text(
+                                "Testando registro",
+                                style: TextStyle(fontSize: 25),
+                              ),
+                            ),
+                          ], // Children
+                        ),
+                      ),
+                    ),
+
                   ],
                 ),
               ),
