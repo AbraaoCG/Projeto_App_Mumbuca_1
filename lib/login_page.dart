@@ -67,12 +67,12 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: <Widget>[
               SizedBox(
-                width: 210,
-                height: 210,
-                child: Transform.scale(
-                  scale: 1.5,
-                  child: Image.asset("assets/logo_login.png"),
-                )
+                  width: 210,
+                  height: 210,
+                  child: Transform.scale(
+                    scale: 1.5,
+                    child: Image.asset("assets/logo_login.png"),
+                  )
               ),
               Form(
                 key: formKey,
@@ -148,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                       padding: EdgeInsets.all(24.0),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(//<-- SEE HERE
-                            ),
+                        ),
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
                             login();
@@ -200,36 +200,6 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
 
-                    Container(
-                      padding: EdgeInsets.only(
-                        top: 24.0,
-                        left: 24.0,
-                        right: 24.0,
-                      ),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return const CreateUserPage();
-                            },
-                          );
-                        },
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Padding(
-                              padding: EdgeInsets.all(16.0),
-                              child: Text(
-                                "Testando registro",
-                                style: TextStyle(fontSize: 25),
-                              ),
-                            ),
-                          ], // Children
-                        ),
-                      ),
-                    ),
-
                   ],
                 ),
               ),
@@ -240,5 +210,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
-/** teste **/
