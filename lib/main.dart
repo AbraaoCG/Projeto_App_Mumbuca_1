@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: non_constant_identifier_names
 
+
 import 'package:appmumbuca/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -10,12 +11,15 @@ import 'package:appmumbuca/my_app.dart';
 import 'package:appmumbuca/packages/firebase_options.dart';
 
 
+
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   // Wait Firebase
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   runApp(
       MultiProvider(
         providers: [
@@ -24,6 +28,7 @@ void main() async{
         child: const MyApp()
       ),
   );
+
   // Inicializar Firebase e gerar variáveis com dados úteis.
   FirebaseFirestore.instance;
   var Forms_collection = FirebaseFirestore.instance.collection('Formulários');
