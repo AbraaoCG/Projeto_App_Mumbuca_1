@@ -14,8 +14,8 @@ import 'package:appmumbuca/account_page.dart';
 import 'package:appmumbuca/login_page.dart';
 import 'register_page.dart';
 
-
 final Forms_collection = FirebaseFirestore.instance.collection('Formulários');
+
 final colecaoUsuarios = FirebaseFirestore.instance.collection('testeusuarios');
 
 class HomePage extends StatefulWidget {
@@ -86,25 +86,20 @@ class _HomePage extends State<HomePage> {
   }
 
   @override
-  void initState() {
-    dadosUsuario();
-    getForms();
-    super.initState();
-  }
-
-  Widget build(BuildContext context)  {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
           backgroundColor: Color(0xFFB71717),
           toolbarHeight: 100,
-          title:
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Image.asset(
-              'assets/LogoMumbuca.png',
-              fit: BoxFit.contain,
-              height: 90,
-            ),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+          Image.asset(
+          'assets/LogoMumbuca.png',
+          fit: BoxFit.contain,
+          height: 90,
+          ),
             Text(
               "Banco Mumbuca Pesquisas",
               style: TextStyle(
@@ -463,24 +458,7 @@ class _Survey extends StatelessWidget {
   final String surveyName;
   final String surveyCreationDate;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        child: Column(
-          children: [
-            Text(
-              "",
-              style: TextStyle(
-                fontSize: 30,
-                fontFamily: 'Montserrat',
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ));
-  }
 }
-
 class GradientAppBar extends StatelessWidget {
   final String title;
   final double barHeight = 50.0;
@@ -504,15 +482,16 @@ class GradientAppBar extends StatelessWidget {
             begin: const FractionalOffset(0.0, 0.0),
             end: const FractionalOffset(0.5, 0.0),
             stops: const [0.0, 1.0],
-            tileMode: TileMode.clamp),
+            tileMode: TileMode.clamp
+        ),
       ),
       child: Center(
         child: Text(
           title,
-          style: TextStyle(
-              fontSize: 20.0, color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 20.0, color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
+
     );
   }
 }

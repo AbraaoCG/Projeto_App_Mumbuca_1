@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -31,10 +28,7 @@ class DefaultFirebaseOptions {
           'you can reconfigure this by running the FlutterFire CLI again.',
         );
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -52,11 +46,31 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyAv0fqhbq5RD94G12SW19aOJYgxub2_v1Q',
+    appId: '1:952997310244:web:2c6d68accc5eec275d0db1',
+    messagingSenderId: '952997310244',
+    projectId: 'app-pesquis-satisf-mumbuca',
+    authDomain: 'app-pesquis-satisf-mumbuca.firebaseapp.com',
+    storageBucket: 'app-pesquis-satisf-mumbuca.appspot.com',
+    measurementId: 'G-NX1EHYB4PZ',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyC4VLJLH0AjBh1hI4yYvifNMBQbSU4c2OE',
     appId: '1:952997310244:android:17349e74f3033f3e5d0db1',
     messagingSenderId: '952997310244',
     projectId: 'app-pesquis-satisf-mumbuca',
     storageBucket: 'app-pesquis-satisf-mumbuca.appspot.com',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyC2c5yRXQX4Ysqzu1LQOHM3CEIAXnfSDGw',
+    appId: '1:952997310244:ios:d3a305180dcb59e35d0db1',
+    messagingSenderId: '952997310244',
+    projectId: 'app-pesquis-satisf-mumbuca',
+    storageBucket: 'app-pesquis-satisf-mumbuca.appspot.com',
+    iosClientId: '952997310244-kn50mhm70eucelshnokjpqdvbodn9ihk.apps.googleusercontent.com',
+    iosBundleId: 'com.example.appmumbuca',
   );
 }
