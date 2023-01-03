@@ -49,7 +49,6 @@ class _CreateUserPage extends State<CreateUserPage> {
       'acesso': _role,
     };
     await usersCollection.add(data);
-    print('Dados adicionados com sucesso');
   }
 
   createUser(BuildContext context) async {
@@ -286,14 +285,13 @@ class _CreateUserPage extends State<CreateUserPage> {
                 setState(() {
                   switch (_selectedOption) {
                     case 1:
-                      _role = 'Usuario';
+                      _role = 'Usuário';
                       break;
                     case 2:
                       _role = 'Administrador';
                       break;
                   }
                 });
-                print(_role);
                 createUser(context);
               },
               style: ElevatedButton.styleFrom(

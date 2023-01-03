@@ -10,6 +10,7 @@ import 'package:appmumbuca/home_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:appmumbuca/register_page.dart';
+import 'package:appmumbuca/home_page.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -26,6 +27,7 @@ class _LoginPageState extends State<LoginPage> {
 
   String titulo = "Tela de Login";
 
+
   @override
   void initState() {
     super.initState();
@@ -36,7 +38,7 @@ class _LoginPageState extends State<LoginPage> {
       await context.read<AuthService>().login(email.text, senha.text).then((_) {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => HomePage(emailUsuario: email.text),
           ),
         );
       });
@@ -47,10 +49,8 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   registrar() async {
-    // Método posicionado aqui, porém na verdade deverá ser
+    // Método posicionado aqui, porém na verdade deverá ser usado em outra página.
     try {
-      // usado em outra página.
-      await context.read<AuthService>().registrar(email.text, senha.text);
     } on AuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message)));
@@ -142,6 +142,8 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
                     ),
+
+
                     Container(
                       padding: EdgeInsets.all(24.0),
                       child: ElevatedButton(
@@ -152,6 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                             login();
                           }
                         },
+
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
@@ -167,6 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
+
                     Container(
                       padding: EdgeInsets.only(
                         left: 24.0,
