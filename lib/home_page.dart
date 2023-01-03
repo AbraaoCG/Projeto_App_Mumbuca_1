@@ -1,10 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: non_constant_identifier_names
-
 // import 'dart:html';
-//import 'dart:html';
-import 'package:appmumbuca/packages/firebase_options.dart';
-import 'package:appmumbuca/form_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:appmumbuca/services/auth_service.dart';
@@ -14,8 +10,8 @@ import 'package:appmumbuca/account_page.dart';
 import 'package:appmumbuca/login_page.dart';
 import 'register_page.dart';
 
-final Forms_collection = FirebaseFirestore.instance.collection('Formulários');
 
+final Forms_collection = FirebaseFirestore.instance.collection('Formulários');
 final colecaoUsuarios = FirebaseFirestore.instance.collection('testeusuarios');
 
 class HomePage extends StatefulWidget {
@@ -86,20 +82,25 @@ class _HomePage extends State<HomePage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    dadosUsuario();
+    getForms();
+    super.initState();
+  }
+
+  Widget build(BuildContext context)  {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
           backgroundColor: Color(0xFFB71717),
           toolbarHeight: 100,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-          Image.asset(
-          'assets/LogoMumbuca.png',
-          fit: BoxFit.contain,
-          height: 90,
-          ),
+          title:
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Image.asset(
+              'assets/LogoMumbuca.png',
+              fit: BoxFit.contain,
+              height: 90,
+            ),
             Text(
               "Banco Mumbuca Pesquisas",
               style: TextStyle(
@@ -268,9 +269,7 @@ class _HomePage extends State<HomePage> {
                             );
                           },
                         ),
-                      ),
-
-                  /** AQUI TERMINAM AS FUNCIONALIDADES RESTRITAS A ADMINISTRADORES **/
+                        Divider(),
 
                         ListTile(
                           title: Text(
@@ -304,153 +303,79 @@ class _HomePage extends State<HomePage> {
                           fontWeight: FontWeight.bold,
                           color: Color(0xFFB71717)
                       ),
-                    width: MediaQuery.of(context).size.width / 1.2,
-                    height: MediaQuery.of(context).size.height / 6,
-                      child: Column(
-                        children: [
-                          Text(document['Nome_Formulário'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                          Text("Data de Criação: " +document['Data_Criação'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.all(5),
-                             child: Container(
-                                width: 200,
-                                height: 50,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
-                                  },
-                                  child: Text("Deletar Formulário", textScaleFactor: 1.4),
-
-                                ),
-                              ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(5),
-                              child: Container(
-                                width: 200,
-                                height: 50,
-                                child: ElevatedButton(
-                                  onPressed: () {
-                                    DefaultFirebaseOptions.documento = document.id;
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const FormPage()),
-                                    );
-                                  },
-                                  child: Text("Editar Formulário", textScaleFactor: 1.5),
-
-                                ),
-                              ),
-                              )
-                            ]
-                          )
-
-
-                      ]
-
-                  )
+                    ),
+                    leading: Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: SizedBox(
+                        child: Transform.scale(
+                            scale: 2,
+                            child: Icon(Icons.logout,
+                              color: Color(0xFFB71717) ,)
+                        ),
+                      ),
+                    ),
+                    onTap: () {
+                      logout();
+                    },
                   ),
-                    child: Column(
-                      children: [
-                        Text(document['Nome_Formulário'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                        Text("Data de Criação: " +document['Data_Criação'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                      ],
-                    )
-                  )
-                );
-              }
-              return ListView(
-                children: snapshot.data!.docs.map((document) {
-                  return Center(
-                      child: Container(
-                          padding: EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 10),
-                          margin: EdgeInsets.symmetric(
-                              vertical: 25, horizontal: 50),
-                          decoration: BoxDecoration(
-                            borderRadius:
-                            BorderRadius.all(Radius.circular(35.0)),
-                            shape: BoxShape.rectangle,
-                            color: Color(0xFFB71717),
-                          ),
-                          width: MediaQuery.of(context).size.width / 1.2,
-                          height: MediaQuery.of(context).size.height / 6,
-                          child: Column(
-                            children: [
-                              Text(document['Nome_Formulário'],
-                                  style: TextStyle(
-                                      fontSize: 30,
-                                      fontFamily: 'Montserrat',
-                                      fontWeight: FontWeight.bold)),
-                              Text(
-                                  "Data de Criação: " +
-                                      document['Data_Criação'],
-                                  style: TextStyle(
-                                      fontSize: 30,
-                                      fontFamily: 'Montserrat',
-                                      fontWeight: FontWeight.normal)),
-                            ],
-                          )));
-                }).toList(),
-              );
-            }),
-      );
-        }
+                  Divider(),
 
-    ),
-      floatingActionButton: StreamBuilder(
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      // Fim adicionando sidebar
+
+      body: StreamBuilder(
           stream: Forms_collection.snapshots(),
-          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          return Container(
-            //color: Colors.redAccent,
-           child: IconButton(
-            onPressed: () {
-              var data = {
-                "Nome_Formulário": "Novo Formulário",
-                "Data_Criação": DateTime
-                    .now()
-                    .day
-                    .toString() + "/" + DateTime
-                    .now()
-                    .month
-                    .toString() + "/" + DateTime
-                    .now()
-                    .year
-                    .toString(),
-              };
-              var doc1 = FirebaseFirestore.instance.collection("Formulários").doc();
-              doc1.set(data);
-              var doc1id = doc1.id;
-              print(doc1id);
-              var doc2 = FirebaseFirestore.instance.collection("Formulários")
-                      .doc(doc1id.toString())
-                      .collection("Perguntas")
-                      .doc();
-              doc2.set({"Enunciado": "Novo Enunciado", "tipo_pergunta": "0"});
-              var doc2id = doc2.id;
-                //  var docid2 = snapshot.data!.docs.last.id;
-                FirebaseFirestore.instance.collection("Formulários").doc(
-                    doc1id.toString())
-                    .collection("Perguntas").doc(doc2id.toString())
-                    .collection(
-                    "Respostas")
-                    .add({"resposta_codigo": 0});
-            },
-            color: Colors.red,
-            iconSize: 100,
-            icon: Icon(Icons.add_circle_rounded),
-
-          ),
-        );
-      }
-    ),
+          builder: (BuildContext context,
+              AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return ListView(
+              children: snapshot.data!.docs.map((document) {
+                return Center(
+                    child: Container(
+                        padding: EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 10),
+                        margin: EdgeInsets.symmetric(
+                            vertical: 25, horizontal: 50),
+                        decoration: BoxDecoration(
+                          borderRadius:
+                          BorderRadius.all(Radius.circular(35.0)),
+                          shape: BoxShape.rectangle,
+                          color: Color(0xFFB71717),
+                        ),
+                        width: MediaQuery.of(context).size.width / 1.2,
+                        height: MediaQuery.of(context).size.height / 6,
+                        child: Column(
+                          children: [
+                            Text(document['Nome_Formulário'],
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontFamily: 'Montserrat',
+                                    fontWeight: FontWeight.bold)),
+                            Text(
+                                "Data de Criação: " +
+                                    document['Data_Criação'],
+                                style: TextStyle(
+                                    fontSize: 30,
+                                    fontFamily: 'Montserrat',
+                                    fontWeight: FontWeight.normal)),
+                          ],
+                        )));
+              }).toList(),
+            );
+          }),
     );
-    }
+  }
 }
-
 
 
 class _Survey extends StatelessWidget {
@@ -458,21 +383,34 @@ class _Survey extends StatelessWidget {
   final String surveyName;
   final String surveyCreationDate;
 
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        child: Column(
+          children: [
+            Text(
+              "",
+              style: TextStyle(
+                fontSize: 30,
+                fontFamily: 'Montserrat',
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ));
+  }
 }
+
 class GradientAppBar extends StatelessWidget {
   final String title;
   final double barHeight = 50.0;
 
-
   const GradientAppBar(this.title, {super.key});
-
 
   @override
   Widget build(BuildContext context) {
-    final double statusbarHeight = MediaQuery
-        .of(context)
-        .padding
-        .top;
+    final double statusbarHeight = MediaQuery.of(context).padding.top;
+
     return Container(
       padding: EdgeInsets.only(top: statusbarHeight),
       height: statusbarHeight + barHeight,
@@ -482,16 +420,15 @@ class GradientAppBar extends StatelessWidget {
             begin: const FractionalOffset(0.0, 0.0),
             end: const FractionalOffset(0.5, 0.0),
             stops: const [0.0, 1.0],
-            tileMode: TileMode.clamp
-        ),
+            tileMode: TileMode.clamp),
       ),
       child: Center(
         child: Text(
           title,
-          style: TextStyle(fontSize: 20.0, color: Colors.white, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              fontSize: 20.0, color: Colors.white, fontWeight: FontWeight.bold),
         ),
       ),
-
     );
   }
 }
