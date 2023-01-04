@@ -18,13 +18,8 @@ bool validateName(String name) {
  * ela verifica se o nome tem pelo menos uma letra. **/
 
 bool validatePassword(String password) {
-  return password.length >= 6;
+  return password.length >= 6; // verifica se a senha tem pelo menos 6 caracteres.
 }
-
-// A função acima verifica se a senha tem pelo menos 6 caracteres.
-
-int _selectedOption = 1; // variável usada para escolher a permissão no cadastro
-String? _role;
 
 class CreateUserPage extends StatefulWidget {
   const CreateUserPage({Key? key}) : super(key: key);

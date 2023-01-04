@@ -26,6 +26,7 @@ class _LoginPageState extends State<LoginPage> {
   final senha = TextEditingController();
 
   String titulo = "Tela de Login";
+  bool loading = false;
 
 
   @override
@@ -41,10 +42,20 @@ class _LoginPageState extends State<LoginPage> {
             builder: (context) => HomePage(emailUsuario: email.text),
           ),
         );
+
+        setState(() {
+          loading = false;
+        });
+
       });
     } on AuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message)));
+
+      setState(() {
+        loading = false;
+      });
+
     }
   }
 
@@ -143,14 +154,47 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
 
+                    // se loading = true:
+                    loading ? Padding(
+                        padding: EdgeInsets.all(24.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.white, width: 2.0),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Padding(
+                              padding: EdgeInsets.all(10.5),
+                              child: CircularProgressIndicator(
+                                backgroundColor: Color(0xFFB71717),
+                                color: Colors.white,
+                              )
+                          ),
+                        ], // Children
+                      ),
+                    ),
+                    ):
 
+                    // se loading = false:
                     Container(
                       padding: EdgeInsets.all(24.0),
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(//<-- SEE HERE
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFB71717),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            side: BorderSide(color: Colors.white, width: 2.0),
+                          ),
                         ),
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
+
+                            setState(() {
+                              loading = true;
+                            });
+
                             login();
                           }
                         },
@@ -172,11 +216,15 @@ class _LoginPageState extends State<LoginPage> {
                     ),
 
                     Container(
-                      padding: EdgeInsets.only(
-                        left: 24.0,
-                        right: 24.0,
-                      ),
+                      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 24),
                       child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFB71717),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            side: BorderSide(color: Colors.white, width: 2.0),
+                          ),
+                        ),
                         onPressed: () {
                           showDialog(
                             context: context,
