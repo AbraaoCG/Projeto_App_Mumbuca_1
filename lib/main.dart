@@ -32,18 +32,29 @@ void main() async{
   var F1 = Forms_collection.doc("FormExemplo");
   var F2 = Forms_collection.doc("FormExemplo2");
   var F1_P1 = F1.collection("Perguntas").doc("PerguntExemplo1");
+  var F1_P2 = F1.collection("Perguntas").doc("PerguntExemplo2");
+  var F1_P3 = F1.collection("Perguntas").doc("PerguntExemplo3");
+
   var F1_P1_R = F1_P1.collection("Respostas");
+  var F1_P2_R = F1_P1.collection("Respostas");
+  var F1_P3_R = F1_P1.collection("Respostas");
+
   var F1P1R1 = F1_P1_R.doc("Resposta1");
   F1.set({
     'Nome_Formulário' : 'Formulário Exemplo 1',
     'Data_Criação'  : '20/12/2022'
   });
   F1_P1.set({
-    'Enunciado': 'O que o Banco Mumbuca é para você?',
-    'tipo_pergunta': '0'
+    'Enunciado': 'Qual melhor característica do Mumbuca para você?',
+    'tipo_pergunta': '1' // Multipla escolha
   });
-  F1P1R1.set({
-    'resposta_codigo' : '2'
+  F1_P2.set({
+    'Enunciado': 'O que o Banco Mumbuca é para você?',
+    'tipo_pergunta': '2' // caixa de selecao
+  });
+  F1_P3.set({
+    'Enunciado': 'O que o Banco Mumbuca é para você?',
+    'tipo_pergunta': '3' // escala linear
   });
 
 }

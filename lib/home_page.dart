@@ -20,11 +20,13 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key, this.emailUsuario})
       : super(key: key); // Importando email do login_page
 
+
   @override
   State<HomePage> createState() => _HomePage();
 }
 
 class _HomePage extends State<HomePage> {
+
   String _nomeUsuario = 'default';
   String _acessoUsuario = 'default';
 
@@ -90,6 +92,7 @@ class _HomePage extends State<HomePage> {
     dadosUsuario();
     getForms();
     super.initState();
+
   }
 
   Widget build(BuildContext context) {
@@ -306,6 +309,7 @@ class _HomePage extends State<HomePage> {
       ),
 
       body: StreamBuilder(
+
           stream: Forms_collection.snapshots(),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -384,6 +388,7 @@ class _HomePage extends State<HomePage> {
 
                         )
                     ),
+
                 );
               }).toList(),
             );
