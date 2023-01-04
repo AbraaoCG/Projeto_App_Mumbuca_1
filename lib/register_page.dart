@@ -41,12 +41,14 @@ class _CreateUserPage extends State<CreateUserPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
+  String? _selectedOption; // variável que recebe a permissão do cadastro
+
   Future<void> addDataToFirestore() async {
     final CollectionReference usersCollection = FirebaseFirestore.instance.collection('testeusuarios');
     final Map<String, dynamic> data = {
       'nome': nameController.text,
       'email': emailController.text,
-      'acesso': _role,
+      'acesso': _selectedOption,
     };
     await usersCollection.add(data);
   }
@@ -239,11 +241,11 @@ class _CreateUserPage extends State<CreateUserPage> {
             fontWeight: FontWeight.normal,
                 )
           ),
-                value: 1, // Value associated with this option
+                value: 'Usuário', // Value associated with this option
                 groupValue: _selectedOption, // Currently selected option
                 onChanged: (value) {
                   setState(() {
-                    _selectedOption = (value as int);
+                    _selectedOption = (value as String);
                   });
                 },
               ),
@@ -255,19 +257,17 @@ class _CreateUserPage extends State<CreateUserPage> {
                   fontWeight: FontWeight.normal,
                 )
                 ),
-                value: 2, // Value associated with this option
+                value: 'Administrador', // Value associated with this option
                 groupValue: _selectedOption, // Currently selected option
                 onChanged: (value) {
                   setState(() {
-                    _selectedOption = (value as int);// Set the value of _role
+                    _selectedOption = (value as String);
                   });
                 },
               ),
               // Add more RadioListTile widgets as needed
             ],
           ),
-
-          // map function
 
           SizedBox(
             height: 30,
@@ -284,12 +284,6 @@ class _CreateUserPage extends State<CreateUserPage> {
               onPressed: () {
                 setState(() {
                   switch (_selectedOption) {
-                    case 1:
-                      _role = 'Usuário';
-                      break;
-                    case 2:
-                      _role = 'Administrador';
-                      break;
                   }
                 });
                 createUser(context);

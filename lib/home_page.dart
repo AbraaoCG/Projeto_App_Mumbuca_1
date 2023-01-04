@@ -43,8 +43,11 @@ class _HomePage extends State<HomePage> {
       // Retrieve the data from the document
       Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-      _nomeUsuario = (data['nome']);
-      _acessoUsuario = (data['acesso']);
+      setState(() {
+        _nomeUsuario = (data['nome']);
+        _acessoUsuario = (data['acesso']);
+      });
+
     }
   }
 
@@ -152,7 +155,7 @@ class _HomePage extends State<HomePage> {
             height: 30,
           ),
           Text(
-            'redefinirNoCodigo',
+            _nomeUsuario,
             style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -163,7 +166,7 @@ class _HomePage extends State<HomePage> {
             height: 10,
           ),
           Text(
-    'redefinirNoCodigo',
+            _acessoUsuario,
             style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.bold,
@@ -225,7 +228,7 @@ class _HomePage extends State<HomePage> {
                 /** AQUI COMEÇAM AS FUNCIONALIDADES RESTRITAS A ADMINISTRADORES **/
 
                 Offstage(
-                  offstage: 1 != 'Administrador', // 'redefinirNoCodigo'
+                  offstage: _acessoUsuario != 'Administrador', // 'redefinirNoCodigo'
                   child: Column(
                     children: [
                       ListTile(
