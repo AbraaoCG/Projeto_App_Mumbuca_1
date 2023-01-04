@@ -9,6 +9,8 @@ import 'package:provider/provider.dart';
 import 'package:appmumbuca/account_page.dart';
 import 'package:appmumbuca/login_page.dart';
 import 'register_page.dart';
+import 'package:appmumbuca/packages/firebase_options.dart';
+import 'package:appmumbuca/form_page.dart';
 
 final Forms_collection = FirebaseFirestore.instance.collection('Formulários');
 final colecaoUsuarios = FirebaseFirestore.instance.collection('testeusuarios');
@@ -31,7 +33,7 @@ class _HomePage extends State<HomePage> {
 
 // Create the query
     Query query =
-        colecaoUsuarios.where('email', isEqualTo: '${widget.emailUsuario}');
+    colecaoUsuarios.where('email', isEqualTo: '${widget.emailUsuario}');
 
 // Get the query snapshot
     QuerySnapshot snapshot = await query.get();
@@ -63,19 +65,21 @@ class _HomePage extends State<HomePage> {
 
   getLength(snapshot) {
     var length = 0;
-    Forms_collection.get().then((value) => {
-          length = value.docs.length,
-        });
+    Forms_collection.get().then((value) =>
+    {
+      length = value.docs.length,
+    });
     return length;
   }
 
   getForms() {
     final Form_List = [];
-    Forms_collection.get().then((QuerySnapshot snapshot) => {
-          snapshot.docs.forEach((DocumentSnapshot doc) {
-            print(doc['Nome_Formulário']);
-          })
-        });
+    Forms_collection.get().then((QuerySnapshot snapshot) =>
+    {
+      snapshot.docs.forEach((DocumentSnapshot doc) {
+        print(doc['Nome_Formulário']);
+      })
+    });
   }
 
   @override
@@ -126,49 +130,7 @@ class _HomePage extends State<HomePage> {
               },
             ),
           ]),
-      floatingActionButton: StreamBuilder(
-        stream: Forms_collection.snapshots(),
-        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          return Container(
-            //color: Colors.redAccent,
-            child: IconButton(
-              onPressed: () {
-                var data = {
-                  "Nome_Formulário": "Novo Formulário",
-                  "Data_Criação": DateTime.now().day.toString() +
-                      "/" +
-                      DateTime.now().month.toString() +
-                      "/" +
-                      DateTime.now().year.toString(),
-                };
-                var doc1 =
-                    FirebaseFirestore.instance.collection("Formulários").doc();
-                doc1.set(data);
-                var doc1id = doc1.id;
-                print(doc1id);
-                var doc2 = FirebaseFirestore.instance
-                    .collection("Formulários")
-                    .doc(doc1id.toString())
-                    .collection("Perguntas")
-                    .doc();
-                doc2.set({"Enunciado": "Novo Enunciado", "tipo_pergunta": "0"});
-                var doc2id = doc2.id;
-                //  var docid2 = snapshot.data!.docs.last.id;
-                FirebaseFirestore.instance
-                    .collection("Formulários")
-                    .doc(doc1id.toString())
-                    .collection("Perguntas")
-                    .doc(doc2id.toString())
-                    .collection("Respostas")
-                    .add({"resposta_codigo": '0'});
-              },
-              color: Colors.red,
-              iconSize: 100,
-              icon: Icon(Icons.add_circle_rounded),
-            ),
-          );
-        },
-      ),
+
       drawer: Drawer(
         width: MediaQuery.of(context).size.width * 0.7,
         child: Column(children: <Widget>[
@@ -190,7 +152,7 @@ class _HomePage extends State<HomePage> {
             height: 30,
           ),
           Text(
-            _nomeUsuario,
+            'redefinirNoCodigo',
             style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
@@ -201,7 +163,7 @@ class _HomePage extends State<HomePage> {
             height: 10,
           ),
           Text(
-            _acessoUsuario,
+    'redefinirNoCodigo',
             style: TextStyle(
               fontSize: 25,
               fontWeight: FontWeight.bold,
@@ -263,7 +225,7 @@ class _HomePage extends State<HomePage> {
                 /** AQUI COMEÇAM AS FUNCIONALIDADES RESTRITAS A ADMINISTRADORES **/
 
                 Offstage(
-                  offstage: _acessoUsuario != 'Administrador',
+                  offstage: 1 != 'Administrador', // 'redefinirNoCodigo'
                   child: Column(
                     children: [
                       ListTile(
@@ -376,14 +338,101 @@ class _HomePage extends State<HomePage> {
                                     fontSize: 30,
                                     fontFamily: 'Montserrat',
                                     fontWeight: FontWeight.normal)),
-                          ],
-                        )));
+                            Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Padding(
+                                    padding: EdgeInsets.all(5),
+                                    child: Container(
+                                      width: 200,
+                                      height: 50,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
+                                        },
+                                        child: Text("Deletar Formulário", textScaleFactor: 1.4),
+
+                                      ),
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.all(5),
+                                    child: Container(
+                                      width: 200,
+                                      height: 50,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          DefaultFirebaseOptions.documento = document.id;
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => const FormPage()),
+                                          );
+                                        },
+                                        child: Text("Editar Formulário", textScaleFactor: 1.5),
+
+                                      ),
+                                    ),
+                                  )
+                                ]
+                            )
+
+
+                          ]
+
+                        )
+                    ),
+                );
               }).toList(),
             );
           }),
+
+    floatingActionButton: StreamBuilder(
+      stream: Forms_collection.snapshots(),
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        return Container(
+          //color: Colors.redAccent,
+          child: IconButton(
+            onPressed: () {
+              var data = {
+                "Nome_Formulário": "Novo Formulário",
+                "Data_Criação": DateTime.now().day.toString() +
+                    "/" +
+                    DateTime.now().month.toString() +
+                    "/" +
+                    DateTime.now().year.toString(),
+              };
+              var doc1 =
+              FirebaseFirestore.instance.collection("Formulários").doc();
+              doc1.set(data);
+              var doc1id = doc1.id;
+              print(doc1id);
+              var doc2 = FirebaseFirestore.instance
+                  .collection("Formulários")
+                  .doc(doc1id.toString())
+                  .collection("Perguntas")
+                  .doc();
+              doc2.set({"Enunciado": "Novo Enunciado", "tipo_pergunta": "0"});
+              var doc2id = doc2.id;
+              //  var docid2 = snapshot.data!.docs.last.id;
+              FirebaseFirestore.instance
+                  .collection("Formulários")
+                  .doc(doc1id.toString())
+                  .collection("Perguntas")
+                  .doc(doc2id.toString())
+                  .collection("Respostas")
+                  .add({"resposta_codigo": '0'});
+            },
+            color: Colors.red,
+            iconSize: 100,
+            icon: Icon(Icons.add_circle_rounded),
+          ),
+        );
+      },
+    ),
     );
   }
 }
+
 
 class _Survey extends StatelessWidget {
   const _Survey({required this.surveyName, required this.surveyCreationDate});
