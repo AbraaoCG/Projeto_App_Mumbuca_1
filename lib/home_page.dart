@@ -319,6 +319,51 @@ class _HomePage extends State<HomePage> {
                     },
                   ),
                   Divider(),
+                  
+                  // Fim adicionando sidebar
+                  
+    ),
+      floatingActionButton: StreamBuilder(
+          stream: Forms_collection.snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          return Container(
+            //color: Colors.redAccent,
+           child: IconButton(
+            onPressed: () {
+              var data = {
+                "Nome_Formulário": "Novo Formulário",
+                "Data_Criação": DateTime
+                    .now()
+                    .day
+                    .toString() + "/" + DateTime
+                    .now()
+                    .month
+                    .toString() + "/" + DateTime
+                    .now()
+                    .year
+                    .toString(),
+              };
+              var doc1 = FirebaseFirestore.instance.collection("Formulários").doc();
+              doc1.set(data);
+              var doc1id = doc1.id;
+              print(doc1id);
+              var doc2 = FirebaseFirestore.instance.collection("Formulários")
+                      .doc(doc1id.toString())
+                      .collection("Perguntas")
+                      .doc();
+              doc2.set({"Enunciado": "Novo Enunciado", "tipo_pergunta": "0"});
+              var doc2id = doc2.id;
+                //  var docid2 = snapshot.data!.docs.last.id;
+                FirebaseFirestore.instance.collection("Formulários").doc(
+                    doc1id.toString())
+                    .collection("Perguntas").doc(doc2id.toString())
+                    .collection(
+                    "Respostas")
+                    .add({"resposta_codigo": '0'});
+            },
+            color: Colors.red,
+            iconSize: 100,
+            icon: Icon(Icons.add_circle_rounded),
 
                 ],
               ),
@@ -326,9 +371,7 @@ class _HomePage extends State<HomePage> {
           ],
         ),
       ),
-
-      // Fim adicionando sidebar
-
+      
       body: StreamBuilder(
           stream: Forms_collection.snapshots(),
           builder: (BuildContext context,
@@ -432,5 +475,3 @@ class GradientAppBar extends StatelessWidget {
     );
   }
 }
-
-// novo texto

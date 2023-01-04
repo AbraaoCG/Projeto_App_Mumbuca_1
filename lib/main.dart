@@ -40,9 +40,10 @@ void main() async{
   });
   F1_P1.set({
     'Enunciado': 'O que o Banco Mumbuca é para você?',
+    'tipo_pergunta': '0'
   });
   F1P1R1.set({
-    'resposta_codigo' : 2
+    'resposta_codigo' : '2'
   });
 
 }
