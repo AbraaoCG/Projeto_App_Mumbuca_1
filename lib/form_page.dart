@@ -61,6 +61,40 @@ class _FormPage extends State<FormPage> {
             ),
           ]
       ),
+      body: StreamBuilder(
+          stream: Forms_collection.doc(DefaultFirebaseOptions.documento).collection("Perguntas").snapshots(),
+          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot){
+            if (!snapshot.hasData){
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return ListView(
+              children: snapshot.data!.docs.map((document){
+                return Center(
+                  child: Container(
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(35.0)),
+                        shape: BoxShape.rectangle,
+                        color: Color(0xB1B71717),
+                      ),
+                      width: MediaQuery.of(context).size.width / 1.2,
+                      height: MediaQuery.of(context).size.height / 6,
+                      child: Column(
+                          children: [
+                            Text(document['Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                            Text("Tipo de Pergunta: " +document['tipo_pergunta'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                          ]
+                      )
+                  ),
+                );
+              }).toList(),
+            );
+          }
+
+      ),
       bottomNavigationBar: BottomAppBar(
         color: Color(0XFFB71717),
         child: Text("Data de Criação: " + DefaultFirebaseOptions.DATA["Data_Criação"], style: TextStyle(color: Colors.white), textScaleFactor: 1.5),

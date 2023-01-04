@@ -197,7 +197,7 @@ class _HomePage extends State<HomePage> {
                     .collection("Perguntas").doc(doc2id.toString())
                     .collection(
                     "Respostas")
-                    .add({"resposta_codigo": 0});
+                    .add({"resposta_codigo": '0'});
             },
             color: Colors.red,
             iconSize: 100,
