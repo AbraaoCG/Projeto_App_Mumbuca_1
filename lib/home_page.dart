@@ -10,7 +10,6 @@ import 'package:appmumbuca/account_page.dart';
 import 'package:appmumbuca/login_page.dart';
 import 'register_page.dart';
 
-
 final Forms_collection = FirebaseFirestore.instance.collection('Formulários');
 final colecaoUsuarios = FirebaseFirestore.instance.collection('testeusuarios');
 
@@ -24,16 +23,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePage extends State<HomePage> {
-
   String _nomeUsuario = 'default';
   String _acessoUsuario = 'default';
 
   void dadosUsuario() async {
-
     print(widget.emailUsuario);
 
 // Create the query
-    Query query = colecaoUsuarios.where('email', isEqualTo: '${widget.emailUsuario}');
+    Query query =
+        colecaoUsuarios.where('email', isEqualTo: '${widget.emailUsuario}');
 
 // Get the query snapshot
     QuerySnapshot snapshot = await query.get();
@@ -45,7 +43,6 @@ class _HomePage extends State<HomePage> {
 
       _nomeUsuario = (data['nome']);
       _acessoUsuario = (data['acesso']);
-
     }
   }
 
@@ -67,18 +64,18 @@ class _HomePage extends State<HomePage> {
   getLength(snapshot) {
     var length = 0;
     Forms_collection.get().then((value) => {
-      length = value.docs.length,
-    });
+          length = value.docs.length,
+        });
     return length;
   }
 
   getForms() {
     final Form_List = [];
     Forms_collection.get().then((QuerySnapshot snapshot) => {
-      snapshot.docs.forEach((DocumentSnapshot doc) {
-        print(doc['Nome_Formulário']);
-      })
-    });
+          snapshot.docs.forEach((DocumentSnapshot doc) {
+            print(doc['Nome_Formulário']);
+          })
+        });
   }
 
   @override
@@ -88,14 +85,13 @@ class _HomePage extends State<HomePage> {
     super.initState();
   }
 
-  Widget build(BuildContext context)  {
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
           backgroundColor: Color(0xFFB71717),
           toolbarHeight: 100,
-          title:
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          title: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Image.asset(
               'assets/LogoMumbuca.png',
               fit: BoxFit.contain,
@@ -118,8 +114,7 @@ class _HomePage extends State<HomePage> {
                 // Abrir Tela de conta
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                      builder: (context) => const AccountPage()),
+                  MaterialPageRoute(builder: (context) => const AccountPage()),
                 );
               },
             ),
@@ -131,251 +126,224 @@ class _HomePage extends State<HomePage> {
               },
             ),
           ]),
-
-      // Adicionando sidebar
-
-      drawer: Drawer(
-        width: MediaQuery.of(context).size.width * 0.7,
-        child: Column(
-          children: <Widget>[
-            Container(
-                height: 300,
-                color: Color(0xFFB71717),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(
-                      child: Transform.scale(
-                        scale: 0.7,
-                        child: Image.asset("assets/user.png"),
-                      ),
-                    ),
-                  ],
-                )),
-            SizedBox(
-              height: 30,
-            ),
-            Text(
-              _nomeUsuario,
-              style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFB71717)
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            Text(
-              _acessoUsuario,
-              style: TextStyle(
-                fontSize: 25,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            Expanded(
-              child: Column(
-                children: <Widget>[
-
-                  Divider(),
-
-                  ListTile(
-                    title: Text(
-                      'Ver perfil',
-                      style: TextStyle(
-                          fontSize: 30),
-                    ),
-                    leading: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: SizedBox(
-                        child: Transform.scale(
-                            scale: 2,
-                            child: Icon(Icons.account_circle)
-                        ),
-                      ),
-                    ),
-                    onTap: () {},
-                  ),
-                  Divider(),
-
-                  ListTile(
-                    title: Text(
-                      'Deixar um feedback',
-                      style: TextStyle(
-                          fontSize: 30),
-                    ),
-                    leading: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: SizedBox(
-                        child: Transform.scale(
-                            scale: 2,
-                            child: Icon(Icons.feedback)
-                        ),
-                      ),
-                    ),
-                    onTap: () {},
-                  ),
-                  Divider(),
-
-                  ListTile(
-                    title: Text(
-                      'Sobre o aplicativo',
-                      style: TextStyle(
-                          fontSize: 30),
-                    ),
-                    leading: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: SizedBox(
-                        child: Transform.scale(
-                            scale: 2,
-                            child: Icon(Icons.info)
-                        ),
-                      ),
-                    ),
-                    onTap: () {},
-                  ),
-                  Divider(),
-
-                  /** AQUI COMEÇAM AS FUNCIONALIDADES RESTRITAS A ADMINISTRADORES **/
-
-                  Offstage(
-                    offstage: _acessoUsuario != 'Administrador',
-                    child: Column(
-                      children: [
-                        ListTile(
-                          title: Text(
-                            'Cadastrar usuários',
-                            style: TextStyle(fontSize: 30),
-                          ),
-                          leading: Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: SizedBox(
-                              child: Transform.scale(
-                                  scale: 2,
-                                  child: Icon(Icons.add)
-                              ),
-                            ),
-                          ),
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (context) => CreateUserPage(),
-                              ),
-                            );
-                          },
-                        ),
-                        Divider(),
-
-                        ListTile(
-                          title: Text(
-                            'Listar usuários cadastrados',
-                            style: TextStyle(fontSize: 30),
-                          ),
-                          leading: Padding(
-                            padding: const EdgeInsets.only(left: 8.0),
-                            child: SizedBox(
-                              child: Transform.scale(
-                                  scale: 2,
-                                  child: Icon(Icons.list)
-                              ),
-                            ),
-                          ),
-                          onTap: () {},
-                        ),
-                        Divider(),
-
-                      ],
-                    ),
-                  ),
-
-                  /** AQUI TERMINAM AS FUNCIONALIDADES RESTRITAS A ADMINISTRADORES **/
-
-                  ListTile(
-                    title: Text(
-                      'Deslogar do aplicativo',
-                      style: TextStyle(
-                          fontSize: 30,
-                          fontWeight: FontWeight.bold,
-                          color: Color(0xFFB71717)
-                      ),
-                    ),
-                    leading: Padding(
-                      padding: const EdgeInsets.only(left: 8.0),
-                      child: SizedBox(
-                        child: Transform.scale(
-                            scale: 2,
-                            child: Icon(Icons.logout,
-                              color: Color(0xFFB71717) ,)
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      logout();
-                    },
-                  ),
-                  Divider(),
-                  
-                  // Fim adicionando sidebar
-                  
-    ),
       floatingActionButton: StreamBuilder(
-          stream: Forms_collection.snapshots(),
-          builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        stream: Forms_collection.snapshots(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           return Container(
             //color: Colors.redAccent,
-           child: IconButton(
-            onPressed: () {
-              var data = {
-                "Nome_Formulário": "Novo Formulário",
-                "Data_Criação": DateTime
-                    .now()
-                    .day
-                    .toString() + "/" + DateTime
-                    .now()
-                    .month
-                    .toString() + "/" + DateTime
-                    .now()
-                    .year
-                    .toString(),
-              };
-              var doc1 = FirebaseFirestore.instance.collection("Formulários").doc();
-              doc1.set(data);
-              var doc1id = doc1.id;
-              print(doc1id);
-              var doc2 = FirebaseFirestore.instance.collection("Formulários")
-                      .doc(doc1id.toString())
-                      .collection("Perguntas")
-                      .doc();
-              doc2.set({"Enunciado": "Novo Enunciado", "tipo_pergunta": "0"});
-              var doc2id = doc2.id;
+            child: IconButton(
+              onPressed: () {
+                var data = {
+                  "Nome_Formulário": "Novo Formulário",
+                  "Data_Criação": DateTime.now().day.toString() +
+                      "/" +
+                      DateTime.now().month.toString() +
+                      "/" +
+                      DateTime.now().year.toString(),
+                };
+                var doc1 =
+                    FirebaseFirestore.instance.collection("Formulários").doc();
+                doc1.set(data);
+                var doc1id = doc1.id;
+                print(doc1id);
+                var doc2 = FirebaseFirestore.instance
+                    .collection("Formulários")
+                    .doc(doc1id.toString())
+                    .collection("Perguntas")
+                    .doc();
+                doc2.set({"Enunciado": "Novo Enunciado", "tipo_pergunta": "0"});
+                var doc2id = doc2.id;
                 //  var docid2 = snapshot.data!.docs.last.id;
-                FirebaseFirestore.instance.collection("Formulários").doc(
-                    doc1id.toString())
-                    .collection("Perguntas").doc(doc2id.toString())
-                    .collection(
-                    "Respostas")
+                FirebaseFirestore.instance
+                    .collection("Formulários")
+                    .doc(doc1id.toString())
+                    .collection("Perguntas")
+                    .doc(doc2id.toString())
+                    .collection("Respostas")
                     .add({"resposta_codigo": '0'});
-            },
-            color: Colors.red,
-            iconSize: 100,
-            icon: Icon(Icons.add_circle_rounded),
-
-                ],
-              ),
+              },
+              color: Colors.red,
+              iconSize: 100,
+              icon: Icon(Icons.add_circle_rounded),
             ),
-          ],
-        ),
+          );
+        },
       ),
-      
+      drawer: Drawer(
+        width: MediaQuery.of(context).size.width * 0.7,
+        child: Column(children: <Widget>[
+          Container(
+              height: 300,
+              color: Color(0xFFB71717),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    child: Transform.scale(
+                      scale: 0.7,
+                      child: Image.asset("assets/user.png"),
+                    ),
+                  ),
+                ],
+              )),
+          SizedBox(
+            height: 30,
+          ),
+          Text(
+            _nomeUsuario,
+            style: TextStyle(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFFB71717)),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Text(
+            _acessoUsuario,
+            style: TextStyle(
+              fontSize: 25,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(
+            height: 20,
+          ),
+          Expanded(
+            child: Column(
+              children: <Widget>[
+                Divider(),
+                ListTile(
+                  title: Text(
+                    'Ver perfil',
+                    style: TextStyle(fontSize: 30),
+                  ),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: SizedBox(
+                      child: Transform.scale(
+                          scale: 2, child: Icon(Icons.account_circle)),
+                    ),
+                  ),
+                  onTap: () {},
+                ),
+                Divider(),
+                ListTile(
+                  title: Text(
+                    'Deixar um feedback',
+                    style: TextStyle(fontSize: 30),
+                  ),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: SizedBox(
+                      child: Transform.scale(
+                          scale: 2, child: Icon(Icons.feedback)),
+                    ),
+                  ),
+                  onTap: () {},
+                ),
+                Divider(),
+                ListTile(
+                  title: Text(
+                    'Sobre o aplicativo',
+                    style: TextStyle(fontSize: 30),
+                  ),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: SizedBox(
+                      child: Transform.scale(scale: 2, child: Icon(Icons.info)),
+                    ),
+                  ),
+                  onTap: () {},
+                ),
+                Divider(),
+
+                /** AQUI COMEÇAM AS FUNCIONALIDADES RESTRITAS A ADMINISTRADORES **/
+
+                Offstage(
+                  offstage: _acessoUsuario != 'Administrador',
+                  child: Column(
+                    children: [
+                      ListTile(
+                        title: Text(
+                          'Cadastrar usuários',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                        leading: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: SizedBox(
+                            child: Transform.scale(
+                                scale: 2, child: Icon(Icons.add)),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => CreateUserPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text(
+                          'Listar usuários cadastrados',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                        leading: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: SizedBox(
+                            child: Transform.scale(
+                                scale: 2, child: Icon(Icons.list)),
+                          ),
+                        ),
+                        onTap: () {},
+                      ),
+                      Divider(),
+                    ],
+                  ),
+                ),
+
+                /** AQUI TERMINAM AS FUNCIONALIDADES RESTRITAS A ADMINISTRADORES **/
+
+                ListTile(
+                  title: Text(
+                    'Deslogar do aplicativo',
+                    style: TextStyle(
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFFB71717)),
+                  ),
+                  leading: Padding(
+                    padding: const EdgeInsets.only(left: 8.0),
+                    child: SizedBox(
+                      child: Transform.scale(
+                          scale: 2,
+                          child: Icon(
+                            Icons.logout,
+                            color: Color(0xFFB71717),
+                          )),
+                    ),
+                  ),
+                  onTap: () {
+                    logout();
+                  },
+                ),
+                Divider(),
+              ],
+
+              // Fim adicionando sidebar,
+            ),
+          ),
+        ]),
+      ),
+
       body: StreamBuilder(
           stream: Forms_collection.snapshots(),
-          builder: (BuildContext context,
-              AsyncSnapshot<QuerySnapshot> snapshot) {
+          builder:
+              (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (!snapshot.hasData) {
               return Center(
                 child: CircularProgressIndicator(),
@@ -385,13 +353,12 @@ class _HomePage extends State<HomePage> {
               children: snapshot.data!.docs.map((document) {
                 return Center(
                     child: Container(
-                        padding: EdgeInsets.symmetric(
-                            vertical: 10, horizontal: 10),
-                        margin: EdgeInsets.symmetric(
-                            vertical: 25, horizontal: 50),
+                        padding:
+                            EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        margin:
+                            EdgeInsets.symmetric(vertical: 25, horizontal: 50),
                         decoration: BoxDecoration(
-                          borderRadius:
-                          BorderRadius.all(Radius.circular(35.0)),
+                          borderRadius: BorderRadius.all(Radius.circular(35.0)),
                           shape: BoxShape.rectangle,
                           color: Color(0xFFB71717),
                         ),
@@ -404,9 +371,7 @@ class _HomePage extends State<HomePage> {
                                     fontSize: 30,
                                     fontFamily: 'Montserrat',
                                     fontWeight: FontWeight.bold)),
-                            Text(
-                                "Data de Criação: " +
-                                    document['Data_Criação'],
+                            Text("Data de Criação: " + document['Data_Criação'],
                                 style: TextStyle(
                                     fontSize: 30,
                                     fontFamily: 'Montserrat',
@@ -420,7 +385,6 @@ class _HomePage extends State<HomePage> {
   }
 }
 
-
 class _Survey extends StatelessWidget {
   const _Survey({required this.surveyName, required this.surveyCreationDate});
   final String surveyName;
@@ -430,17 +394,17 @@ class _Survey extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         child: Column(
-          children: [
-            Text(
-              "",
-              style: TextStyle(
-                fontSize: 30,
-                fontFamily: 'Montserrat',
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ));
+      children: [
+        Text(
+          "",
+          style: TextStyle(
+            fontSize: 30,
+            fontFamily: 'Montserrat',
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    ));
   }
 }
 
