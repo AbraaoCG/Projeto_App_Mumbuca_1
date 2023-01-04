@@ -7,6 +7,11 @@ import 'package:provider/provider.dart';
 import 'package:appmumbuca/reset_password_page.dart';
 import 'package:appmumbuca/home_page.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:appmumbuca/register_page.dart';
+import 'package:appmumbuca/home_page.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -22,17 +27,18 @@ class _LoginPageState extends State<LoginPage> {
 
   String titulo = "Tela de Login";
 
+
   @override
   void initState() {
     super.initState();
   }
 
-  login() async {
+  void login() async {
     try {
       await context.read<AuthService>().login(email.text, senha.text).then((_) {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => HomePage(emailUsuario: email.text),
           ),
         );
       });
@@ -42,12 +48,9 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-
   registrar() async {
-    // Método posicionado aqui, porém na verdade deverá ser
+    // Método posicionado aqui, porém na verdade deverá ser usado em outra página.
     try {
-      // usado em outra página.
-      await context.read<AuthService>().registrar(email.text, senha.text);
     } on AuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message)));
@@ -64,12 +67,12 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: <Widget>[
               SizedBox(
-                width: 210,
-                height: 210,
-                child: Transform.scale(
-                  scale: 1.5,
-                  child: Image.asset("assets/logo_login.png"),
-                )
+                  width: 210,
+                  height: 210,
+                  child: Transform.scale(
+                    scale: 1.5,
+                    child: Image.asset("assets/logo_login.png"),
+                  )
               ),
               Form(
                 key: formKey,
@@ -139,16 +142,19 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
                     ),
+
+
                     Container(
                       padding: EdgeInsets.all(24.0),
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(//<-- SEE HERE
-                            ),
+                        ),
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
                             login();
                           }
                         },
+
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
@@ -164,6 +170,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
+
                     Container(
                       padding: EdgeInsets.only(
                         left: 24.0,
@@ -192,6 +199,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
+
                   ],
                 ),
               ),
@@ -202,5 +210,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
-/** teste **/

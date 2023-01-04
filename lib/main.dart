@@ -1,16 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: non_constant_identifier_names
 
-
 import 'package:appmumbuca/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:appmumbuca/my_app.dart';
-import 'package:appmumbuca/packages/firebase_options.dart';
-
-
+import 'firebase_options.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
