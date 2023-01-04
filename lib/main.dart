@@ -1,16 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: non_constant_identifier_names
 
-
 import 'package:appmumbuca/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:appmumbuca/my_app.dart';
-import 'package:appmumbuca/packages/firebase_options.dart';
-
-
+import 'firebase_options.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,19 +45,16 @@ void main() async{
     'Data_Criação'  : '20/12/2022'
   });
   F1_P1.set({
-    'Enunciado': '',
-    'tipo_pergunta': 1 // Multipla escolha
+    'Enunciado': 'Qual melhor característica do Mumbuca para você?',
+    'tipo_pergunta': '1' // Multipla escolha
   });
-  F1_P1.set({
+  F1_P2.set({
     'Enunciado': 'O que o Banco Mumbuca é para você?',
-    'tipo_pergunta': 2 // caixa de selecao
+    'tipo_pergunta': '2' // caixa de selecao
   });
-  F1_P1.set({
+  F1_P3.set({
     'Enunciado': 'O que o Banco Mumbuca é para você?',
-    'tipo_pergunta': 3 // escala linear
-  });
-  F1P1R1.set({
-    'resposta_codigo' : 2
+    'tipo_pergunta': '3' // escala linear
   });
 
 }

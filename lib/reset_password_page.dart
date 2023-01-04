@@ -81,7 +81,7 @@ class _ResetPasswordPage extends State<ResetPasswordPage> {
             height: 20,
           ),
           Text(
-            "Esqueceu sua senha?",
+            "Alteração de senha",
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w500,

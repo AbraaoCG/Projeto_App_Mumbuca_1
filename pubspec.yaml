@@ -101,7 +101,9 @@ flutter:
     - assets/logo_login.png
     - assets/LogoMumbuca.png
     - assets/reset-password-icon.png
+    - assets/add-user-icon.png
     - assets/fonts/Montserrat-VariableFont_wght.ttf
+    - assets/user.png
 
   fonts:
     - family: HomepageB
