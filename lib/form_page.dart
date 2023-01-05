@@ -6,7 +6,9 @@ import 'package:appmumbuca/packages/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-final Forms_collection = FirebaseFirestore.instance.collection('Formulários');
+
+final formsCollection = FirebaseFirestore.instance.collection('Formulários');
+
 class FormPage extends StatefulWidget{
   const FormPage({Key? key}) : super(key: key);
 
@@ -15,11 +17,21 @@ class FormPage extends StatefulWidget{
 }
 
 class _FormPage extends State<FormPage> {
+  TextEditingController newFormNameController = TextEditingController();
 
+  changeFormName(newFormName){
+    print(newFormName);
+    Forms_collection.doc(DefaultFirebaseOptions.documento).update({'Nome_Formulário' : newFormName});
+    // DefaultFirebaseOptions.DATA['Nome_Formulário'] = newFormName;
+  }
   getForms(){
-    Forms_collection.doc(DefaultFirebaseOptions.documento).get().then((DocumentSnapshot Doc) {
-      DefaultFirebaseOptions.DATA = Doc.data() as Map<String, dynamic>;
+    Forms_collection.doc(DefaultFirebaseOptions.documento).get().then((DocumentSnapshot doc) {
+      DefaultFirebaseOptions.DATA = doc.data() as Map<String, dynamic>;
     });
+  }
+
+  addPergunta(){
+    // print(DefaultFirebaseOptions.documento);
   }
   @override
   void initState(){
@@ -69,29 +81,108 @@ class _FormPage extends State<FormPage> {
                 child: CircularProgressIndicator(),
               );
             }
-            return ListView(
-              children: snapshot.data!.docs.map((document){
-                return Center(
-                  child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                      margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(35.0)),
-                        shape: BoxShape.rectangle,
-                        color: Color(0xB1B71717),
-                      ),
-                      width: MediaQuery.of(context).size.width / 1.2,
-                      height: MediaQuery.of(context).size.height / 6,
-                      child: Column(
-                          children: [
-                            Text(document['Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                            Text("Tipo de Pergunta: " +document['tipo_pergunta'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                          ]
-                      )
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    children: snapshot.data!.docs.map((document){
+                      return Center(
+                        child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                            margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(35.0)),
+                              shape: BoxShape.rectangle,
+                              color: Color(0xB1B71717),
+                            ),
+                            width: MediaQuery.of(context).size.width / 1.2,
+                            height: MediaQuery.of(context).size.height / 6,
+                            child: Column(
+                                children: [
+                                  Text(document['Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                  Text("Tipo de Pergunta: " +document['tipo_pergunta'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                                ]
+                            )
+                        ),
+                      );
+                    }).toList(),
                   ),
-                );
-              }).toList(),
+                ),
+                Expanded(
+                    child: ListView(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                            margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(35.0)),
+                              shape: BoxShape.rectangle,
+                              color: Color(0xB1B71717),
+                            ),
+                            width: MediaQuery.of(context).size.width / 1.2,
+                            height: MediaQuery.of(context).size.height / 5.2,
+                            child: Column(
+                              children: [
+                                Text("Editar Nome do Formulário",  style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                Text(" Nome Atual: " + DefaultFirebaseOptions.DATA["Nome_Formulário"],  style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                                TextFormField(
+                                  style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                  controller: newFormNameController,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Nome novo: (Clique encima)',
+                                    hintText: 'Insira aqui um novo nome para o formulário.',
+                                    labelStyle: TextStyle(color: Colors.black,fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                    hintStyle: TextStyle(color: Colors.black45,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                  ),
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'Informe um novo nome válido.';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                Center(
+                                  child: ElevatedButton(
+                                    style: const ButtonStyle(
+                                      backgroundColor: MaterialStatePropertyAll<Color>(Color(0xB1B71717)),
+                                    ),
+                                    onPressed: () {
+                                      changeFormName(newFormNameController.text);
+                                    },
+                                    child: Text("Aplicar Alteração", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
+
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                          Container(
+                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                              margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(35.0)),
+                                shape: BoxShape.rectangle,
+                                color: Color(0xB1B71717),
+                              ),
+                              width: MediaQuery.of(context).size.width / 1.2,
+                              height: MediaQuery.of(context).size.height / 6,
+                              child: Column(
+                                  children: [
+                                    Text("Teste1", style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                    Text("Teste2", style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                                    ElevatedButton(
+                                      onPressed: addPergunta(),
+                                      child: const Text("Adicionar Pergunta", style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                                    ),
+                                  ]
+                              )
+                          ),
+                        ]
+                    ),
+                ),
+              ],
             );
+
           }
 
       ),
