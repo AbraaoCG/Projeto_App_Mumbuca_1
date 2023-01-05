@@ -1,0 +1,24 @@
+Tipo1 : Múltipla escolha
+--> info pergunta
+colecao com opcoes da multipla escolha; 
+cada doc dessa colecao armazena dado código e dado nome
+
+--> info resposta
+
+guardo código da resposta
+
+
+Tipo2 : Caixa de Seleção
+-->info pergunta
+colecao com opcoes de seleção; 
+cada doc dessa colecao armazena dado código e dado nome
+--> info resposta
+array com códigos das respostas selecionadas
+
+Tipo3: Escala
+--> info pergunta
+não necessita coleção extra, apenas o dado já existente do enunciado
+--> info resposta
+string com número de 1 à 5 que é a resposta em escala.
+
+

@@ -21,6 +21,10 @@ class _FormPage extends State<FormPage> {
       DefaultFirebaseOptions.DATA = Doc.data() as Map<String, dynamic>;
     });
   }
+
+  addPergunta(){
+    print("oi");
+  }
   @override
   void initState(){
     super.initState();
@@ -69,29 +73,58 @@ class _FormPage extends State<FormPage> {
                 child: CircularProgressIndicator(),
               );
             }
-            return ListView(
-              children: snapshot.data!.docs.map((document){
-                return Center(
-                  child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                      margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(35.0)),
-                        shape: BoxShape.rectangle,
-                        color: Color(0xB1B71717),
-                      ),
-                      width: MediaQuery.of(context).size.width / 1.2,
-                      height: MediaQuery.of(context).size.height / 6,
-                      child: Column(
-                          children: [
-                            Text(document['Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                            Text("Tipo de Pergunta: " +document['tipo_pergunta'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                          ]
-                      )
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    children: snapshot.data!.docs.map((document){
+                      return Center(
+                        child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                            margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(35.0)),
+                              shape: BoxShape.rectangle,
+                              color: Color(0xB1B71717),
+                            ),
+                            width: MediaQuery.of(context).size.width / 1.2,
+                            height: MediaQuery.of(context).size.height / 6,
+                            child: Column(
+                                children: [
+                                  Text(document['Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                  Text("Tipo de Pergunta: " +document['tipo_pergunta'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                                ]
+                            )
+                        ),
+                      );
+                    }).toList(),
                   ),
-                );
-              }).toList(),
+                ),
+
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                  margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(35.0)),
+                    shape: BoxShape.rectangle,
+                    color: Color(0xB1B71717),
+                  ),
+                  width: MediaQuery.of(context).size.width / 1.2,
+                  height: MediaQuery.of(context).size.height / 6,
+                    child: Column(
+                        children: [
+                          Text("Teste1", style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                          Text("Teste2", style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                    ElevatedButton(
+                        onPressed: addPergunta(),
+                        child: Text("Adicionar Pergunta"),
+                    ),
+                        ]
+                    )
+                ),
+              ],
             );
+
           }
 
       ),
