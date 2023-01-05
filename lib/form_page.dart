@@ -19,6 +19,8 @@ class FormPage extends StatefulWidget{
 class _FormPage extends State<FormPage> {
   TextEditingController newFormNameController = TextEditingController();
 
+  final _tiposPerguntas = ["Múltipla Escolha","Caixas de Seleção","Escala Linear"];
+  String? _tipoPerguntaEscolhido;
   changeFormName(newFormName){
     Forms_collection.doc(DefaultFirebaseOptions.documento).update({'Nome_Formulário' : newFormName});
     // DefaultFirebaseOptions.DATA['Nome_Formulário'] = newFormName;
@@ -35,11 +37,12 @@ class _FormPage extends State<FormPage> {
   @override
   void initState(){
     super.initState();
-    Timer(Duration(microseconds: 300), () => setState(() {}));
+    _tipoPerguntaEscolhido = _tiposPerguntas[0];
+    Timer(const Duration(microseconds: 300), () => setState(() {}));
     getForms();
   }
   Widget build(BuildContext context) {
-    Timer(Duration(microseconds: 100), () => setState(() {}));
+    Timer(const Duration(microseconds: 100), () => setState(() {}));
     getForms();
     return Scaffold(
       backgroundColor: Colors.grey,
@@ -82,51 +85,100 @@ class _FormPage extends State<FormPage> {
             }
             return Column(
               children: [
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                  margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(35.0)),
-                    shape: BoxShape.rectangle,
-                    color: Color(0xB1B71717),
-                  ),
-                  width: MediaQuery.of(context).size.width / 1.2,
-                  height: MediaQuery.of(context).size.height / 5.2,
-                  child: Column(
-                    children: [
-                      Text("Editar Nome do Formulário",  style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                      Text(" Nome Atual: " + DefaultFirebaseOptions.DATA["Nome_Formulário"],  style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                      TextFormField(
-                        style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
-                        controller: newFormNameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Nome novo: (Clique encima)',
-                          hintText: 'Insira aqui um novo nome para o formulário.',
-                          labelStyle: TextStyle(color: Colors.black,fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
-                          hintStyle: TextStyle(color: Colors.black45,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
-                        ),
-                        validator: (value) {
-                          if (value!.isEmpty) {
-                            return 'Informe um novo nome válido.';
-                          }
-                          return null;
-                        },
+                Row(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                      margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(35.0)),
+                        shape: BoxShape.rectangle,
+                        color: Color(0xB1B71717),
                       ),
-                      Center(
-                        child: ElevatedButton(
-                          style: const ButtonStyle(
-                            backgroundColor: MaterialStatePropertyAll<Color>(Color(0xB1B71717)),
+                      width: MediaQuery.of(context).size.width / 2.1,
+                      height: MediaQuery.of(context).size.height / 8,
+                      child: Column(
+                        children: [
+                          TextFormField(
+                            style: TextStyle(fontSize: 22, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                            controller: newFormNameController,
+                            decoration: const InputDecoration(
+                              labelText: 'Editar nome do formulário:',
+                              hintText: 'Insira aqui um novo nome',
+                              labelStyle: TextStyle(color: Colors.black,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                              hintStyle: TextStyle(color: Colors.black45,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                            ),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return 'Informe um novo nome válido.';
+                              }
+                              return null;
+                            },
                           ),
-                          onPressed: () {
-                            changeFormName(newFormNameController.text);
-                          },
-                          child: Text("Aplicar Alteração", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
+                          Center(
+                            child: ElevatedButton(
+                              style: const ButtonStyle(
+                                backgroundColor: MaterialStatePropertyAll<Color>(Color(0xB1B71717)),
+                              ),
+                              onPressed: () {
+                                changeFormName(newFormNameController.text);
+                              },
+                              child: Text("Aplicar", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
 
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Column(
+                      children: [
+                        Text("Adicionar Pergunta", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                        Row(
+                          children: [
+                            const Text("Tipo: ", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                            DropdownButton(items:_tiposPerguntas.map((item){
+                              return DropdownMenuItem(value: item,child: Text(item),);
+                            }).toList(),
+                              value: _tipoPerguntaEscolhido,
+                              onChanged:(val) {
+                                setState(() {
+                                  _tipoPerguntaEscolhido = val as String;
+
+                                });
+                              },
+                            ),
+                          ],
                         ),
-                      )
-                    ],
-                  ),
+                        IconButton(
+                          onPressed: () {
+                            var colecaoPerguntas =
+                            FirebaseFirestore.instance.collection("Formulários").doc(DefaultFirebaseOptions.documento).collection("Perguntas");
+                            var doc2 = colecaoPerguntas.doc();
+                            String tipopergunta_inteiro = '';
+                            switch (_tipoPerguntaEscolhido){
+                              case "Múltipla Escolha": {
+                                tipopergunta_inteiro = '1';
+                              } break;
+                              case "Caixas de Seleção": {
+                                tipopergunta_inteiro = '2';
+                              } break;
+                              case "Escala Linear": {
+                                tipopergunta_inteiro = '3';
+                              } break;
+
+                            }
+                            doc2.set({"Nm_Enunciado": "Nova Pergunta", "CD_tipo_pergunta": tipopergunta_inteiro});
+                          },
+                          color: Colors.white,
+                          iconSize: 100,
+                          icon: Icon(Icons.add_circle_rounded),
+                        ),
+                      ],
+                    ),
+
+                  ],
                 ),
+
                 Container(
                     padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                     margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
