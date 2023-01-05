@@ -36,7 +36,7 @@ class _FormPage extends State<FormPage> {
   @override
   void initState(){
     super.initState();
-    Timer(Duration(microseconds: 100), () => setState(() {}));
+    Timer(Duration(microseconds: 300), () => setState(() {}));
     getForms();
   }
   Widget build(BuildContext context) {
@@ -99,8 +99,8 @@ class _FormPage extends State<FormPage> {
                             height: MediaQuery.of(context).size.height / 6,
                             child: Column(
                                 children: [
-                                  Text(document['Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                  Text("Tipo de Pergunta: " +document['tipo_pergunta'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                                  Text(document['Nm_Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                  Text("Tipo de Pergunta: " +document['CD_tipo_pergunta'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
                                 ]
                             )
                         ),
@@ -165,7 +165,7 @@ class _FormPage extends State<FormPage> {
                                 color: Color(0xB1B71717),
                               ),
                               width: MediaQuery.of(context).size.width / 1.2,
-                              height: MediaQuery.of(context).size.height / 6,
+                              height: MediaQuery.of(context).size.height / 3,
                               child: Column(
                                   children: [
                                     Text("Teste1", style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
