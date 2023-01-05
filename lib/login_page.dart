@@ -7,6 +7,11 @@ import 'package:provider/provider.dart';
 import 'package:appmumbuca/reset_password_page.dart';
 import 'package:appmumbuca/home_page.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
+
+import 'package:appmumbuca/register_page.dart';
+import 'package:appmumbuca/home_page.dart';
+
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -21,33 +26,42 @@ class _LoginPageState extends State<LoginPage> {
   final senha = TextEditingController();
 
   String titulo = "Tela de Login";
+  bool loading = false;
+
 
   @override
   void initState() {
     super.initState();
   }
 
-  login() async {
+  void login() async {
     try {
       await context.read<AuthService>().login(email.text, senha.text).then((_) {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => HomePage(emailUsuario: email.text),
           ),
         );
+
+        setState(() {
+          loading = false;
+        });
+
       });
     } on AuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message)));
+
+      setState(() {
+        loading = false;
+      });
+
     }
   }
 
-
   registrar() async {
-    // Método posicionado aqui, porém na verdade deverá ser
+    // Método posicionado aqui, porém na verdade deverá ser usado em outra página.
     try {
-      // usado em outra página.
-      await context.read<AuthService>().registrar(email.text, senha.text);
     } on AuthException catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text(e.message)));
@@ -64,12 +78,12 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: <Widget>[
               SizedBox(
-                width: 210,
-                height: 210,
-                child: Transform.scale(
-                  scale: 1.5,
-                  child: Image.asset("assets/logo_login.png"),
-                )
+                  width: 210,
+                  height: 210,
+                  child: Transform.scale(
+                    scale: 1.5,
+                    child: Image.asset("assets/logo_login.png"),
+                  )
               ),
               Form(
                 key: formKey,
@@ -139,16 +153,52 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
                     ),
+
+                    // se loading = true:
+                    loading ? Padding(
+                        padding: EdgeInsets.all(24.0),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.white, width: 2.0),
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          Padding(
+                              padding: EdgeInsets.all(10.5),
+                              child: CircularProgressIndicator(
+                                backgroundColor: Color(0xFFB71717),
+                                color: Colors.white,
+                              )
+                          ),
+                        ], // Children
+                      ),
+                    ),
+                    ):
+
+                    // se loading = false:
                     Container(
                       padding: EdgeInsets.all(24.0),
                       child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(//<-- SEE HERE
-                            ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFB71717),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            side: BorderSide(color: Colors.white, width: 2.0),
+                          ),
+                        ),
                         onPressed: () {
                           if (formKey.currentState!.validate()) {
+
+                            setState(() {
+                              loading = true;
+                            });
+
                             login();
                           }
                         },
+
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: const [
@@ -164,12 +214,17 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
+
                     Container(
-                      padding: EdgeInsets.only(
-                        left: 24.0,
-                        right: 24.0,
-                      ),
+                      padding: EdgeInsets.symmetric(vertical: 0, horizontal: 24),
                       child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Color(0xFFB71717),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            side: BorderSide(color: Colors.white, width: 2.0),
+                          ),
+                        ),
                         onPressed: () {
                           showDialog(
                             context: context,
@@ -192,6 +247,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
+
                   ],
                 ),
               ),
@@ -202,5 +258,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-
-/** teste **/
