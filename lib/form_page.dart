@@ -151,23 +151,25 @@ class _FormPage extends State<FormPage> {
                         ),
                         IconButton(
                           onPressed: () {
-                            var colecaoPerguntas =
-                            FirebaseFirestore.instance.collection("Formulários").doc(DefaultFirebaseOptions.documento).collection("Perguntas");
+                            var colecaoPerguntas = FirebaseFirestore.instance.collection("Formulários").doc(DefaultFirebaseOptions.documento).collection("Perguntas");
                             var doc2 = colecaoPerguntas.doc();
-                            String tipopergunta_inteiro = '';
+
+                            String tipoPerguntaInteiro = '';
                             switch (_tipoPerguntaEscolhido){
                               case "Múltipla Escolha": {
-                                tipopergunta_inteiro = '1';
+                                tipoPerguntaInteiro = '1';
+                                doc2.collection("opcoes_escolha").doc().set({'CD_escolha': '1' , 'Nm_escolha' : 'Exemplo de caixa de escolha.'});
                               } break;
                               case "Caixas de Seleção": {
-                                tipopergunta_inteiro = '2';
+                                tipoPerguntaInteiro = '2';
+                                doc2.collection("opcoes_selecao").doc().set({'CD_selecao' : '1' , 'Nm_escolha' : 'Exemplo de caixa de seleção.' });;
                               } break;
                               case "Escala Linear": {
-                                tipopergunta_inteiro = '3';
+                                tipoPerguntaInteiro = '3';
                               } break;
 
                             }
-                            doc2.set({"Nm_Enunciado": "Nova Pergunta", "CD_tipo_pergunta": tipopergunta_inteiro});
+                            doc2.set({"Nm_Enunciado": "Nova Pergunta", "CD_tipo_pergunta": tipoPerguntaInteiro});
                           },
                           color: Colors.white,
                           iconSize: 100,
@@ -179,27 +181,6 @@ class _FormPage extends State<FormPage> {
                   ],
                 ),
 
-                Container(
-                    padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                    margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(35.0)),
-                      shape: BoxShape.rectangle,
-                      color: Color(0xB1B71717),
-                    ),
-                    width: MediaQuery.of(context).size.width / 1.2,
-                    height: MediaQuery.of(context).size.height / 3,
-                    child: Column(
-                        children: [
-                          Text("Teste1", style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                          Text("Teste2", style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                          ElevatedButton(
-                            onPressed: addPergunta(),
-                            child: const Text("Adicionar Pergunta", style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                          ),
-                        ]
-                    )
-                ),
                 Expanded(
                   child: ListView(
                     children: snapshot.data!.docs.map((document){
