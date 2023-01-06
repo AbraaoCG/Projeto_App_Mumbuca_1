@@ -21,6 +21,22 @@ class _FormPage extends State<FormPage> {
 
   final _tiposPerguntas = ["Múltipla Escolha","Caixas de Seleção","Escala Linear"];
   String? _tipoPerguntaEscolhido;
+
+  obterTipoPergunta(cdTipoPergunta){
+    var resposta="";
+    switch (cdTipoPergunta){
+      case "1": {
+        resposta = "Múltipla Escolha";
+      } break;
+      case "2": {
+        resposta = "Caixas de Seleção";
+      } break;
+      case "3": {
+        resposta = "Escala Linear";
+      } break;
+    }
+    return resposta;
+  }
   changeFormName(newFormName){
     Forms_collection.doc(DefaultFirebaseOptions.documento).update({'Nome_Formulário' : newFormName});
     // DefaultFirebaseOptions.DATA['Nome_Formulário'] = newFormName;
@@ -167,7 +183,6 @@ class _FormPage extends State<FormPage> {
                               case "Escala Linear": {
                                 tipoPerguntaInteiro = '3';
                               } break;
-
                             }
                             doc2.set({"Nm_Enunciado": "Nova Pergunta", "CD_tipo_pergunta": tipoPerguntaInteiro});
                           },
@@ -184,6 +199,7 @@ class _FormPage extends State<FormPage> {
                 Expanded(
                   child: ListView(
                     children: snapshot.data!.docs.map((document){
+                      var perguntaID = document.id;
                       return Center(
                         child: Container(
                             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -198,7 +214,11 @@ class _FormPage extends State<FormPage> {
                             child: Column(
                                 children: [
                                   Text(document['Nm_Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                  Text("Tipo de Pergunta: " +document['CD_tipo_pergunta'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                                  Text("Tipo de Pergunta: " + obterTipoPergunta(document['CD_tipo_pergunta']) , style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                                  Column(
+                                    // Iterar sobre caixas de seleção.
+                                    children: ,
+                                  ),
                                 ]
                             )
                         ),
