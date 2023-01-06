@@ -37,6 +37,59 @@ class _FormPage extends State<FormPage> {
     }
     return resposta;
   }
+  obterOpcoes(DocumentSnapshot document){
+    var cdTipoPergunta = document['CD_tipo_pergunta'];
+    switch (cdTipoPergunta){
+      case "1": {
+        return StreamBuilder(
+          stream: document.reference.collection('opcoes_escolha').snapshots(),
+          builder:  (context, snapshot){
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return Column(
+              children: snapshot.data!.docs.map((optionSnapshot) {
+                return Row(
+                    children: [
+                      Text(optionSnapshot['Nm_escolha'], style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+
+                    ]
+                );
+              }).toList() ,
+            );
+          },
+        );
+      }
+      case "2": {
+        return StreamBuilder(
+          stream: document.reference.collection('opcoes_selecao').snapshots(),
+          builder:  (context, snapshot){
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return Column(
+              children: snapshot.data!.docs.map((optionSnapshot) {
+                return Row(
+                    children: [
+                      Text(optionSnapshot['Nm_selecao'], style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+
+                    ]
+                );
+              }).toList() ,
+            );
+          },
+        );
+      }
+      case "3": {
+        return Container();
+      } break;
+    }
+
+  }
   changeFormName(newFormName){
     Forms_collection.doc(DefaultFirebaseOptions.documento).update({'Nome_Formulário' : newFormName});
     // DefaultFirebaseOptions.DATA['Nome_Formulário'] = newFormName;
@@ -199,7 +252,6 @@ class _FormPage extends State<FormPage> {
                 Expanded(
                   child: ListView(
                     children: snapshot.data!.docs.map((document){
-                      var perguntaID = document.id;
                       return Center(
                         child: Container(
                             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
@@ -215,9 +267,9 @@ class _FormPage extends State<FormPage> {
                                 children: [
                                   Text(document['Nm_Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
                                   Text("Tipo de Pergunta: " + obterTipoPergunta(document['CD_tipo_pergunta']) , style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                                  Column(
+                                  Container(
                                     // Iterar sobre caixas de seleção.
-                                    children: ,
+                                    child: obterOpcoes(document),
                                   ),
                                 ]
                             )
