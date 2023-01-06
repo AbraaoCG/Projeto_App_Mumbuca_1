@@ -17,14 +17,21 @@ class FormResp extends StatefulWidget{
 }
 
 class _FormResp extends State<FormResp> {
-
+  var value = false;
   changeFormName(newFormName) {
     print(newFormName);
     Forms_collection.doc(DefaultFirebaseOptions.documento).update(
         {'Nome_Formulário': newFormName});
     // DefaultFirebaseOptions.DATA['Nome_Formulário'] = newFormName;
   }
+  void changa(bool newValue) => setState((){
+    value = !value;
+    if (value){
 
+    } else{
+
+    }
+  });
   getForms() {
     Forms_collection.doc(DefaultFirebaseOptions.documento).get().then((
         DocumentSnapshot doc) {
@@ -88,6 +95,8 @@ class _FormResp extends State<FormResp> {
             children: [
               Expanded(
                 child: ListView(
+                  shrinkWrap: true,
+                  physics: ClampingScrollPhysics(),
                   children: snapshot.data!.docs.map((document){
                     return Center(
                       child: Container(
@@ -115,12 +124,30 @@ class _FormResp extends State<FormResp> {
                                     );
                                   }else{
                                   return Column(
+                                    mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Expanded(
+                                      Flexible(
                                         child: ListView(
+                                          shrinkWrap: true,
+                                          physics: ClampingScrollPhysics(),
                                           children: snapshota.data!.docs.map((document2){
-                                            return Center(
-                                              child: Text(document2['Nm_escolha']),
+                                            return Align(
+                                              alignment: Alignment.topLeft,
+                                              //child: Container(
+                                              //  width: MediaQuery.of(context).size.width / 1.2,
+                                             //   height: MediaQuery.of(context).size.height / 6,
+                                                child: Row(
+                                                  children: [
+                                                    Text(document2['Nm_escolha'], textScaleFactor: 2,),
+                                                    Checkbox(
+                                                        value: value,
+                                                        onChanged: (changa){
+                                                          changa;
+
+                                                        })
+                                                  ],
+                                                ),
+                                             // ),
                                               );
                                           },
                                           ).toList(),
