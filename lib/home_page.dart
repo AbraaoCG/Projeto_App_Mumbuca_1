@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
 import 'package:appmumbuca/account_page.dart';
 import 'package:appmumbuca/login_page.dart';
+import 'form_resp.dart';
 import 'register_page.dart';
 import 'package:appmumbuca/packages/firebase_options.dart';
 import 'package:appmumbuca/form_page.dart';
@@ -112,7 +113,7 @@ class _HomePage extends State<HomePage> {
             Text(
               "Banco Mumbuca Pesquisas",
               style: TextStyle(
-                fontSize: 30,
+                fontSize: 20,
                 fontFamily: 'Montserrat',
                 fontWeight: FontWeight.bold,
               ),
@@ -334,7 +335,7 @@ class _HomePage extends State<HomePage> {
                           color: Color(0xFFB71717),
                         ),
                         width: MediaQuery.of(context).size.width / 1.2,
-                        height: MediaQuery.of(context).size.height / 6,
+                        height: MediaQuery.of(context).size.height / 4,
                         child: Column(
                           children: [
                             Text(document['Nome_Formulário'],
@@ -385,6 +386,24 @@ class _HomePage extends State<HomePage> {
                                       ),
                                     )
                                   ]
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(5),
+                              child: Container(
+                                width: 300,
+                                height: 50,
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    DefaultFirebaseOptions.documento = document.id;
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => const FormResp()),
+                                    );
+                                  },
+                                  child: Text("Responder Formulário", textScaleFactor: 1.4),
+
+                                ),
                               ),
                             ),
                           ]

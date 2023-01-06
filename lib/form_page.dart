@@ -120,18 +120,18 @@ class _FormPage extends State<FormPage> {
                               color: Color(0xB1B71717),
                             ),
                             width: MediaQuery.of(context).size.width / 1.2,
-                            height: MediaQuery.of(context).size.height / 5.2,
+                            height: MediaQuery.of(context).size.height / 5,
                             child: Column(
                               children: [
-                                Text("Editar Nome do Formulário",  style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                Text(" Nome Atual: " + DefaultFirebaseOptions.DATA["Nome_Formulário"],  style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                                Text("Editar Nome do Formulário",  style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                Text(" Nome Atual: " + DefaultFirebaseOptions.DATA["Nome_Formulário"],  style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
                                 TextFormField(
-                                  style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                  style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
                                   controller: newFormNameController,
                                   decoration: const InputDecoration(
                                     labelText: 'Nome novo: (Clique encima)',
                                     hintText: 'Insira aqui um novo nome para o formulário.',
-                                    labelStyle: TextStyle(color: Colors.black,fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                    labelStyle: TextStyle(color: Colors.black,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
                                     hintStyle: TextStyle(color: Colors.black45,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
                                   ),
                                   validator: (value) {
