@@ -83,7 +83,6 @@ class _HomePage extends State<HomePage> {
     Forms_collection.get().then((QuerySnapshot snapshot) =>
     {
       snapshot.docs.forEach((DocumentSnapshot doc) {
-        // print(doc['Nome_Formulário']);
       })
     });
   }

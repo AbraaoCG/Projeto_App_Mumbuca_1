@@ -198,6 +198,47 @@ class _FormPage extends State<FormPage> {
     }
 
   }
+  getAddOptions(document){
+    if (document['CD_tipo_pergunta'] == '3'){ return Container();}
+    else{
+      return Container(
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0),
+        child: Row(
+          children: [
+            const Text("Adicionar Opção: ", style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+            IconButton(
+              onPressed: () {
+                var nomeColecao = "";
+                var nomeCampo = "";
+                var nomeExemplo = "";
+                switch (document['CD_tipo_pergunta']){
+                  case "1": {
+                    nomeColecao = "opcoes_escolha";
+                    nomeCampo = 'Nm_escolha';
+                    nomeExemplo = 'Exemplo de caixa de escolha';
+                  } break;
+                  case "2": {
+                    nomeColecao = "opcoes_selecao";
+                    nomeCampo = 'Nm_selecao';
+                    nomeExemplo = 'Exemplo de caixa de selecao';
+                  } break;
+                }
+                var colecaoOpcoes = document.reference.collection(nomeColecao);
+                var docOpcao = colecaoOpcoes.doc();
+
+                docOpcao.set({nomeCampo: nomeExemplo});
+              },
+              color: Colors.white,
+              iconSize: 60,
+              icon: Icon(Icons.add_circle_rounded),
+            ),
+          ],
+        ),
+      );
+
+    }
+
+  }
   changeFormName(newFormName){
     Forms_collection.doc(DefaultFirebaseOptions.documento).update({'Nome_Formulário' : newFormName});
     // DefaultFirebaseOptions.DATA['Nome_Formulário'] = newFormName;
@@ -336,11 +377,11 @@ class _FormPage extends State<FormPage> {
                               switch (_tipoPerguntaEscolhido){
                                 case "Múltipla Escolha": {
                                   tipoPerguntaInteiro = '1';
-                                  doc2.collection("opcoes_escolha").doc().set({'CD_escolha': '1' , 'Nm_escolha' : 'Exemplo de caixa de escolha.'});
+                                  doc2.collection("opcoes_escolha").doc().set({'Nm_escolha' : 'Exemplo de caixa de escolha.'});
                                 } break;
                                 case "Caixas de Seleção": {
                                   tipoPerguntaInteiro = '2';
-                                  doc2.collection("opcoes_selecao").doc().set({'CD_selecao' : '1' , 'Nm_selecao' : 'Exemplo de caixa de seleção.' });;
+                                  doc2.collection("opcoes_selecao").doc().set({'Nm_selecao' : 'Exemplo de caixa de seleção.' });
                                 } break;
                                 case "Escala Linear": {
                                   tipoPerguntaInteiro = '3';
@@ -380,52 +421,59 @@ class _FormPage extends State<FormPage> {
                                         children: [
                                           Text(document['Nm_Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
                                           Container(
-                                            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 210),
-                                            margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 30),
-                                            child: ElevatedButton(
-                                              style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent)),
-                                              child: Row(children: const [
-                                                Text("__", style: TextStyle(color: Colors.grey,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                                Icon(Icons.edit, color: Colors.grey,size: 35 ,),
-                                                Text("Editar Enunciado", style: TextStyle(color: Colors.grey,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                              ]
-                                              ),
-                                              onPressed: () {
-                                                showDialog(
-                                                context: context,
-                                                builder: (context)
-                                              {
-                                                String novoNomeEnunciado = "";
-                                                return AlertDialog(
-                                                  title: const Text("Novo nome do enunciado:", style: TextStyle(color: Color(0xB1B71717), fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                                  content: TextField(
-                                                    style: const TextStyle(color: Colors.black, fontSize: 25, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
-                                                    autofocus: true,
-                                                    onChanged: (value) {
-                                                      novoNomeEnunciado = value;
-                                                    },
+                                            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                                            margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 80),
+                                            child: Row(
+                                              children: [
+                                                ElevatedButton( // Botão para editar enunciado da pergunta.
+                                                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent)),
+                                                  child: Row(children: const [
+                                                    Text("__", style: TextStyle(color: Colors.grey,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                                    Icon(Icons.edit, color: Colors.grey,size: 35 ,),
+                                                    Text("Editar Enunciado", style: TextStyle(color: Colors.grey,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                                  ]
                                                   ),
-                                                  actions: <Widget>[
-                                                    CloseButton(onPressed: () {
-                                                      Navigator.pop(context);
-                                                    }),
-                                                    FloatingActionButton(
-                                                        child: const Icon(
-                                                            Icons.send),
-                                                        onPressed: () {
-                                                          if (novoNomeEnunciado != "") {
-                                                            document.reference.update({'Nm_Enunciado': novoNomeEnunciado});
-                                                            Navigator.pop(context);
-                                                          } else {
-                                                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Insira um novo nome de Enunciado válido:", style: TextStyle(color: Colors.red, fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
-                                                          }
-                                                        }),
-                                                  ],
-                                                );
-                                              }
-                                              );
-                                              },
+                                                  onPressed: () {
+                                                    showDialog(
+                                                        context: context,
+                                                        builder: (context)
+                                                        {
+                                                          String novoNomeEnunciado = "";
+                                                          return AlertDialog(
+                                                            title: const Text("Novo nome do enunciado:", style: TextStyle(color: Color(0xB1B71717), fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                                            content: TextField(
+                                                              style: const TextStyle(color: Colors.black, fontSize: 25, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                                              autofocus: true,
+                                                              onChanged: (value) {
+                                                                novoNomeEnunciado = value;
+                                                              },
+                                                            ),
+                                                            actions: <Widget>[
+                                                              CloseButton(onPressed: () {
+                                                                Navigator.pop(context);
+                                                              }),
+                                                              FloatingActionButton(
+                                                                  child: const Icon(
+                                                                      Icons.send),
+                                                                  onPressed: () {
+                                                                    if (novoNomeEnunciado != "") {
+                                                                      document.reference.update({'Nm_Enunciado': novoNomeEnunciado});
+                                                                      Navigator.pop(context);
+                                                                    } else {
+                                                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Insira um novo nome de Enunciado válido:", style: TextStyle(color: Colors.red, fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
+                                                                    }
+                                                                  }),
+                                                            ],
+                                                          );
+                                                        }
+                                                    );
+                                                  },
+                                                ),
+                                                getAddOptions(document),
+
+                                              ],
                                             ),
+
                                           ),
                                         ],
                                       ) ),
