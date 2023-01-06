@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+
 final formsCollection = FirebaseFirestore.instance.collection('Formulários');
 
 class FormPage extends StatefulWidget{
@@ -18,7 +19,6 @@ class FormPage extends StatefulWidget{
 
 class _FormPage extends State<FormPage> {
   TextEditingController newFormNameController = TextEditingController();
-
   final _tiposPerguntas = ["Múltipla Escolha","Caixas de Seleção","Escala Linear"];
   String? _tipoPerguntaEscolhido;
 
@@ -39,6 +39,7 @@ class _FormPage extends State<FormPage> {
   }
   obterOpcoes(DocumentSnapshot document){
     var cdTipoPergunta = document['CD_tipo_pergunta'];
+
     switch (cdTipoPergunta){
       case "1": {
         return StreamBuilder(
@@ -49,15 +50,65 @@ class _FormPage extends State<FormPage> {
                 child: CircularProgressIndicator(),
               );
             }
-            return Column(
-              children: snapshot.data!.docs.map((optionSnapshot) {
-                return Row(
-                    children: [
-                      Text(optionSnapshot['Nm_escolha'], style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-
-                    ]
+            List<Widget> widgets = [];
+            widgets.addAll(
+              snapshot.data!.docs.map((optionSnapshot) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  decoration: const BoxDecoration(
+                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                    shape: BoxShape.rectangle,
+                    color: Colors.white24,
+                  ),
+                  child: Row(
+                      children: [
+                        const Icon(Icons.mode_edit, color: Colors.grey,size: 35 ,),
+                        InkWell(
+                          splashColor: Colors.red,
+                          onTap: (){
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                String novoNomeOpcao = "";
+                                return AlertDialog(
+                                  title: const Text("Alterar nome de opção" , style: TextStyle(color: Color(0xB1B71717),fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                  content: TextField(
+                                    autofocus: true,
+                                    onChanged: (value){
+                                      novoNomeOpcao = value;
+                                    },
+                                  ),
+                                  actions: <Widget>[
+                                    CloseButton(onPressed: (){
+                                      Navigator.pop(context);
+                                    }),
+                                    FloatingActionButton(
+                                        child: const Icon(Icons.send),
+                                        onPressed: (){
+                                          if (novoNomeOpcao != ""){
+                                            optionSnapshot.reference.update({ 'Nm_escolha' : novoNomeOpcao });
+                                            Navigator.pop(context);
+                                          } else{
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(content: Text("Insira um novo nome de opção válido:" , style: TextStyle(color: Colors.white,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
+                                          }
+                                        }),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                          child: Container( //optionSnapshot['Nm_escolha']
+                            child:Text(optionSnapshot['Nm_escolha'] , style: TextStyle(color: Colors.white70,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                          ),
+                        ),
+                        //
+                      ]
+                  ),
                 );
-              }).toList() ,
+              }).toList());
+            return Column(
+              children: widgets
             );
           },
         );
@@ -71,22 +122,79 @@ class _FormPage extends State<FormPage> {
                 child: CircularProgressIndicator(),
               );
             }
+            List<Widget> widgets = [];
+            widgets.addAll(
+                snapshot.data!.docs.map((optionSnapshot) {
+                  return Container(
+                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
+                      shape: BoxShape.rectangle,
+                      color: Colors.white24,
+                    ),
+                    child: Row(
+                        children: [
+                          const Icon(Icons.mode_edit, color: Colors.grey,size: 35 ,),
+                          InkWell(
+                            splashColor: Colors.red,
+                            onTap: (){
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  String novoNomeOpcao = "";
+                                  return AlertDialog(
+                                    title: const Text("Novo nome da opção:" , style: TextStyle(color: Color(0xB1B71717),fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                    content: TextField(
+                                      autofocus: true,
+                                      onChanged: (value){
+                                        novoNomeOpcao = value;
+                                      },
+                                    ),
+                                    actions: <Widget>[
+                                      CloseButton(onPressed: (){
+                                        Navigator.pop(context);
+                                      }),
+                                      FloatingActionButton(
+                                          child: const Icon(Icons.send),
+                                          onPressed: (){
+                                            if (novoNomeOpcao != ""){
+                                              optionSnapshot.reference.update({ 'Nm_selecao' : novoNomeOpcao });
+                                              Navigator.pop(context);
+                                            } else{
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(SnackBar(content: Text("Insira um novo nome de opção válido:" , style: TextStyle(color: Colors.red,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
+                                            }
+                                          }),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Container(
+                              child:Text(optionSnapshot['Nm_selecao'] , style: TextStyle(color: Colors.white70,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                            ),
+                          ),
+                          //
+                        ]
+                    ),
+                  );
+                }).toList());
             return Column(
-              children: snapshot.data!.docs.map((optionSnapshot) {
-                return Row(
-                    children: [
-                      Text(optionSnapshot['Nm_selecao'], style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-
-                    ]
-                );
-              }).toList() ,
+              children: widgets,
             );
           },
         );
       }
       case "3": {
-        return Container();
-      } break;
+        return Container(
+          padding: EdgeInsets.all(40),
+          child: Row(
+            children: [
+              Icon(Icons.face)
+            ],
+          ),
+        );
+      } 
     }
 
   }
@@ -154,119 +262,174 @@ class _FormPage extends State<FormPage> {
             }
             return Column(
               children: [
-                Row(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                      margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(35.0)),
-                        shape: BoxShape.rectangle,
-                        color: Color(0xB1B71717),
-                      ),
-                      width: MediaQuery.of(context).size.width / 2.1,
-                      height: MediaQuery.of(context).size.height / 8,
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            style: TextStyle(fontSize: 22, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
-                            controller: newFormNameController,
-                            decoration: const InputDecoration(
-                              labelText: 'Editar nome do formulário:',
-                              hintText: 'Insira aqui um novo nome',
-                              labelStyle: TextStyle(color: Colors.black,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
-                              hintStyle: TextStyle(color: Colors.black45,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
-                            ),
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Informe um novo nome válido.';
-                              }
-                              return null;
-                            },
-                          ),
-                          Center(
-                            child: ElevatedButton(
-                              style: const ButtonStyle(
-                                backgroundColor: MaterialStatePropertyAll<Color>(Color(0xB1B71717)),
-                              ),
-                              onPressed: () {
-                                changeFormName(newFormNameController.text);
-                              },
-                              child: Text("Aplicar", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
-
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                    Column(
-                      children: [
-                        Text("Adicionar Pergunta", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                        Row(
+                 Padding(padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 24),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                        margin: const EdgeInsets.symmetric(vertical: 25, horizontal: 50),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(35.0)),
+                          shape: BoxShape.rectangle,
+                          color: Color(0xB1B71717),
+                        ),
+                        width: MediaQuery.of(context).size.width / 2.1,
+                        height: MediaQuery.of(context).size.height / 8,
+                        child: Column(
                           children: [
-                            const Text("Tipo: ", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                            DropdownButton(items:_tiposPerguntas.map((item){
-                              return DropdownMenuItem(value: item,child: Text(item),);
-                            }).toList(),
-                              value: _tipoPerguntaEscolhido,
-                              onChanged:(val) {
-                                setState(() {
-                                  _tipoPerguntaEscolhido = val as String;
-
-                                });
+                            TextFormField(
+                              style: TextStyle(fontSize: 22, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                              controller: newFormNameController,
+                              decoration: const InputDecoration(
+                                labelText: 'Editar nome do formulário:',
+                                hintText: 'Insira aqui um novo nome',
+                                labelStyle: TextStyle(color: Colors.black,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                hintStyle: TextStyle(color: Colors.black45,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Informe um novo nome válido.';
+                                }
+                                return null;
                               },
                             ),
+                            Center(
+                              child: ElevatedButton(
+                                style: const ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll<Color>(Color(0xB1B71717)),
+                                ),
+                                onPressed: () {
+                                  changeFormName(newFormNameController.text);
+                                },
+                                child: Text("Aplicar", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
+
+                              ),
+                            )
                           ],
                         ),
-                        IconButton(
-                          onPressed: () {
-                            var colecaoPerguntas = FirebaseFirestore.instance.collection("Formulários").doc(DefaultFirebaseOptions.documento).collection("Perguntas");
-                            var doc2 = colecaoPerguntas.doc();
+                      ),
+                      Column(
+                        children: [
+                          const Text("Adicionar Pergunta", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                          Row(
+                            children: [
+                              const Text("Tipo: ", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                              DropdownButton(items:_tiposPerguntas.map((item){
+                                return DropdownMenuItem(value: item,child: Text(item , style: const TextStyle(color: Colors.black,fontSize: 17, fontFamily: 'Montserrat', fontWeight: FontWeight.normal) ),);
+                              }).toList(),
+                                value: _tipoPerguntaEscolhido,
+                                onChanged:(val) {
+                                  setState(() {
+                                    _tipoPerguntaEscolhido = val as String;
 
-                            String tipoPerguntaInteiro = '';
-                            switch (_tipoPerguntaEscolhido){
-                              case "Múltipla Escolha": {
-                                tipoPerguntaInteiro = '1';
-                                doc2.collection("opcoes_escolha").doc().set({'CD_escolha': '1' , 'Nm_escolha' : 'Exemplo de caixa de escolha.'});
-                              } break;
-                              case "Caixas de Seleção": {
-                                tipoPerguntaInteiro = '2';
-                                doc2.collection("opcoes_selecao").doc().set({'CD_selecao' : '1' , 'Nm_escolha' : 'Exemplo de caixa de seleção.' });;
-                              } break;
-                              case "Escala Linear": {
-                                tipoPerguntaInteiro = '3';
-                              } break;
-                            }
-                            doc2.set({"Nm_Enunciado": "Nova Pergunta", "CD_tipo_pergunta": tipoPerguntaInteiro});
-                          },
-                          color: Colors.white,
-                          iconSize: 100,
-                          icon: Icon(Icons.add_circle_rounded),
-                        ),
-                      ],
-                    ),
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                          IconButton(
+                            onPressed: () {
+                              var colecaoPerguntas = FirebaseFirestore.instance.collection("Formulários").doc(DefaultFirebaseOptions.documento).collection("Perguntas");
+                              var doc2 = colecaoPerguntas.doc();
 
-                  ],
+                              String tipoPerguntaInteiro = '';
+                              switch (_tipoPerguntaEscolhido){
+                                case "Múltipla Escolha": {
+                                  tipoPerguntaInteiro = '1';
+                                  doc2.collection("opcoes_escolha").doc().set({'CD_escolha': '1' , 'Nm_escolha' : 'Exemplo de caixa de escolha.'});
+                                } break;
+                                case "Caixas de Seleção": {
+                                  tipoPerguntaInteiro = '2';
+                                  doc2.collection("opcoes_selecao").doc().set({'CD_selecao' : '1' , 'Nm_selecao' : 'Exemplo de caixa de seleção.' });;
+                                } break;
+                                case "Escala Linear": {
+                                  tipoPerguntaInteiro = '3';
+                                } break;
+                              }
+                              doc2.set({"Nm_Enunciado": "Nova Pergunta", "CD_tipo_pergunta": tipoPerguntaInteiro});
+                            },
+                            color: Colors.white,
+                            iconSize: 100,
+                            icon: Icon(Icons.add_circle_rounded),
+                          ),
+                        ],
+                      ),
+
+                    ],
+                  ),
                 ),
-
                 Expanded(
                   child: ListView(
                     children: snapshot.data!.docs.map((document){
                       return Center(
                         child: Container(
                             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                            margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
+                            margin: EdgeInsets.symmetric(vertical: 25, horizontal: 10),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.all(Radius.circular(35.0)),
                               shape: BoxShape.rectangle,
                               color: Color(0xB1B71717),
                             ),
-                            width: MediaQuery.of(context).size.width / 1.2,
-                            height: MediaQuery.of(context).size.height / 6,
+                            width: MediaQuery.of(context).size.width / 1,
+                            height: MediaQuery.of(context).size.height / 3,
                             child: Column(
                                 children: [
-                                  Text(document['Nm_Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                  Text("Tipo de Pergunta: " + obterTipoPergunta(document['CD_tipo_pergunta']) , style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                                  Align(
+                                      alignment: Alignment.center,
+                                      child: Column(
+                                        children: [
+                                          Text(document['Nm_Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 210),
+                                            margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 30),
+                                            child: ElevatedButton(
+                                              style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent)),
+                                              child: Row(children: const [
+                                                Text("__", style: TextStyle(color: Colors.grey,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                                Icon(Icons.edit, color: Colors.grey,size: 35 ,),
+                                                Text("Editar Enunciado", style: TextStyle(color: Colors.grey,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                              ]
+                                              ),
+                                              onPressed: () {
+                                                showDialog(
+                                                context: context,
+                                                builder: (context)
+                                              {
+                                                String novoNomeEnunciado = "";
+                                                return AlertDialog(
+                                                  title: const Text("Novo nome do enunciado:", style: TextStyle(color: Color(0xB1B71717), fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                                  content: TextField(
+                                                    style: const TextStyle(color: Colors.black, fontSize: 25, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                                    autofocus: true,
+                                                    onChanged: (value) {
+                                                      novoNomeEnunciado = value;
+                                                    },
+                                                  ),
+                                                  actions: <Widget>[
+                                                    CloseButton(onPressed: () {
+                                                      Navigator.pop(context);
+                                                    }),
+                                                    FloatingActionButton(
+                                                        child: const Icon(
+                                                            Icons.send),
+                                                        onPressed: () {
+                                                          if (novoNomeEnunciado != "") {
+                                                            document.reference.update({'Nm_Enunciado': novoNomeEnunciado});
+                                                            Navigator.pop(context);
+                                                          } else {
+                                                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Insira um novo nome de Enunciado válido:", style: TextStyle(color: Colors.red, fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
+                                                          }
+                                                        }),
+                                                  ],
+                                                );
+                                              }
+                                              );
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ) ),
+                                  Text("Tipo de Pergunta: " + obterTipoPergunta(document['CD_tipo_pergunta']) , style: TextStyle(fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
                                   Container(
                                     // Iterar sobre caixas de seleção.
                                     child: obterOpcoes(document),
