@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:appmumbuca/register_page.dart';
 
 class AuthException implements Exception{
   String message;
@@ -47,10 +48,17 @@ class AuthService extends ChangeNotifier{
     _getUser();
   }
     on FirebaseAuthException catch(e){
-      if (e.code == 'weak-password'){
-        throw AuthException('A senha é muito fraca.');
+      if (e.code == 'invalid-password'){
+        throw AuthException('A senha deve conter pelo menos 6 caracteres.');
       } else if (e.code == 'email-already-in-use'){
-        throw AuthException('Email já está em uso.');
+        throw AuthException('Este email já está em uso.');
+      } else if (e.code == 'invalid-email'){
+        throw AuthException('O email está incorreto. Escreva-o no formato padrão (exemplo: email@email.com).');
+      }
+    }
+    on ValidationException catch(e){
+      if (e == 'O nome não pode ficar em branco.') {
+        throw ValidationException('é isso mesmo');
       }
     }
   }
