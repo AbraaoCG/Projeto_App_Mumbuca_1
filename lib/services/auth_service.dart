@@ -51,14 +51,9 @@ class AuthService extends ChangeNotifier{
       if (e.code == 'invalid-password'){
         throw AuthException('A senha deve conter pelo menos 6 caracteres.');
       } else if (e.code == 'email-already-in-use'){
-        throw AuthException('Este email já está em uso.');
-      } else if (e.code == 'invalid-email'){
-        throw AuthException('O email está incorreto. Escreva-o no formato padrão (exemplo: email@email.com).');
-      }
-    }
-    on ValidationException catch(e){
-      if (e == 'O nome não pode ficar em branco.') {
-        throw ValidationException('é isso mesmo');
+        throw AuthException('Email já está em uso.');
+      } else if (email == ''){
+        throw AuthException('Para cadastrar um usuário, é preciso inserir um email válido.');
       }
     }
   }

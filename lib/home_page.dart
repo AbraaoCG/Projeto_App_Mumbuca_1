@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: non_constant_identifier_names
 // import 'dart:html';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:appmumbuca/services/auth_service.dart';
@@ -31,11 +32,11 @@ class _HomePage extends State<HomePage> {
   String _acessoUsuario = 'default';
 
   void dadosUsuario() async {
-    print(widget.emailUsuario);
+    var usuario = FirebaseAuth.instance.currentUser?.email;
 
 // Create the query
     Query query =
-    colecaoUsuarios.where('email', isEqualTo: '${widget.emailUsuario}');
+    colecaoUsuarios.where('email', isEqualTo: '$usuario');
 
 // Get the query snapshot
     QuerySnapshot snapshot = await query.get();
@@ -82,7 +83,6 @@ class _HomePage extends State<HomePage> {
     Forms_collection.get().then((QuerySnapshot snapshot) =>
     {
       snapshot.docs.forEach((DocumentSnapshot doc) {
-        print(doc['Nome_Formulário']);
       })
     });
   }
@@ -345,45 +345,46 @@ class _HomePage extends State<HomePage> {
                                     fontSize: 30,
                                     fontFamily: 'Montserrat',
                                     fontWeight: FontWeight.normal)),
-                            Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.all(5),
-                                    child: Container(
-                                      width: 200,
-                                      height: 50,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
-                                        },
-                                        child: Text("Deletar Formulário", textScaleFactor: 1.4),
+                            Offstage(
+                              offstage: _acessoUsuario != 'Administrador',
+                              child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: EdgeInsets.all(5),
+                                      child: Container(
+                                        width: 200,
+                                        height: 50,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
+                                          },
+                                          child: Text("Deletar Formulário", textScaleFactor: 1.4),
 
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: EdgeInsets.all(5),
-                                    child: Container(
-                                      width: 200,
-                                      height: 50,
-                                      child: ElevatedButton(
-                                        onPressed: () {
-                                          DefaultFirebaseOptions.documento = document.id;
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(builder: (context) => const FormPage()),
-                                          );
-                                        },
-                                        child: Text("Editar Formulário", textScaleFactor: 1.5),
+                                    Padding(
+                                      padding: EdgeInsets.all(5),
+                                      child: Container(
+                                        width: 200,
+                                        height: 50,
+                                        child: ElevatedButton(
+                                          onPressed: () {
+                                            DefaultFirebaseOptions.documento = document.id;
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => const FormPage()),
+                                            );
+                                          },
+                                          child: Text("Editar Formulário", textScaleFactor: 1.5),
 
+                                        ),
                                       ),
-                                    ),
-                                  )
-                                ]
-                            )
-
-
+                                    )
+                                  ]
+                              ),
+                            ),
                           ]
 
                         )
@@ -413,22 +414,12 @@ class _HomePage extends State<HomePage> {
               FirebaseFirestore.instance.collection("Formulários").doc();
               doc1.set(data);
               var doc1id = doc1.id;
-              print(doc1id);
               var doc2 = FirebaseFirestore.instance
                   .collection("Formulários")
                   .doc(doc1id.toString())
                   .collection("Perguntas")
                   .doc();
-              doc2.set({"Enunciado": "Novo Enunciado", "tipo_pergunta": "0"});
-              var doc2id = doc2.id;
-              //  var docid2 = snapshot.data!.docs.last.id;
-              FirebaseFirestore.instance
-                  .collection("Formulários")
-                  .doc(doc1id.toString())
-                  .collection("Perguntas")
-                  .doc(doc2id.toString())
-                  .collection("Respostas")
-                  .add({"resposta_codigo": '0'});
+              doc2.set({"Nm_Enunciado": "Nova Pergunta", "CD_tipo_pergunta": "1"});
             },
             color: Colors.red,
             iconSize: 100,

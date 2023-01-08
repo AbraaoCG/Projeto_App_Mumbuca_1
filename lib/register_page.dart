@@ -56,6 +56,7 @@ class _CreateUserPage extends State<CreateUserPage> {
 
   createUser(BuildContext context) async {
     try {
+      if (nameController.text == "") {throw "O Campo nome do usuário não pode estar vazio.";}
       await context.read<AuthService>().registrar(emailController.text, passwordController.text);
       showDialog(
         context: context,
@@ -313,6 +314,7 @@ class _CreateUserPage extends State<CreateUserPage> {
                   switch (_selectedOption) {
                   }
                 });
+
                 createUser(context);
               },
               style: ElevatedButton.styleFrom(
