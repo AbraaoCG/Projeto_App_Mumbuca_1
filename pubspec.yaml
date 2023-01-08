@@ -104,6 +104,7 @@ flutter:
     - assets/add-user-icon.png
     - assets/fonts/Montserrat-VariableFont_wght.ttf
     - assets/user.png
+    - assets/Escala_Linear.png
 
   fonts:
     - family: HomepageB
