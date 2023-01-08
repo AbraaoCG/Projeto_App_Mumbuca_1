@@ -17,21 +17,14 @@ class FormResp extends StatefulWidget{
 }
 
 class _FormResp extends State<FormResp> {
-  var value = false;
+  var enderecos = [];
+  var respostas = [];
   changeFormName(newFormName) {
     print(newFormName);
     Forms_collection.doc(DefaultFirebaseOptions.documento).update(
         {'Nome_Formulário': newFormName});
     // DefaultFirebaseOptions.DATA['Nome_Formulário'] = newFormName;
   }
-  void changa(bool newValue) => setState((){
-    value = !value;
-    if (value){
-
-    } else{
-
-    }
-  });
   getForms() {
     Forms_collection.doc(DefaultFirebaseOptions.documento).get().then((
         DocumentSnapshot doc) {
@@ -46,12 +39,12 @@ class _FormResp extends State<FormResp> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(microseconds: 300), () => setState(() {}));
+    Timer(Duration(microseconds: 500), () => setState(() {}));
     getForms();
   }
 
   Widget build(BuildContext context) {
-    Timer(Duration(microseconds: 100), () => setState(() {}));
+    Timer(Duration(microseconds: 500), () => setState(() {}));
     getForms();
     return Scaffold(
       appBar: AppBar(
@@ -109,7 +102,9 @@ class _FormResp extends State<FormResp> {
                         ),
                         width: MediaQuery.of(context).size.width / 1.2,
                         height: MediaQuery.of(context).size.height / 3,
-                        child: Column(
+                        child: SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Column(
                           children: [
                             Text(document['Nm_Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
                             Text("Tipo de Pergunta: " +document['CD_tipo_pergunta'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
@@ -118,6 +113,7 @@ class _FormResp extends State<FormResp> {
                               child: StreamBuilder(
                                 stream: Forms_collection.doc(DefaultFirebaseOptions.documento).collection("Perguntas").doc(document.id).collection('opcoes_escolha').snapshots(),
                                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshota){
+                                  var icon = null;
                                   if (!snapshota.hasData){
                                     return Center(
                                       child: CircularProgressIndicator(),
@@ -129,8 +125,14 @@ class _FormResp extends State<FormResp> {
                                       Flexible(
                                         child: ListView(
                                           shrinkWrap: true,
+                                          clipBehavior: Clip.hardEdge,
                                           physics: ClampingScrollPhysics(),
                                           children: snapshota.data!.docs.map((document2){
+                                            if (respostas.contains(document2.id)) {
+                                              icon = Icon(Icons.check_circle);
+                                            } else{
+                                              icon = Icon(Icons.check_circle_outline_outlined);
+                                            }
                                             return Align(
                                               alignment: Alignment.topLeft,
                                               //child: Container(
@@ -139,12 +141,31 @@ class _FormResp extends State<FormResp> {
                                                 child: Row(
                                                   children: [
                                                     Text(document2['Nm_escolha'], textScaleFactor: 2,),
-                                                    Checkbox(
-                                                        value: value,
-                                                        onChanged: (changa){
-                                                          changa;
-
-                                                        })
+                                                    IconButton(onPressed: (){
+                                                      if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
+                                                        var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                                        enderecos.removeAt(local);
+                                                        respostas.removeAt(local);
+                                                      }else {
+                                                        enderecos.add(
+                                                            formsCollection.doc(
+                                                                DefaultFirebaseOptions
+                                                                    .documento)
+                                                                .collection(
+                                                                'Perguntas')
+                                                                .doc(
+                                                                document.id)
+                                                                .collection(
+                                                                'Respostas'));
+                                                        respostas.add(
+                                                            document2.id);
+                                                      }
+                                                      },
+                                                        icon: icon,style: IconButton.styleFrom(
+                                                        focusColor: Colors.red,
+                                                        highlightColor: Colors.blue,
+                                                          foregroundColor: Colors.black,
+                                                    ))
                                                   ],
                                                 ),
                                              // ),
@@ -157,10 +178,209 @@ class _FormResp extends State<FormResp> {
                                   );}
                                 }
                               ),
+                            ),
+                            Offstage(
+                              offstage: document['CD_tipo_pergunta'] != '2',
+                              child: StreamBuilder(
+                                  stream: Forms_collection.doc(DefaultFirebaseOptions.documento).collection("Perguntas").doc(document.id).collection('opcoes_selecao').snapshots(),
+                                  builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshota){
+                                    var icon = null;
+                                    if (!snapshota.hasData){
+                                      return Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    }else{
+                                      return Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Flexible(
+                                            child: ListView(
+                                              shrinkWrap: true,
+                                              physics: ClampingScrollPhysics(),
+                                              children: snapshota.data!.docs.map((document2){
+                                                var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                                if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas')) && respostas[local].contains(document2.id)) {
+                                                  icon = Icon(Icons.check_circle);
+                                                } else{
+                                                  icon = Icon(Icons.check_circle_outline_outlined);
+                                                }
+                                                return Align(
+                                                  alignment: Alignment.topLeft,
+                                                  //child: Container(
+                                                  //  width: MediaQuery.of(context).size.width / 1.2,
+                                                  //   height: MediaQuery.of(context).size.height / 6,
+                                                  child: Row(
+                                                    children: [
+                                                      Text(document2['Nm_selecao'], textScaleFactor: 2,),
+                                                      IconButton(onPressed: (){
+                                                        if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
+                                                          var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                                          if (respostas[local].contains(document2.id)){
+                                                            respostas[local].remove(document2.id);
+                                                          }else{
+                                                            respostas[local].add(document2.id);
+                                                          }
+                                                        }else {
+                                                          enderecos.add(
+                                                              formsCollection.doc(
+                                                                  DefaultFirebaseOptions
+                                                                      .documento)
+                                                                  .collection(
+                                                                  'Perguntas')
+                                                                  .doc(
+                                                                  document.id)
+                                                                  .collection(
+                                                                  'Respostas'));
+                                                          respostas.add(
+                                                              [document2.id]);
+                                                        }
+                                                      },
+                                                          icon: icon,style: IconButton.styleFrom(
+                                                            focusColor: Colors.red,
+                                                            highlightColor: Colors.blue,
+                                                            foregroundColor: Colors.black,
+                                                          ))
+                                                    ],
+                                                  ),
+                                                  // ),
+                                                );
+                                              },
+                                              ).toList(),
+                                            ),
+                                          ),
+                                        ],
+                                      );}
+                                  }
+                              ),
+                            ),
+                            Offstage(
+                              offstage: document['CD_tipo_pergunta'] != '3',
+                              child: Builder(builder: (context){
+                                var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                double icon1 = 0;
+                                double icon2 = 0;
+                                double icon3 = 0;
+                                double icon4 = 0;
+                                double icon5 = 0;
+                                if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas')) && respostas[local] == '1'){
+                                  icon1 = 20;
+                                  icon2 = 0;
+                                  icon3 = 0;
+                                  icon4 = 0;
+                                  icon5 = 0;
+                                }
+                                else if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas')) && respostas[local] == '2'){
+                                  icon1 = 0;
+                                  icon2 = 20;
+                                  icon3 = 0;
+                                  icon4 = 0;
+                                  icon5 = 0;
+                                }
+                                else if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas')) && respostas[local] == '3'){
+                                  icon1 = 0;
+                                  icon2 = 0;
+                                  icon3 = 20;
+                                  icon4 = 0;
+                                  icon5 = 0;
+                                }
+                                else if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas')) && respostas[local] == '4'){
+                                  icon1 = 0;
+                                  icon2 = 0;
+                                  icon3 = 0;
+                                  icon4 = 20;
+                                  icon5 = 0;
+                                }
+                                else if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas')) && respostas[local] == '5'){
+                                  icon1 = 0;
+                                  icon2 = 0;
+                                  icon3 = 0;
+                                  icon4 = 0;
+                                  icon5 = 20;
+                                } else{
+                                  icon1 = 0;
+                                  icon2 = 0;
+                                  icon3 = 0;
+                                  icon4 = 0;
+                                  icon5 = 0;
+                                }
+                                return Builder(builder: (context){return Row(
+                                children: [
+                                  IconButton(onPressed: (){
+                                    if(enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
+                                      var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                      enderecos.removeAt(local);
+                                      respostas.removeAt(local);
+                                    } else {
+                                      enderecos.add(formsCollection.doc(
+                                          DefaultFirebaseOptions.documento)
+                                          .collection('Perguntas').doc(
+                                          document.id)
+                                          .collection('Respostas'));
+                                      respostas.add('1');
+                                    }
+                                    }, icon: Image.asset('assets/Escala_Linear_Ruim.png'), iconSize: 75 + icon1,),
+                                  IconButton(onPressed: (){
+                                    if(enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
+                                      var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                      enderecos.removeAt(local);
+                                      respostas.removeAt(local);
+                                    } else {
+                                      enderecos.add(formsCollection.doc(
+                                          DefaultFirebaseOptions.documento)
+                                          .collection('Perguntas').doc(
+                                          document.id)
+                                          .collection('Respostas'));
+                                      respostas.add('2');
+                                    }
+                                    }, icon: Image.asset('assets/Escala_Linear_Quase_Ruim.png'), iconSize: 75 + icon2,),
+                                  IconButton(onPressed: (){
+                                    if(enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
+                                      var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                      enderecos.removeAt(local);
+                                      respostas.removeAt(local);
+                                    } else {
+                                      enderecos.add(formsCollection.doc(
+                                          DefaultFirebaseOptions.documento)
+                                          .collection('Perguntas').doc(
+                                          document.id)
+                                          .collection('Respostas'));
+                                      respostas.add('3');
+                                    }
+                                    }, icon: Image.asset('assets/Escala_Linear_Medio.png'), iconSize: 75 + icon3,),
+                                  IconButton(onPressed: (){
+                                    if(enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
+                                      var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                      enderecos.removeAt(local);
+                                      respostas.removeAt(local);
+                                    } else {
+                                      enderecos.add(formsCollection.doc(
+                                          DefaultFirebaseOptions.documento)
+                                          .collection('Perguntas').doc(
+                                          document.id)
+                                          .collection('Respostas'));
+                                      respostas.add('4');
+                                    }
+                                    }, icon: Image.asset('assets/Escala_Linear_Quase_Bom.png'), iconSize: 75 + icon4,),
+                                  IconButton(onPressed: (){
+                                    if(enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
+                                      var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                      enderecos.removeAt(local);
+                                      respostas.removeAt(local);
+                                    } else {
+                                      enderecos.add(formsCollection.doc(
+                                          DefaultFirebaseOptions.documento)
+                                          .collection('Perguntas').doc(
+                                          document.id)
+                                          .collection('Respostas'));
+                                      respostas.add('5');
+                                    }
+                                    }, icon: Image.asset('assets/Escala_Linear_Bom.png'), iconSize: 75 + icon5,),
+                                ],
+                              );});})
                             )
                           ]
                         )
-                      ),
+                      ),),
                     );
                   }).toList(),
                 ),
@@ -171,6 +391,21 @@ class _FormResp extends State<FormResp> {
           }
 
         ),
+      floatingActionButton: IconButton(
+          onPressed: (){
+            for(int i = 0;i != respostas.length;i++){
+              print(respostas.length);
+              print(i);
+              var enderec = enderecos[i];
+              print(enderec.runtimeType);
+              enderec.add({'CD_resposta' : respostas[i]});
+              //formsCollection.doc(enderec[1]).collection(enderec[2]).doc(enderec[3]).collection(enderec[4]).add({'CD_resposta' : respostas[i]});
+            }
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Enviado!')));
+          },
+          icon: Icon(Icons.check_circle_sharp, color: Colors.red,),
+          iconSize: 75,
+      ),
       bottomNavigationBar: BottomAppBar(
         color: Color(0XFFB71717),
         child: Text("Data de Criação: " + DefaultFirebaseOptions.DATA["Data_Criação"], style: TextStyle(color: Colors.white), textScaleFactor: 1.5),

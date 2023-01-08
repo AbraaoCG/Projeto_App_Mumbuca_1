@@ -104,6 +104,11 @@ flutter:
     - assets/add-user-icon.png
     - assets/fonts/Montserrat-VariableFont_wght.ttf
     - assets/user.png
+    - assets/Escala_Linear_Bom.png
+    - assets/Escala_Linear_Medio.png
+    - assets/Escala_Linear_Quase_Bom.png
+    - assets/Escala_Linear_Ruim.png
+    - assets/Escala_Linear_Quase_Ruim.png
 
   fonts:
     - family: HomepageB
