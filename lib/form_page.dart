@@ -50,65 +50,72 @@ class _FormPage extends State<FormPage> {
                 child: CircularProgressIndicator(),
               );
             }
-            List<Widget> widgets = [];
-            widgets.addAll(
-              snapshot.data!.docs.map((optionSnapshot) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  decoration: const BoxDecoration(
-                    borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                    shape: BoxShape.rectangle,
-                    color: Colors.white24,
-                  ),
-                  child: Row(
-                      children: [
-                        const Icon(Icons.mode_edit, color: Colors.grey,size: 35 ,),
-                        InkWell(
-                          splashColor: Colors.red,
-                          onTap: (){
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                String novoNomeOpcao = "";
-                                return AlertDialog(
-                                  title: const Text("Alterar nome de opção" , style: TextStyle(color: Color(0xB1B71717),fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                  content: TextField(
-                                    autofocus: true,
-                                    onChanged: (value){
-                                      novoNomeOpcao = value;
-                                    },
-                                  ),
-                                  actions: <Widget>[
-                                    CloseButton(onPressed: (){
-                                      Navigator.pop(context);
-                                    }),
-                                    FloatingActionButton(
-                                        child: const Icon(Icons.send),
-                                        onPressed: (){
-                                          if (novoNomeOpcao != ""){
-                                            optionSnapshot.reference.update({ 'Nm_escolha' : novoNomeOpcao });
-                                            Navigator.pop(context);
-                                          } else{
-                                            ScaffoldMessenger.of(context)
-                                                .showSnackBar(SnackBar(content: Text("Insira um novo nome de opção válido:" , style: TextStyle(color: Colors.white,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
-                                          }
+
+            return SizedBox(
+              height: 200,
+              child: Scrollbar(
+                child: ListView(
+                  children: snapshot.data!.docs.map((optionSnapshot) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+
+                      child: Row(
+                          children: [
+                            const Icon(Icons.mode_edit, color: Colors.grey,size: 35 ,),
+                            InkWell(
+                              splashColor: Colors.red,
+                              onTap: (){
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    String novoNomeOpcao = "";
+                                    return AlertDialog(
+                                      title: const Text("Alterar nome de opção" , style: TextStyle(color: Color(0xB1B71717),fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                      content: TextField(
+                                        autofocus: true,
+                                        onChanged: (value){
+                                          novoNomeOpcao = value;
+                                        },
+                                      ),
+                                      actions: <Widget>[
+                                        CloseButton(onPressed: (){
+                                          Navigator.pop(context);
                                         }),
-                                  ],
+                                        FloatingActionButton(
+                                            child: const Icon(Icons.send),
+                                            onPressed: (){
+                                              if (novoNomeOpcao != ""){
+                                                optionSnapshot.reference.update({ 'Nm_escolha' : novoNomeOpcao });
+                                                Navigator.pop(context);
+                                              } else{
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(SnackBar(content: Text("Insira um novo nome de opção válido:" , style: TextStyle(color: Colors.white,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
+                                              }
+                                            }),
+                                      ],
+                                    );
+                                  },
                                 );
                               },
-                            );
-                          },
-                          child: Container( //optionSnapshot['Nm_escolha']
-                            child:Text(optionSnapshot['Nm_escolha'] , style: TextStyle(color: Colors.white70,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                          ),
-                        ),
-                        //
-                      ]
-                  ),
-                );
-              }).toList());
-            return Column(
-              children: widgets
+                              child: Container( //optionSnapshot['Nm_escolha']
+                                child:Text(optionSnapshot['Nm_escolha'] , style: TextStyle(color: Colors.white70,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                              ),
+                            ),
+                            const VerticalDivider(),
+                            IconButton(
+                              onPressed:() {
+                                optionSnapshot.reference.delete();
+                              },
+                              iconSize: 30,
+                              color: Colors.black,
+                              icon: const Icon(Icons.delete),
+                            ),
+                          ]
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
             );
           },
         );
@@ -116,83 +123,95 @@ class _FormPage extends State<FormPage> {
       case "2": {
         return StreamBuilder(
           stream: document.reference.collection('opcoes_selecao').snapshots(),
-          builder:  (context, snapshot){
+          builder:  (context, snapshot) {
             if (!snapshot.hasData) {
               return Center(
                 child: CircularProgressIndicator(),
               );
             }
-            List<Widget> widgets = [];
-            widgets.addAll(
-                snapshot.data!.docs.map((optionSnapshot) {
-                  return Container(
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(50.0)),
-                      shape: BoxShape.rectangle,
-                      color: Colors.white24,
-                    ),
-                    child: Row(
-                        children: [
-                          const Icon(Icons.mode_edit, color: Colors.grey,size: 35 ,),
-                          InkWell(
-                            splashColor: Colors.red,
-                            onTap: (){
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  String novoNomeOpcao = "";
-                                  return AlertDialog(
-                                    title: const Text("Novo nome da opção:" , style: TextStyle(color: Color(0xB1B71717),fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                    content: TextField(
-                                      autofocus: true,
-                                      onChanged: (value){
-                                        novoNomeOpcao = value;
-                                      },
-                                    ),
-                                    actions: <Widget>[
-                                      CloseButton(onPressed: (){
-                                        Navigator.pop(context);
-                                      }),
-                                      FloatingActionButton(
-                                          child: const Icon(Icons.send),
-                                          onPressed: (){
-                                            if (novoNomeOpcao != ""){
-                                              optionSnapshot.reference.update({ 'Nm_selecao' : novoNomeOpcao });
-                                              Navigator.pop(context);
-                                            } else{
-                                              ScaffoldMessenger.of(context)
-                                                  .showSnackBar(SnackBar(content: Text("Insira um novo nome de opção válido:" , style: TextStyle(color: Colors.red,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
-                                            }
+            return SizedBox(
+              height: 200,
+                child: Scrollbar(
+                  child: ListView(
+                    children: snapshot.data!.docs.map((optionSnapshot) {
+                      return Container(
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+
+                        child: Row(
+                            children: [
+                              const Icon(Icons.mode_edit, color: Colors.grey,size: 35 ,),
+                              InkWell(
+                                splashColor: Colors.red,
+                                onTap: (){
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      String novoNomeOpcao = "";
+                                      return AlertDialog(
+                                        title: const Text("Novo nome da opção:" , style: TextStyle(color: Color(0xB1B71717),fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                        content: TextField(
+                                          autofocus: true,
+                                          onChanged: (value){
+                                            novoNomeOpcao = value;
+                                          },
+                                        ),
+                                        actions: <Widget>[
+                                          CloseButton(onPressed: (){
+                                            Navigator.pop(context);
                                           }),
-                                    ],
+                                          FloatingActionButton(
+                                              child: const Icon(Icons.send),
+                                              onPressed: (){
+                                                if (novoNomeOpcao != ""){
+                                                  optionSnapshot.reference.update({ 'Nm_selecao' : novoNomeOpcao });
+                                                  Navigator.pop(context);
+                                                } else{
+                                                  ScaffoldMessenger.of(context)
+                                                      .showSnackBar(SnackBar(content: Text("Insira um novo nome de opção válido:" , style: TextStyle(color: Colors.red,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
+                                                }
+                                              }),
+                                        ],
+                                      );
+                                    },
                                   );
                                 },
-                              );
-                            },
-                            child: Container(
-                              child:Text(optionSnapshot['Nm_selecao'] , style: TextStyle(color: Colors.white70,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                            ),
-                          ),
-                          //
-                        ]
-                    ),
-                  );
-                }).toList());
-            return Column(
-              children: widgets,
+                                child: Container(
+                                  child:Text(optionSnapshot['Nm_selecao'] , style: TextStyle(color: Colors.white70,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                                ),
+                              ),
+                              IconButton(
+                                onPressed:() {
+                                  optionSnapshot.reference.delete();
+                                },
+                                iconSize: 30,
+                                color: Colors.black,
+                                icon: const Icon(Icons.delete),
+                              ),
+                            ]
+                        ),
+                      );
+
+                    }).toList(),
+                  ),
+                ),
             );
-          },
+          }
         );
       }
       case "3": {
-        return Container(
-          padding: EdgeInsets.all(40),
-          child: Row(
-            children: [
-              Icon(Icons.face)
-            ],
-          ),
+        return Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children:[
+            Container(height: 70,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Image.asset("assets/Escala_Linear.png", scale: 1.8,),
+              ],
+            ),
+            Container(height: 70,),
+
+    ]
         );
       } 
     }
@@ -205,8 +224,8 @@ class _FormPage extends State<FormPage> {
         padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 0),
         child: Row(
           children: [
-            const Text("Adicionar Opção: ", style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-            IconButton(
+            ElevatedButton(
+              style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent)),
               onPressed: () {
                 var nomeColecao = "";
                 var nomeCampo = "";
@@ -228,16 +247,64 @@ class _FormPage extends State<FormPage> {
 
                 docOpcao.set({nomeCampo: nomeExemplo});
               },
-              color: Colors.white,
-              iconSize: 60,
-              icon: Icon(Icons.add_circle_rounded),
+              child: Row(
+                  children: const [
+                Icon(Icons.add_circle_rounded, color: Colors.grey,size: 30 ,),
+                    Text("Adicionar Opção", style: TextStyle(color: Colors.grey,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                  ]
             ),
+            )
           ],
         ),
       );
 
     }
 
+  }
+  deleteButtonCond2(document){
+    if (document['CD_tipo_pergunta'] != '3'){
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton( // Botão para deletar pergunta.
+            style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent)),
+            onPressed: (){
+              document.reference.delete();
+            },
+            child: Row(
+              children: const [
+                Icon(Icons.delete, color: Colors.grey,),
+                Text("Deletar Pergunta", style: TextStyle(color: Colors.grey, fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+
+        ],
+      );
+    } else { return Container(); }
+  }
+
+  deleteButtonCond1(document){
+    if (document['CD_tipo_pergunta'] == '3'){
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton( // Botão para deletar pergunta.
+            style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent)),
+            onPressed: (){
+              document.reference.delete();
+            },
+            child: Row(
+              children: const [
+                Icon(Icons.delete, color: Colors.grey,),
+                Text("Deletar Pergunta", style: TextStyle(color: Colors.grey, fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+
+        ],
+      );
+  } else { return Container(); }
   }
   changeFormName(newFormName){
     Forms_collection.doc(DefaultFirebaseOptions.documento).update({'Nome_Formulário' : newFormName});
@@ -263,7 +330,7 @@ class _FormPage extends State<FormPage> {
     Timer(const Duration(microseconds: 100), () => setState(() {}));
     getForms();
     return Scaffold(
-      backgroundColor: Colors.grey,
+      backgroundColor: Colors.white,
       appBar: AppBar(
           backgroundColor: Color(0XFFB71717),
           toolbarHeight: 100,
@@ -312,7 +379,7 @@ class _FormPage extends State<FormPage> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(35.0)),
                           shape: BoxShape.rectangle,
-                          color: Color(0xB1B71717),
+                          color: Color(0xFFB71717),
                         ),
                         width: MediaQuery.of(context).size.width / 2.1,
                         height: MediaQuery.of(context).size.height / 8,
@@ -377,11 +444,11 @@ class _FormPage extends State<FormPage> {
                               switch (_tipoPerguntaEscolhido){
                                 case "Múltipla Escolha": {
                                   tipoPerguntaInteiro = '1';
-                                  doc2.collection("opcoes_escolha").doc().set({'Nm_escolha' : 'Exemplo de caixa de escolha.'});
+                                  doc2.collection("opcoes_escolha").doc().set({'Nm_escolha' : 'Exemplo de caixa de escolha'});
                                 } break;
                                 case "Caixas de Seleção": {
                                   tipoPerguntaInteiro = '2';
-                                  doc2.collection("opcoes_selecao").doc().set({'Nm_selecao' : 'Exemplo de caixa de seleção.' });
+                                  doc2.collection("opcoes_selecao").doc().set({'Nm_selecao' : 'Exemplo de caixa de seleção' });
                                 } break;
                                 case "Escala Linear": {
                                   tipoPerguntaInteiro = '3';
@@ -389,7 +456,7 @@ class _FormPage extends State<FormPage> {
                               }
                               doc2.set({"Nm_Enunciado": "Nova Pergunta", "CD_tipo_pergunta": tipoPerguntaInteiro});
                             },
-                            color: Colors.white,
+                            color: Colors.grey,
                             iconSize: 100,
                             icon: Icon(Icons.add_circle_rounded),
                           ),
@@ -400,93 +467,96 @@ class _FormPage extends State<FormPage> {
                   ),
                 ),
                 Expanded(
-                  child: ListView(
-                    children: snapshot.data!.docs.map((document){
-                      return Center(
-                        child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                            margin: EdgeInsets.symmetric(vertical: 25, horizontal: 10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(35.0)),
-                              shape: BoxShape.rectangle,
-                              color: Color(0xB1B71717),
-                            ),
-                            width: MediaQuery.of(context).size.width / 1,
-                            height: MediaQuery.of(context).size.height / 3,
-                            child: Column(
-                                children: [
-                                  Align(
-                                      alignment: Alignment.center,
-                                      child: Column(
-                                        children: [
-                                          Text(document['Nm_Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                          Container(
-                                            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
-                                            margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 80),
-                                            child: Row(
-                                              children: [
-                                                ElevatedButton( // Botão para editar enunciado da pergunta.
-                                                  style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent)),
-                                                  child: Row(children: const [
-                                                    Text("__", style: TextStyle(color: Colors.grey,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                                    Icon(Icons.edit, color: Colors.grey,size: 35 ,),
-                                                    Text("Editar Enunciado", style: TextStyle(color: Colors.grey,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                                  ]
+                  child: Scrollbar(
+                    child: ListView(
+                      children: snapshot.data!.docs.map((document){
+                        return Center(
+                          child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                              margin: EdgeInsets.symmetric(vertical: 25, horizontal: 10),
+                              decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(35.0)),
+                                shape: BoxShape.rectangle,
+                                color: Color(0xFFB71717),
+                              ),
+                              width: MediaQuery.of(context).size.width / 1,
+                              height: MediaQuery.of(context).size.height / 2.6,
+                              child: Column(
+                                  children: [
+                                    Align(
+                                        alignment: Alignment.center,
+                                        child: Column(
+                                          children: [
+                                            Text(document['Nm_Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                            Container(
+                                              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                                              margin: const EdgeInsets.symmetric(vertical: 2, horizontal: 80),
+                                              child: Row(
+                                                children: [
+                                                  ElevatedButton( // Botão para editar enunciado da pergunta.
+                                                    style: ButtonStyle(backgroundColor: MaterialStateProperty.all<Color>(Colors.transparent)),
+                                                    child: Row(children: const [
+                                                      Text("__", style: TextStyle(color: Colors.grey,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                                      Icon(Icons.edit, color: Colors.grey,size: 35 ,),
+                                                      Text("Editar Enunciado", style: TextStyle(color: Colors.grey,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                                    ]
+                                                    ),
+                                                    onPressed: () {
+                                                      showDialog(
+                                                          context: context,
+                                                          builder: (context)
+                                                          {
+                                                            String novoNomeEnunciado = "";
+                                                            return AlertDialog(
+                                                              title: const Text("Novo nome do enunciado:", style: TextStyle(color: Color(0xB1B71717), fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                                              content: TextField(
+                                                                style: const TextStyle(color: Colors.black, fontSize: 25, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                                                autofocus: true,
+                                                                onChanged: (value) {
+                                                                  novoNomeEnunciado = value;
+                                                                },
+                                                              ),
+                                                              actions: <Widget>[
+                                                                CloseButton(onPressed: () {
+                                                                  Navigator.pop(context);
+                                                                }),
+                                                                FloatingActionButton(
+                                                                    child: const Icon(
+                                                                        Icons.send),
+                                                                    onPressed: () {
+                                                                      if (novoNomeEnunciado != "") {
+                                                                        document.reference.update({'Nm_Enunciado': novoNomeEnunciado});
+                                                                        Navigator.pop(context);
+                                                                      } else {
+                                                                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Insira um novo nome de Enunciado válido:", style: TextStyle(color: Colors.red, fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
+                                                                      }
+                                                                    }),
+                                                              ],
+                                                            );
+                                                          }
+                                                      );
+                                                    },
                                                   ),
-                                                  onPressed: () {
-                                                    showDialog(
-                                                        context: context,
-                                                        builder: (context)
-                                                        {
-                                                          String novoNomeEnunciado = "";
-                                                          return AlertDialog(
-                                                            title: const Text("Novo nome do enunciado:", style: TextStyle(color: Color(0xB1B71717), fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                                            content: TextField(
-                                                              style: const TextStyle(color: Colors.black, fontSize: 25, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
-                                                              autofocus: true,
-                                                              onChanged: (value) {
-                                                                novoNomeEnunciado = value;
-                                                              },
-                                                            ),
-                                                            actions: <Widget>[
-                                                              CloseButton(onPressed: () {
-                                                                Navigator.pop(context);
-                                                              }),
-                                                              FloatingActionButton(
-                                                                  child: const Icon(
-                                                                      Icons.send),
-                                                                  onPressed: () {
-                                                                    if (novoNomeEnunciado != "") {
-                                                                      document.reference.update({'Nm_Enunciado': novoNomeEnunciado});
-                                                                      Navigator.pop(context);
-                                                                    } else {
-                                                                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Insira um novo nome de Enunciado válido:", style: TextStyle(color: Colors.red, fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
-                                                                    }
-                                                                  }),
-                                                            ],
-                                                          );
-                                                        }
-                                                    );
-                                                  },
-                                                ),
-                                                getAddOptions(document),
-
-                                              ],
+                                                  const VerticalDivider(),
+                                                  const VerticalDivider(),
+                                                  getAddOptions(document),
+                                                  deleteButtonCond1(document),
+                                                ],
+                                              ),
                                             ),
+                                            deleteButtonCond2(document),
+                                          ],
+                                        )
+                                    ),
+                                    Text("Tipo de Pergunta: " + obterTipoPergunta(document['CD_tipo_pergunta']) , style: const TextStyle(fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
 
-                                          ),
-                                        ],
-                                      ) ),
-                                  Text("Tipo de Pergunta: " + obterTipoPergunta(document['CD_tipo_pergunta']) , style: TextStyle(fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                                  Container(
-                                    // Iterar sobre caixas de seleção.
-                                    child: obterOpcoes(document),
-                                  ),
-                                ]
-                            )
-                        ),
-                      );
-                    }).toList(),
+                                    obterOpcoes(document),
+                                  ]
+                              )
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
                 ),
               ],
@@ -496,7 +566,7 @@ class _FormPage extends State<FormPage> {
 
       ),
       bottomNavigationBar: BottomAppBar(
-        color: Color(0XFFB71717),
+        color: Colors.transparent,
         child: Text("Data de Criação: " + DefaultFirebaseOptions.DATA["Data_Criação"], style: TextStyle(color: Colors.white), textScaleFactor: 1.5),
       ),
 
