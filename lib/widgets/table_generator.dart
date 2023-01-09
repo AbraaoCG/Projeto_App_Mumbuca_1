@@ -75,10 +75,30 @@ class _TableGenerator extends State<TableGenerator> {
             }
 
             value = docResposta['CD_resposta'];
-
             //print('value encontrado: $value');
 
-            respostas.add(value);
+        // tratar aqui os nomes
+
+        // Access 'Respostas' collection
+        CollectionReference collOpcoesSelecao = doc.reference.collection('opcoes_selecao');
+
+        // Get 'Respostas' documents
+        QuerySnapshot snapshotcollOpcoesSelecao = await collOpcoesSelecao.get();
+
+        var docOpcoesSelecao = snapshotcollOpcoesSelecao.docs;
+
+        for (var doc in docOpcoesSelecao) {
+          // Get the ID of the current document
+          var docId = doc.id;
+
+          // Compare the ID to the variable
+          if (value.contains(doc.id)) {
+            value = doc['Nm_selecao'];
+          }
+
+        }
+
+        respostas.add(value);
 
             respostasEnunciados.add(respostas);
             }
