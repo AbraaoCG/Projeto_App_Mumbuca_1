@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: non_constant_identifier_names
 // import 'dart:html';
+import 'package:appmumbuca/widgets/table_generator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -268,6 +269,27 @@ class _HomePage extends State<HomePage> {
                           ),
                         ),
                         onTap: () {},
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text(
+                          'Gerar tabela com respostas',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                        leading: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: SizedBox(
+                            child: Transform.scale(
+                                scale: 2, child: Icon(Icons.restore_page)),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => TableGenerator(),
+                            ),
+                          );
+                        },
                       ),
                       Divider(),
                     ],
