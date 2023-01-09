@@ -22,33 +22,12 @@ class TableGenerator extends StatefulWidget {
 
 class _TableGenerator extends State<TableGenerator> {
 
-  /**generatecsv() async {
-    List<List<String>> data = [
-      ["No.", "Name", "Roll No."],
-      ["1", randomAlpha(3), randomNumeric(3)],
-      ["2", randomAlpha(3), randomNumeric(3)],
-      ["3", randomAlpha(3), randomNumeric(3)]
-    ];
-    String csvData = ListTocsvConverter().convert(data);
-    final String directory = (await getApplicationSupportDirectory()).path;
-    final path = "$directory/csv-${DateTime.now()}.csv";
-    print(path);
-    final File file = File(path);
-    await file.writeAsString(csvData);
-    Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (_) {
-          return LoadcsvDataScreen(path: path);
-        },
-      ),
-    );
-  } **/
-
-  void CD_resposta_pesquisas(DocumentSnapshot document) async {
+  CD_resposta_pesquisas(DocumentSnapshot document) async {
     List<dynamic> listaEnunciados = [];
     List<dynamic> respostasEnunciados = [];
     int i;
     int j;
+    var value;
 
     List<dynamic> linhasCSV = [];
 
@@ -60,34 +39,66 @@ class _TableGenerator extends State<TableGenerator> {
     // Acessando documentos de Perguntas
     QuerySnapshot snapshot = await collPerguntas.get();
 
+    var docResposta;
+
     int len_collPerguntas = snapshot.size;
 
-    for (int i = 0; i < len_collPerguntas; i++) {
-      // Get the i-th Perguntas document
-      var doc = snapshot.docs[i];
+    for (int j = 0; j < len_collPerguntas+1; j++) { // qtd perguntas
 
-      var enunciado = doc['Nm_Enunciado'];
-      print('');
-      print('Analisando resultado: $enunciado');
-      listaEnunciados.add("$enunciado");
-      print('Lista de enunciados: $listaEnunciados');
+      for (int i = 0; i < len_collPerguntas; i++) { // qtd respostas
+        // Get the i-th Perguntas document
+        var doc = snapshot.docs[i];
 
-      // Access 'Respostas' collection
-      CollectionReference collRespostas = doc.reference.collection('Respostas');
+        var enunciado = doc['Nm_Enunciado'];
+        //print('');
+        //print('Analisando resultado: $enunciado');
 
-      // Get 'Respostas' documents
-      QuerySnapshot snapshotRespostas = await collRespostas.get();
-      int len_collRespostas = snapshotRespostas.size;
+          if (listaEnunciados.contains(enunciado)) {
+            //print('');
+          } else {
+            listaEnunciados.add(enunciado);
+          }
 
-      var docResposta = snapshotRespostas.docs[0];
-      var value = docResposta['CD_resposta'];
-      print('value encontrado: $value');
-      respostasEnunciados.add(value);
+            // Access 'Respostas' collection
+            CollectionReference collRespostas = doc.reference.collection('Respostas');
+
+            // Get 'Respostas' documents
+            QuerySnapshot snapshotRespostas = await collRespostas.get();
+
+            List<dynamic> respostas = [];
+
+            try {
+              docResposta = snapshotRespostas.docs[j];
+            } on RangeError catch (_) {
+              //print('não existe uma resposta aqui');
+              continue;
+            }
+
+            value = docResposta['CD_resposta'];
+
+            //print('value encontrado: $value');
+
+            respostas.add(value);
+
+            respostasEnunciados.add(respostas);
+            }
+
+      linhasCSV.add(respostasEnunciados);
+      //print('adicionou $respostasEnunciados em linhasCSV');
+      respostasEnunciados = [];
+      //print('linhasCSV: $linhasCSV');
+
+          }
+
+    // retornaria aqui se fosse exportar o CSV codificado
+    //return linhasCSV;
+
+    print(linhasCSV);
+    //print(listaEnunciados);
+
+
 
     }
-
-
-  }
 
 
   @override
