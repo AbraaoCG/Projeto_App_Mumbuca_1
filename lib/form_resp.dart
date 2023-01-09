@@ -19,6 +19,8 @@ class FormResp extends StatefulWidget{
 class _FormResp extends State<FormResp> {
   var enderecos = [];
   var respostas = [];
+  var value = 0;
+  var quest = [];
   changeFormName(newFormName) {
     print(newFormName);
     Forms_collection.doc(DefaultFirebaseOptions.documento).update(
@@ -128,6 +130,12 @@ class _FormResp extends State<FormResp> {
                                           clipBehavior: Clip.hardEdge,
                                           physics: ClampingScrollPhysics(),
                                           children: snapshota.data!.docs.map((document2){
+                                            if(!quest.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
+                                              value += 1;
+                                              quest.add(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                            }else{
+
+                                            }
                                             if (respostas.contains(document2.id)) {
                                               icon = Icon(Icons.check_circle);
                                             } else{
@@ -198,6 +206,12 @@ class _FormResp extends State<FormResp> {
                                               shrinkWrap: true,
                                               physics: ClampingScrollPhysics(),
                                               children: snapshota.data!.docs.map((document2){
+                                                if(!quest.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
+                                                  value += 1;
+                                                  quest.add(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                                }else{
+
+                                                }
                                                 var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
                                                 if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas')) && respostas[local].contains(document2.id)) {
                                                   icon = Icon(Icons.check_circle);
@@ -256,6 +270,12 @@ class _FormResp extends State<FormResp> {
                             Offstage(
                               offstage: document['CD_tipo_pergunta'] != '3',
                               child: Builder(builder: (context){
+                                if(!quest.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
+                                  value += 1;
+                                  quest.add(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                }else{
+
+                                }
                                 var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
                                 double icon1 = 0;
                                 double icon2 = 0;
@@ -393,16 +413,21 @@ class _FormResp extends State<FormResp> {
         ),
       floatingActionButton: IconButton(
           onPressed: (){
-            for(int i = 0;i != respostas.length;i++){
-              print(respostas.length);
-              print(i);
-              var enderec = enderecos[i];
-              print(enderec.runtimeType);
-              enderec.add({'CD_resposta' : respostas[i]});
-              //formsCollection.doc(enderec[1]).collection(enderec[2]).doc(enderec[3]).collection(enderec[4]).add({'CD_resposta' : respostas[i]});
-            }
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Enviado!')));
-          },
+            if(respostas.length == value) {
+              for (int i = 0; i != respostas.length; i++) {
+                print(respostas.length);
+                print(i);
+                var enderec = enderecos[i];
+                print(enderec.runtimeType);
+                enderec.add({'CD_resposta': respostas[i]});
+                //formsCollection.doc(enderec[1]).collection(enderec[2]).doc(enderec[3]).collection(enderec[4]).add({'CD_resposta' : respostas[i]});
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Enviado!')));
+            }else{
+              ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Responda todas as questões!')));
+            }},
           icon: Icon(Icons.check_circle_sharp, color: Colors.red,),
           iconSize: 75,
       ),
