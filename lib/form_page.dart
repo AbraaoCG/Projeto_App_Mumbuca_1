@@ -381,35 +381,52 @@ class _FormPage extends State<FormPage> {
                           shape: BoxShape.rectangle,
                           color: Color(0xFFB71717),
                         ),
-                        width: MediaQuery.of(context).size.width / 2.1,
-                        height: MediaQuery.of(context).size.height / 8,
-                        child: Column(
-                          children: [
-                            TextFormField(
-                              style: TextStyle(fontSize: 22, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
-                              controller: newFormNameController,
-                              decoration: const InputDecoration(
-                                labelText: 'Editar nome do formulário:',
-                                hintText: 'Insira aqui um novo nome',
-                                labelStyle: TextStyle(color: Colors.black,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
-                                hintStyle: TextStyle(color: Colors.black45,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
-                              ),
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return 'Informe um novo nome válido.';
-                                }
-                                return null;
-                              },
+                      );
+                    }).toList(),
+                  ),
+                ),
+                Expanded(
+                    child: ListView(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                            margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.all(Radius.circular(35.0)),
+                              shape: BoxShape.rectangle,
+                              color: Color(0xB1B71717),
                             ),
-                            Center(
-                              child: ElevatedButton(
-                                style: const ButtonStyle(
-                                  backgroundColor: MaterialStatePropertyAll<Color>(Color(0xB1B71717)),
+                            width: MediaQuery.of(context).size.width / 1.2,
+                            height: MediaQuery.of(context).size.height / 5,
+                            child: Column(
+                              children: [
+                                Text("Editar Nome do Formulário",  style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                Text(" Nome Atual: " + DefaultFirebaseOptions.DATA["Nome_Formulário"],  style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                                TextFormField(
+                                  style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                  controller: newFormNameController,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Nome novo: (Clique encima)',
+                                    hintText: 'Insira aqui um novo nome para o formulário.',
+                                    labelStyle: TextStyle(color: Colors.black,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                    hintStyle: TextStyle(color: Colors.black45,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                  ),
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return 'Informe um novo nome válido.';
+                                    }
+                                    return null;
+                                  },
                                 ),
-                                onPressed: () {
-                                  changeFormName(newFormNameController.text);
-                                },
-                                child: Text("Aplicar", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
+                                Center(
+                                  child: ElevatedButton(
+                                    style: const ButtonStyle(
+                                      backgroundColor: MaterialStatePropertyAll<Color>(Color(0xB1B71717)),
+                                    ),
+                                    onPressed: () {
+                                      changeFormName(newFormNameController.text);
+                                    },
+                                    child: Text("Aplicar Alteração", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
 
                               ),
                             )
