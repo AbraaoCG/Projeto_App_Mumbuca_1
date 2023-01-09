@@ -47,15 +47,12 @@ void main() async{
 
   F1_P1_OP1.set({
     'Nm_escolha':'Praticidade',
-    'CD_escolha':'1'
   });
   F1_P2_OS1.set({
-    'nome_selecao' : 'Paz Mundial',
-    'CD_selecao' : '1'
+    'Nm_selecao' : 'Paz Mundial',
   });
   F1_P2_OS2.set({
-    'nome_selecao' : 'Apenas um Banco.',
-    'CD_selecao' : '2'
+    'Nm_selecao' : 'Apenas um Banco.',
   });
 
 
