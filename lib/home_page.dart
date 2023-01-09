@@ -196,7 +196,12 @@ class _HomePage extends State<HomePage> {
                           scale: 2, child: Icon(Icons.account_circle)),
                     ),
                   ),
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const AccountPage()),
+                    );
+                  },
                 ),
                 Divider(),
                 ListTile(
