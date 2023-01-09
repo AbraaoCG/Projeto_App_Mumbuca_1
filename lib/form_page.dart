@@ -472,6 +472,7 @@ class _FormPage extends State<FormPage> {
                       children: snapshot.data!.docs.map((document){
                         return Center(
                           child: Container(
+
                               padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
                               margin: EdgeInsets.symmetric(vertical: 25, horizontal: 10),
                               decoration: const BoxDecoration(
