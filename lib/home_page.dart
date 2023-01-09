@@ -33,7 +33,6 @@ class _HomePage extends State<HomePage> {
   String _acessoUsuario = 'default';
 
   void dadosUsuario() async {
-    print(widget.emailUsuario);
     var usuario = FirebaseAuth.instance.currentUser?.email;
 
 // Create the query
@@ -85,7 +84,6 @@ class _HomePage extends State<HomePage> {
     Forms_collection.get().then((QuerySnapshot snapshot) =>
     {
       snapshot.docs.forEach((DocumentSnapshot doc) {
-        print(doc['Nome_Formulário']);
       })
     });
   }
@@ -435,22 +433,12 @@ class _HomePage extends State<HomePage> {
               FirebaseFirestore.instance.collection("Formulários").doc();
               doc1.set(data);
               var doc1id = doc1.id;
-              print(doc1id);
               var doc2 = FirebaseFirestore.instance
                   .collection("Formulários")
                   .doc(doc1id.toString())
                   .collection("Perguntas")
                   .doc();
-              doc2.set({"Enunciado": "Novo Enunciado", "tipo_pergunta": "0"});
-              var doc2id = doc2.id;
-              //  var docid2 = snapshot.data!.docs.last.id;
-              FirebaseFirestore.instance
-                  .collection("Formulários")
-                  .doc(doc1id.toString())
-                  .collection("Perguntas")
-                  .doc(doc2id.toString())
-                  .collection("Respostas")
-                  .add({"resposta_codigo": '0'});
+              doc2.set({"Nm_Enunciado": "Nova Pergunta", "CD_tipo_pergunta": "1"});
             },
             color: Colors.red,
             iconSize: 100,

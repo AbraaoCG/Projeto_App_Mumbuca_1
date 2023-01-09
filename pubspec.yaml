@@ -109,6 +109,7 @@ flutter:
     - assets/Escala_Linear_Quase_Bom.png
     - assets/Escala_Linear_Ruim.png
     - assets/Escala_Linear_Quase_Ruim.png
+    - assets/Escala_Linear.png
 
   fonts:
     - family: HomepageB
