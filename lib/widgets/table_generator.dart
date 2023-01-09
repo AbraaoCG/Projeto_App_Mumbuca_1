@@ -22,44 +22,70 @@ class TableGenerator extends StatefulWidget {
 
 class _TableGenerator extends State<TableGenerator> {
 
-  void CD_resposta_pesquisas(DocumentSnapshot document) async {
+  /**generatecsv() async {
+    List<List<String>> data = [
+      ["No.", "Name", "Roll No."],
+      ["1", randomAlpha(3), randomNumeric(3)],
+      ["2", randomAlpha(3), randomNumeric(3)],
+      ["3", randomAlpha(3), randomNumeric(3)]
+    ];
+    String csvData = ListTocsvConverter().convert(data);
+    final String directory = (await getApplicationSupportDirectory()).path;
+    final path = "$directory/csv-${DateTime.now()}.csv";
+    print(path);
+    final File file = File(path);
+    await file.writeAsString(csvData);
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) {
+          return LoadcsvDataScreen(path: path);
+        },
+      ),
+    );
+  } **/
 
-    List listaEnunciados = [];
-    List respostasEnunciados = [];
+  void CD_resposta_pesquisas(DocumentSnapshot document) async {
+    List<dynamic> listaEnunciados = [];
+    List<dynamic> respostasEnunciados = [];
+    int i;
+    int j;
+
+    List<dynamic> linhasCSV = [];
 
     //print(document.reference); // Path do documento
 
     // Acessando Perguntas
-    CollectionReference colPerguntas = document.reference.collection('Perguntas');
+    CollectionReference collPerguntas = document.reference.collection('Perguntas');
 
     // Acessando documentos de Perguntas
-    QuerySnapshot snapshot = await colPerguntas.get();
+    QuerySnapshot snapshot = await collPerguntas.get();
 
-    // Iterando em Perguntas
-    for (var doc in snapshot.docs) {
+    int len_collPerguntas = snapshot.size;
+
+    for (int i = 0; i < len_collPerguntas; i++) {
+      // Get the i-th Perguntas document
+      var doc = snapshot.docs[i];
+
       var enunciado = doc['Nm_Enunciado'];
-      listaEnunciados.add(enunciado);
+      print('');
+      print('Analisando resultado: $enunciado');
+      listaEnunciados.add("$enunciado");
+      print('Lista de enunciados: $listaEnunciados');
 
       // Access 'Respostas' collection
-      CollectionReference colRespostas = doc.reference.collection('Respostas');
+      CollectionReference collRespostas = doc.reference.collection('Respostas');
 
       // Get 'Respostas' documents
-      QuerySnapshot snapshotRespostas = await colRespostas.get();
+      QuerySnapshot snapshotRespostas = await collRespostas.get();
+      int len_collRespostas = snapshotRespostas.size;
 
-      snapshotRespostas.docs.forEach((docResposta) {
-        try {
-          var value = docResposta['CD_resposta'];
-          respostasEnunciados.add(value);
-        } catch (e) {
-          respostasEnunciados.add(-1);
-        }
+      var docResposta = snapshotRespostas.docs[0];
+      var value = docResposta['CD_resposta'];
+      print('value encontrado: $value');
+      respostasEnunciados.add(value);
 
-      });
+    }
 
-    };
-
-    print(listaEnunciados);
-    print(respostasEnunciados);
 
   }
 

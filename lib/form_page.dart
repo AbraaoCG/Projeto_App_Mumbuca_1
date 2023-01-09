@@ -122,15 +122,15 @@ class _FormPage extends State<FormPage> {
       }
       case "2": {
         return StreamBuilder(
-          stream: document.reference.collection('opcoes_selecao').snapshots(),
-          builder:  (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            return SizedBox(
-              height: 200,
+            stream: document.reference.collection('opcoes_selecao').snapshots(),
+            builder:  (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              return SizedBox(
+                height: 200,
                 child: Scrollbar(
                   child: ListView(
                     children: snapshot.data!.docs.map((optionSnapshot) {
@@ -194,26 +194,26 @@ class _FormPage extends State<FormPage> {
                     }).toList(),
                   ),
                 ),
-            );
-          }
+              );
+            }
         );
       }
       case "3": {
         return Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children:[
-            Container(height: 70,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Image.asset("assets/Escala_Linear.png", scale: 1.8,),
-              ],
-            ),
-            Container(height: 70,),
+            children:[
+              Container(height: 70,),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Image.asset("assets/Escala_Linear.png", scale: 1.8,),
+                ],
+              ),
+              Container(height: 70,),
 
-    ]
+            ]
         );
-      } 
+      }
     }
 
   }
@@ -249,10 +249,10 @@ class _FormPage extends State<FormPage> {
               },
               child: Row(
                   children: const [
-                Icon(Icons.add_circle_rounded, color: Colors.grey,size: 30 ,),
+                    Icon(Icons.add_circle_rounded, color: Colors.grey,size: 30 ,),
                     Text("Adicionar Opção", style: TextStyle(color: Colors.grey,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
                   ]
-            ),
+              ),
             )
           ],
         ),
@@ -304,7 +304,7 @@ class _FormPage extends State<FormPage> {
 
         ],
       );
-  } else { return Container(); }
+    } else { return Container(); }
   }
   changeFormName(newFormName){
     Forms_collection.doc(DefaultFirebaseOptions.documento).update({'Nome_Formulário' : newFormName});
@@ -335,11 +335,11 @@ class _FormPage extends State<FormPage> {
           backgroundColor: Color(0XFFB71717),
           toolbarHeight: 100,
           leading: IconButton(onPressed: (){
-        Navigator.pop(
-            context,
-            MaterialPageRoute(builder: (context) => const HomePage()),
+            Navigator.pop(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
             );}, icon: Icon(Icons.arrow_back)),
-      title: Text(DefaultFirebaseOptions.DATA["Nome_Formulário"], textAlign: TextAlign.center, textScaleFactor: 1.7), 
+          title: Text(DefaultFirebaseOptions.DATA["Nome_Formulário"], textAlign: TextAlign.center, textScaleFactor: 1.7),
           actions:
           <Widget>[
             IconButton(
@@ -370,7 +370,7 @@ class _FormPage extends State<FormPage> {
             }
             return Column(
               children: [
-                 Padding(padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 24),
+                Padding(padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 24),
                   child: Row(
                     children: [
                       Container(
@@ -381,52 +381,35 @@ class _FormPage extends State<FormPage> {
                           shape: BoxShape.rectangle,
                           color: Color(0xFFB71717),
                         ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-                Expanded(
-                    child: ListView(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                            margin: EdgeInsets.symmetric(vertical: 25, horizontal: 50),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(35.0)),
-                              shape: BoxShape.rectangle,
-                              color: Color(0xB1B71717),
+                        width: MediaQuery.of(context).size.width / 2.1,
+                        height: MediaQuery.of(context).size.height / 8,
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              style: TextStyle(fontSize: 22, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                              controller: newFormNameController,
+                              decoration: const InputDecoration(
+                                labelText: 'Editar nome do formulário:',
+                                hintText: 'Insira aqui um novo nome',
+                                labelStyle: TextStyle(color: Colors.black,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                hintStyle: TextStyle(color: Colors.black45,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                              ),
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Informe um novo nome válido.';
+                                }
+                                return null;
+                              },
                             ),
-                            width: MediaQuery.of(context).size.width / 1.2,
-                            height: MediaQuery.of(context).size.height / 5,
-                            child: Column(
-                              children: [
-                                Text("Editar Nome do Formulário",  style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                Text(" Nome Atual: " + DefaultFirebaseOptions.DATA["Nome_Formulário"],  style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                                TextFormField(
-                                  style: TextStyle(fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
-                                  controller: newFormNameController,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Nome novo: (Clique encima)',
-                                    hintText: 'Insira aqui um novo nome para o formulário.',
-                                    labelStyle: TextStyle(color: Colors.black,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
-                                    hintStyle: TextStyle(color: Colors.black45,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
-                                  ),
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Informe um novo nome válido.';
-                                    }
-                                    return null;
-                                  },
+                            Center(
+                              child: ElevatedButton(
+                                style: const ButtonStyle(
+                                  backgroundColor: MaterialStatePropertyAll<Color>(Color(0xB1B71717)),
                                 ),
-                                Center(
-                                  child: ElevatedButton(
-                                    style: const ButtonStyle(
-                                      backgroundColor: MaterialStatePropertyAll<Color>(Color(0xB1B71717)),
-                                    ),
-                                    onPressed: () {
-                                      changeFormName(newFormNameController.text);
-                                    },
-                                    child: Text("Aplicar Alteração", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
+                                onPressed: () {
+                                  changeFormName(newFormNameController.text);
+                                },
+                                child: Text("Aplicar", textScaleFactor: 1.5, style: TextStyle(color: Colors.black,fontSize: 15, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
 
                               ),
                             )
