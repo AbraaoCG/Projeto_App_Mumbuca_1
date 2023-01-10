@@ -3,6 +3,7 @@
 // import 'dart:html';
 
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,6 +12,8 @@ import 'package:appmumbuca/form_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:csv/csv.dart';
+import 'package:matrix2d/matrix2d.dart';
+import 'package:path_provider/path_provider.dart';
 
 final Forms_collection = FirebaseFirestore.instance.collection('Formulários');
 
@@ -21,14 +24,29 @@ class TableGenerator extends StatefulWidget {
   State<TableGenerator> createState() => _TableGenerator();
 }
 
+
 class _TableGenerator extends State<TableGenerator> {
+
+  generateCsv(input) async {
+
+    List<List<dynamic>?>? data = [input];
+    String csvData = ListToCsvConverter().convert(data);
+    final String directory = (await getApplicationSupportDirectory()).path;
+    final path = "$directory/csv-${DateTime.now()}.csv";
+    print(path);
+    final File file = File(path);
+    await file.writeAsString(csvData);
+
+
+
+  }
 
   CD_resposta_pesquisas(DocumentSnapshot document) async {
     List<dynamic> listaEnunciados = [];
     List<dynamic> respostasEnunciados = [];
     var value;
     var docResposta;
-    Set<String> enunciados = {};
+    List<dynamic> enunciados = [];
 
     List<dynamic> linhasCSV = [];
 
@@ -36,38 +54,43 @@ class _TableGenerator extends State<TableGenerator> {
 
     // Acessando Perguntas
     CollectionReference collPerguntas = document.reference.collection('Perguntas');
-
     // Acessando documentos de Perguntas
     QuerySnapshot snapshot = await collPerguntas.get();
 
     int len_collPerguntas = snapshot.size;
 
-    print("numm perguntas: " );
-    print(len_collPerguntas);
+    //print("numm perguntas: $len_collPerguntas");
 
-    for (int j = 0; j < len_collPerguntas-1; j++) { // qtd perguntas
-
+    for (int j = 0; j < len_collPerguntas; j++) { // qtd perguntas
 
       // Acessa j-ésimo documento de pergunta.
       var doc = snapshot.docs[j];
       var enunciado = doc['Nm_Enunciado'];
-      enunciados.add(enunciado);
+      enunciados.add('"'+enunciado+'"');
 
       // Accessa coleção 'Respostas'.
       CollectionReference collRespostas = doc.reference.collection('Respostas');
       // Get 'Respostas' documents into snapshotResposta QuerySnapshot.
       QuerySnapshot snapshotRespostas = await collRespostas.get();
+
       int len_collRES = snapshotRespostas.size;
 
-      print("numm respostas: " );
-      print(len_collRES);
+      //print("numm respostas: $len_collRES" );
+
+      //print('');
 
       for (int i = 0; i < len_collRES; i++) { // qtd respostas
 
         List<dynamic> respostas = [];
-        docResposta = snapshotRespostas.docs[i];
+        docResposta = snapshotRespostas.docs[i]; // acessa os documentos de Respostas
+
         value = docResposta['CD_resposta'];
-        print("tipo pergunta :" + doc['CD_tipo_pergunta']);
+
+
+        //print(value);
+        //print("tipo pergunta :" + doc['CD_tipo_pergunta']);
+        //print('');
+
         switch (doc['CD_tipo_pergunta']) {
           case '1': {
 
@@ -103,10 +126,14 @@ class _TableGenerator extends State<TableGenerator> {
                 //print('docOpcoes_selecao.id() : ${docOpcoes_selecao.id}');
                 //print('value: $value');
 
+
                 Map<String, dynamic> mapOpcoes_selecao = docOpcoes_selecao
                     .data() as Map<String, dynamic>;
-                print(docOpcoes_selecao['Nm_selecao']);
-                print("value: " + value);
+
+
+                //print(docOpcoes_selecao['Nm_selecao']);
+                //print("value: $value");
+
                 if (mapOpcoes_selecao.containsKey('Nm_selecao')) {
                   for (int k = 0; k < value.length; k++) {
                     if (docOpcoes_selecao.id == value[k]) {
@@ -133,18 +160,6 @@ class _TableGenerator extends State<TableGenerator> {
           } break;
         }
 
-
-
-
-        // Define a regular expression that matches any single digit
-        // RegExp numberRegExp = RegExp(r'\d');
-
-        // Check if the string matches the regular expression
-        //if (value.length == 1 && numberRegExp.hasMatch(value)) {
-          //// If the string contains a single digit, apply the mapping
-        //  value = '"'+'${numberToText[int.parse(value)]}'+'"';
-        //}
-
         respostas.add(value);
 
         respostasEnunciados.add(respostas);
@@ -152,23 +167,37 @@ class _TableGenerator extends State<TableGenerator> {
       }
 
       linhasCSV.add(respostasEnunciados);
-      print('adicionou $respostasEnunciados em linhasCSV');
-      print('');
+      //print('adicionou $respostasEnunciados em linhasCSV');
+      //print('');
       respostasEnunciados = [];
-      print('linhasCSV: $linhasCSV');
-      print('');
+      //print('linhasCSV: $linhasCSV');
+      //print('');
 
           }
 
-    listaEnunciados = enunciados.toList();
+    listaEnunciados = [enunciados.toList()];
 
-    print("result");
+    //print(linhasCSV);
+
+
+
+    /**print("result");
     print(listaEnunciados);
     print('');
     print(linhasCSV);
+    print('');**/
+
+    var exportar = (listaEnunciados + (linhasCSV.transpose));
+
+    //List<List<String>> exportar = listaEnunciados + (linhasCSV.transpose);
+
+    //print(exportar); // essa é a versão final antes de entrar na funcao
+    //print(exportar.runtimeType);
     print('');
 
+    //final csv = const ListToCsvConverter().convert(exportar);
 
+    generateCsv(exportar);
 
   }
 
