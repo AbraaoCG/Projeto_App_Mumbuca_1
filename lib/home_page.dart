@@ -4,12 +4,10 @@
 import 'package:appmumbuca/widgets/table_generator.dart';
 import 'package:appmumbuca/widgets/user_editor.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:appmumbuca/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import 'package:appmumbuca/account_page.dart';
 import 'package:appmumbuca/login_page.dart';
 import 'form_resp.dart';
 import 'register_page.dart';
@@ -80,7 +78,6 @@ class _HomePage extends State<HomePage> {
   }
 
   getForms() {
-    final Form_List = [];
     Forms_collection.get().then((QuerySnapshot snapshot) =>
     {
       snapshot.docs.forEach((DocumentSnapshot doc) {
@@ -118,25 +115,8 @@ class _HomePage extends State<HomePage> {
             )
           ]),
           actions: <Widget>[
-            IconButton(
-              iconSize: 60,
-              icon: Icon(Icons.account_circle_rounded),
-              onPressed: () {
-                // Abrir Tela de conta
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AccountPage()),
-                );
-              },
-            ),
-            IconButton(
-              iconSize: 60,
-              icon: Icon(Icons.settings),
-              onPressed: () {
-                // código para abrir tela de configurações
-              },
-            ),
           ]),
+
 
       drawer: Drawer(
         width: MediaQuery.of(context).size.width * 0.7,
@@ -474,62 +454,6 @@ class _HomePage extends State<HomePage> {
         );
       },
     ),
-    );
-  }
-}
-
-
-class _Survey extends StatelessWidget {
-  const _Survey({required this.surveyName, required this.surveyCreationDate});
-  final String surveyName;
-  final String surveyCreationDate;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        child: Column(
-      children: [
-        Text(
-          "",
-          style: TextStyle(
-            fontSize: 30,
-            fontFamily: 'Montserrat',
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    ));
-  }
-}
-
-class GradientAppBar extends StatelessWidget {
-  final String title;
-  final double barHeight = 50.0;
-
-  const GradientAppBar(this.title, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final double statusbarHeight = MediaQuery.of(context).padding.top;
-
-    return Container(
-      padding: EdgeInsets.only(top: statusbarHeight),
-      height: statusbarHeight + barHeight,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-            colors: const [Colors.red, Colors.blue],
-            begin: const FractionalOffset(0.0, 0.0),
-            end: const FractionalOffset(0.5, 0.0),
-            stops: const [0.0, 1.0],
-            tileMode: TileMode.clamp),
-      ),
-      child: Center(
-        child: Text(
-          title,
-          style: TextStyle(
-              fontSize: 20.0, color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-      ),
     );
   }
 }

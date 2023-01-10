@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:appmumbuca/account_page.dart';
 import 'package:appmumbuca/home_page.dart';
 import 'package:appmumbuca/packages/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
@@ -318,18 +316,15 @@ class _FormPage extends State<FormPage> {
     });
   }
 
-  addPergunta(){
-    // print(DefaultFirebaseOptions.documento);
-  }
   @override
   void initState(){
     super.initState();
     _tipoPerguntaEscolhido = _tiposPerguntas[0];
-    Timer(const Duration(microseconds: 300), () => setState(() {}));
+    Timer(const Duration(microseconds: 200), () => setState(() {}));
     getForms();
   }
   Widget build(BuildContext context) {
-    Timer(const Duration(microseconds: 100), () => setState(() {}));
+    Timer(const Duration(microseconds: 200), () => setState(() {}));
     getForms();
     return Scaffold(
       backgroundColor: Colors.white,
@@ -344,22 +339,6 @@ class _FormPage extends State<FormPage> {
           title: Text(DefaultFirebaseOptions.DATA["Nome_Formulário"], textAlign: TextAlign.center, textScaleFactor: 1.7),
           actions:
           <Widget>[
-            IconButton(
-              iconSize: 60,
-              icon: Icon(Icons.account_circle_rounded),
-              onPressed: () { // Abrir Tela de conta
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AccountPage()),
-                );
-              },
-            ),
-            IconButton(
-              iconSize: 60,
-              icon: Icon(Icons.settings),
-              onPressed: () { // código para abrir tela de configurações
-              },
-            ),
           ]
       ),
       body: StreamBuilder(
