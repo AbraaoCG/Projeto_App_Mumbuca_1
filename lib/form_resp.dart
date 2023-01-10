@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:appmumbuca/account_page.dart';
 import 'package:appmumbuca/home_page.dart';
 import 'package:appmumbuca/packages/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 final formsCollection = FirebaseFirestore.instance.collection('Formulários');
@@ -38,7 +36,6 @@ class _FormResp extends State<FormResp> {
     return resposta;
   }
   changeFormName(newFormName) {
-    print(newFormName);
     Forms_collection.doc(DefaultFirebaseOptions.documento).update(
         {'Nome_Formulário': newFormName});
     // DefaultFirebaseOptions.DATA['Nome_Formulário'] = newFormName;
@@ -57,12 +54,13 @@ class _FormResp extends State<FormResp> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(microseconds: 500), () => setState(() {}));
+    Timer(Duration(microseconds: 200), () => setState(() {}));
     getForms();
   }
 
+  @override
   Widget build(BuildContext context) {
-    Timer(Duration(microseconds: 500), () => setState(() {}));
+    Timer(Duration(microseconds: 200), () => setState(() {}));
     getForms();
     return Scaffold(
       appBar: AppBar(
@@ -75,23 +73,7 @@ class _FormResp extends State<FormResp> {
             );}, icon: Icon(Icons.arrow_back)),
           title: Text(DefaultFirebaseOptions.DATA["Nome_Formulário"], textAlign: TextAlign.center, textScaleFactor: 1.7),
           actions:
-          <Widget>[
-            IconButton(
-              iconSize: 60,
-              icon: Icon(Icons.account_circle_rounded),
-              onPressed: () { // Abrir Tela de conta
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AccountPage()),
-                );
-              },
-            ),
-            IconButton(
-              iconSize: 60,
-              icon: Icon(Icons.settings),
-              onPressed: () { // código para abrir tela de configurações
-              },
-            ),
+          const <Widget>[
           ]
       ),
         body: StreamBuilder(
@@ -131,7 +113,7 @@ class _FormResp extends State<FormResp> {
                               child: StreamBuilder(
                                 stream: Forms_collection.doc(DefaultFirebaseOptions.documento).collection("Perguntas").doc(document.id).collection('opcoes_escolha').snapshots(),
                                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshota){
-                                  var icon = null;
+                                  var icon = const Icon(Icons.bug_report, size: 35,);
                                   if (!snapshota.hasData){
                                     return Center(
                                       child: CircularProgressIndicator(),
@@ -443,10 +425,7 @@ class _FormResp extends State<FormResp> {
           onPressed: (){
             if(respostas.length == value) {
               for (int i = 0; i != respostas.length; i++) {
-                print(respostas.length);
-                print(i);
                 var enderec = enderecos[i];
-                print(enderec.runtimeType);
                 enderec.add({'CD_resposta': respostas[i]});
                 //formsCollection.doc(enderec[1]).collection(enderec[2]).doc(enderec[3]).collection(enderec[4]).add({'CD_resposta' : respostas[i]});
               }
