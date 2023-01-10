@@ -70,6 +70,7 @@ class _TableGenerator extends State<TableGenerator> {
         print("tipo pergunta :" + doc['CD_tipo_pergunta']);
         switch (doc['CD_tipo_pergunta']) {
           case '1': {
+
             CollectionReference collOpcoes_escolha = doc.reference.collection('opcoes_escolha');
             QuerySnapshot snapshotOpcoes_escolha = await collOpcoes_escolha.get();
 
@@ -92,11 +93,11 @@ class _TableGenerator extends State<TableGenerator> {
 
           } break;
           case '2': {
-
             CollectionReference collOpcoes_selecao = doc.reference.collection('opcoes_selecao');
             QuerySnapshot snapshotOpcoes_selecao = await collOpcoes_selecao.get();
 
             try {
+
               snapshotOpcoes_selecao.docs.forEach((docOpcoes_selecao) {
                 //print('docOpcoes_selecao.data() : ${docOpcoes_selecao.data()}');
                 //print('docOpcoes_selecao.id() : ${docOpcoes_selecao.id}');

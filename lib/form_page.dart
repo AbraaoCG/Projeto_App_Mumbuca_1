@@ -425,11 +425,11 @@ class _FormPage extends State<FormPage> {
                               switch (_tipoPerguntaEscolhido){
                                 case "Múltipla Escolha": {
                                   tipoPerguntaInteiro = '1';
-                                  doc2.collection("opcoes_escolha").doc().set({'Nm_escolha' : 'Exemplo de caixa de escolha'});
+                                  doc2.collection("opcoes_escolha").doc().set({'Nm_escolha' : 'Nenhuma das opções'});
                                 } break;
                                 case "Caixas de Seleção": {
                                   tipoPerguntaInteiro = '2';
-                                  doc2.collection("opcoes_selecao").doc().set({'Nm_selecao' : 'Exemplo de caixa de seleção' });
+                                  doc2.collection("opcoes_selecao").doc().set({'Nm_selecao' : 'Nenhuma das opções' });
                                 } break;
                                 case "Escala Linear": {
                                   tipoPerguntaInteiro = '3';
