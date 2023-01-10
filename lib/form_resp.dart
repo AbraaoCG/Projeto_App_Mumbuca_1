@@ -246,6 +246,10 @@ class _FormResp extends State<FormResp> {
                                                           }else{
                                                             respostas[local].add(document2.id);
                                                           }
+                                                          if (respostas[local].isEmpty) {
+                                                            respostas.removeAt(local);
+                                                            enderecos.removeAt(local);
+                                                          }
                                                         }else {
                                                           enderecos.add(
                                                               formsCollection.doc(
