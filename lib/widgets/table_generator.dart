@@ -10,6 +10,7 @@ import 'package:appmumbuca/packages/firebase_options.dart';
 import 'package:appmumbuca/form_page.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:csv/csv.dart';
 
 final Forms_collection = FirebaseFirestore.instance.collection('Formulários');
 
@@ -25,9 +26,9 @@ class _TableGenerator extends State<TableGenerator> {
   CD_resposta_pesquisas(DocumentSnapshot document) async {
     List<dynamic> listaEnunciados = [];
     List<dynamic> respostasEnunciados = [];
-    int i;
-    int j;
     var value;
+    var docResposta;
+    Set<String> enunciados = {};
 
     List<dynamic> linhasCSV = [];
 
@@ -39,86 +40,120 @@ class _TableGenerator extends State<TableGenerator> {
     // Acessando documentos de Perguntas
     QuerySnapshot snapshot = await collPerguntas.get();
 
-    var docResposta;
-
     int len_collPerguntas = snapshot.size;
 
-    for (int j = 0; j < len_collPerguntas+1; j++) { // qtd perguntas
+    for (int j = 0; j < len_collPerguntas-1; j++) { // qtd perguntas
 
       for (int i = 0; i < len_collPerguntas; i++) { // qtd respostas
         // Get the i-th Perguntas document
         var doc = snapshot.docs[i];
 
         var enunciado = doc['Nm_Enunciado'];
-        //print('');
-        //print('Analisando resultado: $enunciado');
+        enunciados.add(enunciado);
 
-          if (listaEnunciados.contains(enunciado)) {
-            //print('');
-          } else {
-            listaEnunciados.add(enunciado);
-          }
 
             // Access 'Respostas' collection
             CollectionReference collRespostas = doc.reference.collection('Respostas');
-
             // Get 'Respostas' documents
             QuerySnapshot snapshotRespostas = await collRespostas.get();
 
             List<dynamic> respostas = [];
 
-            try {
-              docResposta = snapshotRespostas.docs[j];
-            } on RangeError catch (_) {
-              //print('não existe uma resposta aqui');
-              continue;
-            }
+            docResposta = snapshotRespostas.docs[j];
 
             value = docResposta['CD_resposta'];
             //print('value encontrado: $value');
 
-        // tratar aqui os nomes
+            //print(value.runtimeType.toString());
 
-        // Access 'Respostas' collection
-        CollectionReference collOpcoesSelecao = doc.reference.collection('opcoes_selecao');
+        // Define the mapping from numbers to text
+        Map<int, String> numberToText = {
+          1: 'Péssimo',
+          2: 'Ruim',
+          3: 'Normal',
+          4: 'Bom',
+          5: 'Excelente'
+        };
 
-        // Get 'Respostas' documents
-        QuerySnapshot snapshotcollOpcoesSelecao = await collOpcoesSelecao.get();
+        // Define a regular expression that matches any single digit
+        RegExp numberRegExp = RegExp(r'\d');
 
-        var docOpcoesSelecao = snapshotcollOpcoesSelecao.docs;
+// Check if the string matches the regular expression
+        if (value.length == 1 && numberRegExp.hasMatch(value)) {
+          // If the string contains a single digit, apply the mapping
+          value = '"'+'${numberToText[int.parse(value)]}'+'"';
+        }
 
-        for (var doc in docOpcoesSelecao) {
-          // Get the ID of the current document
-          var docId = doc.id;
 
-          // Compare the ID to the variable
-          if (value.contains(doc.id)) {
-            value = doc['Nm_selecao'];
-          }
+        CollectionReference collOpcoes_selecao = doc.reference.collection('opcoes_selecao');
+        QuerySnapshot snapshotOpcoes_selecao = await collOpcoes_selecao.get();
 
+        try {
+          snapshotOpcoes_selecao.docs.forEach((docOpcoes_selecao) {
+            //print('docOpcoes_selecao.data() : ${docOpcoes_selecao.data()}');
+            //print('docOpcoes_selecao.id() : ${docOpcoes_selecao.id}');
+            //print('value: $value');
+
+            Map<String, dynamic> mapOpcoes_selecao = docOpcoes_selecao
+                .data() as Map<String, dynamic>;
+            if (mapOpcoes_selecao.containsKey('Nm_selecao')) {
+              for (int i = 0; i < value.length; i++) {
+                if (docOpcoes_selecao.id == value[i]) {
+                  value[i] = '"'+mapOpcoes_selecao['Nm_selecao']+'"';
+                }
+              }
+            }
+          });
+
+        } on Exception catch(_) {
+          // Do nothing, just continue to the next iteration
+        }
+
+        CollectionReference collOpcoes_escolha = doc.reference.collection('opcoes_escolha');
+        QuerySnapshot snapshotOpcoes_escolha = await collOpcoes_escolha.get();
+
+        try {
+          snapshotOpcoes_escolha.docs.forEach((docOpcoes_escolha) {
+            //print('docOpcoes_selecao.data() : ${docOpcoes_escolha.data()}');
+            //print('docOpcoes_selecao.id() : ${docOpcoes_escolha.id}');
+            //print('value: $value');
+
+            Map<String, dynamic> mapOpcoes_escolha = docOpcoes_escolha
+                .data() as Map<String, dynamic>;
+            if (mapOpcoes_escolha.containsKey('Nm_escolha') && docOpcoes_escolha.id == value) {
+              value = '"'+mapOpcoes_escolha['Nm_escolha']+'"';
+            }
+          });
+
+        } on Exception catch(_) {
+          // Do nothing, just continue to the next iteration
         }
 
         respostas.add(value);
 
-            respostasEnunciados.add(respostas);
-            }
+        respostasEnunciados.add(respostas);
+
+      }
 
       linhasCSV.add(respostasEnunciados);
-      //print('adicionou $respostasEnunciados em linhasCSV');
+      print('adicionou $respostasEnunciados em linhasCSV');
+      print('');
       respostasEnunciados = [];
-      //print('linhasCSV: $linhasCSV');
+      print('linhasCSV: $linhasCSV');
+      print('');
 
           }
 
-    // retornaria aqui se fosse exportar o CSV codificado
-    //return linhasCSV;
+    listaEnunciados = enunciados.toList();
 
+    print(listaEnunciados);
+    print('');
     print(linhasCSV);
-    //print(listaEnunciados);
+    print('');
 
 
 
-    }
+  }
 
 
   @override
