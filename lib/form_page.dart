@@ -72,6 +72,7 @@ class _FormPage extends State<FormPage> {
                                     return AlertDialog(
                                       title: const Text("Alterar nome de opção" , style: TextStyle(color: Color(0xB1B71717),fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
                                       content: TextField(
+                                        style: const TextStyle(color: Colors.black, fontSize: 25, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
                                         autofocus: true,
                                         onChanged: (value){
                                           novoNomeOpcao = value;
@@ -150,6 +151,7 @@ class _FormPage extends State<FormPage> {
                                       return AlertDialog(
                                         title: const Text("Novo nome da opção:" , style: TextStyle(color: Color(0xB1B71717),fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
                                         content: TextField(
+                                          style: const TextStyle(color: Colors.black, fontSize: 25, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
                                           autofocus: true,
                                           onChanged: (value){
                                             novoNomeOpcao = value;
@@ -234,12 +236,12 @@ class _FormPage extends State<FormPage> {
                   case "1": {
                     nomeColecao = "opcoes_escolha";
                     nomeCampo = 'Nm_escolha';
-                    nomeExemplo = 'Exemplo de caixa de escolha';
+                    nomeExemplo = 'Nenhuma das outras opções';
                   } break;
                   case "2": {
                     nomeColecao = "opcoes_selecao";
                     nomeCampo = 'Nm_selecao';
-                    nomeExemplo = 'Exemplo de caixa de selecao';
+                    nomeExemplo = 'Nenhuma das outras opções';
                   } break;
                 }
                 var colecaoOpcoes = document.reference.collection(nomeColecao);
@@ -530,7 +532,8 @@ class _FormPage extends State<FormPage> {
                                                                       } else {
                                                                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Insira um novo nome de Enunciado válido:", style: TextStyle(color: Colors.red, fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
                                                                       }
-                                                                    }),
+                                                                    }
+                                                                    ),
                                                               ],
                                                             );
                                                           }

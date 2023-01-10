@@ -25,6 +25,7 @@ class AuthService extends ChangeNotifier{
   }
 
   login(String email, String senha) async {
+
     try{
       await _auth.signInWithEmailAndPassword(email: email, password: senha);
 

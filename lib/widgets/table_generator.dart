@@ -42,92 +42,107 @@ class _TableGenerator extends State<TableGenerator> {
 
     int len_collPerguntas = snapshot.size;
 
+    print("numm perguntas: " );
+    print(len_collPerguntas);
+
     for (int j = 0; j < len_collPerguntas-1; j++) { // qtd perguntas
 
-      for (int i = 0; i < len_collPerguntas; i++) { // qtd respostas
-        // Get the i-th Perguntas document
-        var doc = snapshot.docs[i];
 
-        var enunciado = doc['Nm_Enunciado'];
-        enunciados.add(enunciado);
+      // Acessa j-ésimo documento de pergunta.
+      var doc = snapshot.docs[j];
+      var enunciado = doc['Nm_Enunciado'];
+      enunciados.add(enunciado);
+
+      // Accessa coleção 'Respostas'.
+      CollectionReference collRespostas = doc.reference.collection('Respostas');
+      // Get 'Respostas' documents into snapshotResposta QuerySnapshot.
+      QuerySnapshot snapshotRespostas = await collRespostas.get();
+      int len_collRES = snapshotRespostas.size;
+
+      print("numm respostas: " );
+      print(len_collRES);
+
+      for (int i = 0; i < len_collRES; i++) { // qtd respostas
+
+        List<dynamic> respostas = [];
+        docResposta = snapshotRespostas.docs[i];
+        value = docResposta['CD_resposta'];
+        print("tipo pergunta :" + doc['CD_tipo_pergunta']);
+        switch (doc['CD_tipo_pergunta']) {
+          case '1': {
+            CollectionReference collOpcoes_escolha = doc.reference.collection('opcoes_escolha');
+            QuerySnapshot snapshotOpcoes_escolha = await collOpcoes_escolha.get();
+
+            try {
+              snapshotOpcoes_escolha.docs.forEach((docOpcoes_escolha) {
+                //print('docOpcoes_selecao.data() : ${docOpcoes_escolha.data()}');
+                //print('docOpcoes_selecao.id() : ${docOpcoes_escolha.id}');
+                //print('value: $value');
+
+                Map<String, dynamic> mapOpcoes_escolha = docOpcoes_escolha
+                    .data() as Map<String, dynamic>;
+                if (mapOpcoes_escolha.containsKey('Nm_escolha') && docOpcoes_escolha.id == value) {
+                  value = '"'+mapOpcoes_escolha['Nm_escolha']+'"';
+                }
+              });
+
+            } on Exception catch(_) {
+              // Do nothing, just continue to the next iteration
+            }
+
+          } break;
+          case '2': {
+
+            CollectionReference collOpcoes_selecao = doc.reference.collection('opcoes_selecao');
+            QuerySnapshot snapshotOpcoes_selecao = await collOpcoes_selecao.get();
+
+            try {
+              snapshotOpcoes_selecao.docs.forEach((docOpcoes_selecao) {
+                //print('docOpcoes_selecao.data() : ${docOpcoes_selecao.data()}');
+                //print('docOpcoes_selecao.id() : ${docOpcoes_selecao.id}');
+                //print('value: $value');
+
+                Map<String, dynamic> mapOpcoes_selecao = docOpcoes_selecao
+                    .data() as Map<String, dynamic>;
+                print(docOpcoes_selecao['Nm_selecao']);
+                print("value: " + value);
+                if (mapOpcoes_selecao.containsKey('Nm_selecao')) {
+                  for (int k = 0; k < value.length; k++) {
+                    if (docOpcoes_selecao.id == value[k]) {
+                      value[k] = '"'+mapOpcoes_selecao['Nm_selecao']+'"';
+                    }
+                  }
+                }
+              });
+
+            } on Exception catch(_) {
+              // Do nothing, just continue to the next iteration
+            }
+
+          } break;
+          case '3': {
+            // Define the mapping from numbers to text
+            Map<int, String> numberToText = {
+              1: 'Péssimo',
+              2: 'Ruim',
+              3: 'Normal',
+              4: 'Bom',
+              5: 'Excelente'
+            };
+          } break;
+        }
 
 
-            // Access 'Respostas' collection
-            CollectionReference collRespostas = doc.reference.collection('Respostas');
-            // Get 'Respostas' documents
-            QuerySnapshot snapshotRespostas = await collRespostas.get();
 
-            List<dynamic> respostas = [];
-
-            docResposta = snapshotRespostas.docs[j];
-
-            value = docResposta['CD_resposta'];
-            //print('value encontrado: $value');
-
-            //print(value.runtimeType.toString());
-
-        // Define the mapping from numbers to text
-        Map<int, String> numberToText = {
-          1: 'Péssimo',
-          2: 'Ruim',
-          3: 'Normal',
-          4: 'Bom',
-          5: 'Excelente'
-        };
 
         // Define a regular expression that matches any single digit
-        RegExp numberRegExp = RegExp(r'\d');
+        // RegExp numberRegExp = RegExp(r'\d');
 
-// Check if the string matches the regular expression
-        if (value.length == 1 && numberRegExp.hasMatch(value)) {
-          // If the string contains a single digit, apply the mapping
-          value = '"'+'${numberToText[int.parse(value)]}'+'"';
-        }
-
-
-        CollectionReference collOpcoes_selecao = doc.reference.collection('opcoes_selecao');
-        QuerySnapshot snapshotOpcoes_selecao = await collOpcoes_selecao.get();
-
-        try {
-          snapshotOpcoes_selecao.docs.forEach((docOpcoes_selecao) {
-            //print('docOpcoes_selecao.data() : ${docOpcoes_selecao.data()}');
-            //print('docOpcoes_selecao.id() : ${docOpcoes_selecao.id}');
-            //print('value: $value');
-
-            Map<String, dynamic> mapOpcoes_selecao = docOpcoes_selecao
-                .data() as Map<String, dynamic>;
-            if (mapOpcoes_selecao.containsKey('Nm_selecao')) {
-              for (int i = 0; i < value.length; i++) {
-                if (docOpcoes_selecao.id == value[i]) {
-                  value[i] = '"'+mapOpcoes_selecao['Nm_selecao']+'"';
-                }
-              }
-            }
-          });
-
-        } on Exception catch(_) {
-          // Do nothing, just continue to the next iteration
-        }
-
-        CollectionReference collOpcoes_escolha = doc.reference.collection('opcoes_escolha');
-        QuerySnapshot snapshotOpcoes_escolha = await collOpcoes_escolha.get();
-
-        try {
-          snapshotOpcoes_escolha.docs.forEach((docOpcoes_escolha) {
-            //print('docOpcoes_selecao.data() : ${docOpcoes_escolha.data()}');
-            //print('docOpcoes_selecao.id() : ${docOpcoes_escolha.id}');
-            //print('value: $value');
-
-            Map<String, dynamic> mapOpcoes_escolha = docOpcoes_escolha
-                .data() as Map<String, dynamic>;
-            if (mapOpcoes_escolha.containsKey('Nm_escolha') && docOpcoes_escolha.id == value) {
-              value = '"'+mapOpcoes_escolha['Nm_escolha']+'"';
-            }
-          });
-
-        } on Exception catch(_) {
-          // Do nothing, just continue to the next iteration
-        }
+        // Check if the string matches the regular expression
+        //if (value.length == 1 && numberRegExp.hasMatch(value)) {
+          //// If the string contains a single digit, apply the mapping
+        //  value = '"'+'${numberToText[int.parse(value)]}'+'"';
+        //}
 
         respostas.add(value);
 
@@ -146,6 +161,7 @@ class _TableGenerator extends State<TableGenerator> {
 
     listaEnunciados = enunciados.toList();
 
+    print("result");
     print(listaEnunciados);
     print('');
     print(linhasCSV);

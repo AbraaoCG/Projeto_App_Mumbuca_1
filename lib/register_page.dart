@@ -64,7 +64,7 @@ class _CreateUserPage extends State<CreateUserPage> {
             return AlertDialog(
               title: Text('bem sucedido'),
               content: Text(
-                'texto do cadastro feito com sucesso',
+                'Cadastro feito com sucesso',
               ),
               actions: <Widget>[
                 ElevatedButton(

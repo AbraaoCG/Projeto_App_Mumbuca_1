@@ -2,6 +2,7 @@
 // ignore_for_file: non_constant_identifier_names
 // import 'dart:html';
 import 'package:appmumbuca/widgets/table_generator.dart';
+import 'package:appmumbuca/widgets/user_editor.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -35,11 +36,9 @@ class _HomePage extends State<HomePage> {
 
   void dadosUsuario() async {
     var usuario = FirebaseAuth.instance.currentUser?.email;
-
 // Create the query
     Query query =
     colecaoUsuarios.where('email', isEqualTo: '$usuario');
-
 // Get the query snapshot
     QuerySnapshot snapshot = await query.get();
 
@@ -269,7 +268,13 @@ class _HomePage extends State<HomePage> {
                                 scale: 2, child: Icon(Icons.list)),
                           ),
                         ),
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => UserEditor(),
+                            ),
+                          );
+                        },
                       ),
                       Divider(),
                       ListTile(
