@@ -4,7 +4,8 @@
         android:label="appmumbuca"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
-        <activity
+        android:requestLegacyExternalStorage="true"
+       <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTop"

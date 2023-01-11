@@ -159,33 +159,41 @@ class _FormResp extends State<FormResp> {
                                              //   height: MediaQuery.of(context).size.height / 6,
                                                 child: Row(
                                                   children: [
-
-                                                    Text(document2['Nm_escolha'], textScaleFactor: 2,style: TextStyle(color: Colors.white70, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
-                                                    IconButton(onPressed: (){
-                                                      if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
-                                                        var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
-                                                        enderecos.removeAt(local);
-                                                        respostas.removeAt(local);
-                                                      }else {
-                                                        enderecos.add(
-                                                            formsCollection.doc(
-                                                                DefaultFirebaseOptions
-                                                                    .documento)
-                                                                .collection(
-                                                                'Perguntas')
-                                                                .doc(
-                                                                document.id)
-                                                                .collection(
-                                                                'Respostas'));
-                                                        respostas.add(
-                                                            document2.id);
-                                                      }
-                                                      },
-                                                        icon: icon,style: IconButton.styleFrom(
-                                                        focusColor: Colors.red,
-                                                        highlightColor: Colors.blue,
-                                                          foregroundColor: Colors.black,
-                                                    ))
+                                                    Expanded(
+                                                        child: SingleChildScrollView(
+                                                          scrollDirection: Axis.horizontal,
+                                                          child: Row(
+                                                            children: [
+                                                              Text(document2['Nm_escolha'], textScaleFactor: 2,style: TextStyle(color: Colors.white70, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
+                                                              IconButton(onPressed: (){
+                                                                if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
+                                                                  var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                                                  enderecos.removeAt(local);
+                                                                  respostas.removeAt(local);
+                                                                }else {
+                                                                  enderecos.add(
+                                                                      formsCollection.doc(
+                                                                          DefaultFirebaseOptions
+                                                                              .documento)
+                                                                          .collection(
+                                                                          'Perguntas')
+                                                                          .doc(
+                                                                          document.id)
+                                                                          .collection(
+                                                                          'Respostas'));
+                                                                  respostas.add(
+                                                                      document2.id);
+                                                                }
+                                                              },
+                                                                  icon: icon,style: IconButton.styleFrom(
+                                                                    focusColor: Colors.red,
+                                                                    highlightColor: Colors.blue,
+                                                                    foregroundColor: Colors.black,
+                                                                  ))
+                                                            ],
+                                                          ),
+                                                    )
+                                                    )
                                                   ],
                                                 ),
                                              // ),
@@ -216,7 +224,7 @@ class _FormResp extends State<FormResp> {
                                           Flexible(
                                             child: ListView(
                                               shrinkWrap: true,
-                                              physics: ClampingScrollPhysics(),
+                                              physics: const ClampingScrollPhysics(),
                                               children: snapshota.data!.docs.map((document2){
 
                                                 if(!quest.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
@@ -238,40 +246,48 @@ class _FormResp extends State<FormResp> {
                                                   //   height: MediaQuery.of(context).size.height / 6,
                                                   child: Row(
                                                     children: [
-
-                                                      Text(document2['Nm_selecao'], textScaleFactor: 2,style: TextStyle(color: Colors.white70, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
-                                                      IconButton(onPressed: (){
-                                                        if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
-                                                          var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
-                                                          if (respostas[local].contains(document2.id)){
-                                                            respostas[local].remove(document2.id);
-                                                          }else{
-                                                            respostas[local].add(document2.id);
-                                                          }
-                                                          if (respostas[local].isEmpty) {
-                                                            respostas.removeAt(local);
-                                                            enderecos.removeAt(local);
-                                                          }
-                                                        }else {
-                                                          enderecos.add(
-                                                              formsCollection.doc(
-                                                                  DefaultFirebaseOptions
-                                                                      .documento)
-                                                                  .collection(
-                                                                  'Perguntas')
-                                                                  .doc(
-                                                                  document.id)
-                                                                  .collection(
-                                                                  'Respostas'));
-                                                          respostas.add(
-                                                              [document2.id]);
-                                                        }
-                                                      },
-                                                          icon: icon,style: IconButton.styleFrom(
-                                                            focusColor: Colors.red,
-                                                            highlightColor: Colors.blue,
-                                                            foregroundColor: Colors.black,
-                                                          ))
+                                                      Expanded(
+                                                          child: SingleChildScrollView(
+                                                            child: Row(
+                                                              children: [
+                                                                Text(document2['Nm_selecao'], textScaleFactor: 2,style: TextStyle(color: Colors.white70, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
+                                                                IconButton(onPressed: (){
+                                                                  if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
+                                                                    var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                                                    if (respostas[local].contains(document2.id)){
+                                                                      respostas[local].remove(document2.id);
+                                                                    }else{
+                                                                      respostas[local].add(document2.id);
+                                                                    }
+                                                                    if (respostas[local].isEmpty) {
+                                                                      respostas.removeAt(local);
+                                                                      enderecos.removeAt(local);
+                                                                    }
+                                                                  }else {
+                                                                    enderecos.add(
+                                                                        formsCollection.doc(
+                                                                            DefaultFirebaseOptions
+                                                                                .documento)
+                                                                            .collection(
+                                                                            'Perguntas')
+                                                                            .doc(
+                                                                            document.id)
+                                                                            .collection(
+                                                                            'Respostas'));
+                                                                    respostas.add(
+                                                                        [document2.id]);
+                                                                  }
+                                                                },
+                                                                    icon: icon,style: IconButton.styleFrom(
+                                                                      focusColor: Colors.red,
+                                                                      highlightColor: Colors.blue,
+                                                                      foregroundColor: Colors.black,
+                                                                    ))
+                                                              ],
+                                                            ),
+                                                            scrollDirection: Axis.horizontal,
+                                                          )
+                                                      )
                                                     ],
                                                   ),
                                                   // ),

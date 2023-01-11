@@ -2,15 +2,19 @@
 // ignore_for_file: non_constant_identifier_names
 // import 'dart:html';
 
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:csv/csv.dart';
 import 'package:matrix2d/matrix2d.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:syncfusion_flutter_xlsio/xlsio.dart' hide Row,Column;
 
 final Forms_collection = FirebaseFirestore.instance.collection('Formulários');
+final colecaoUsuarios = FirebaseFirestore.instance.collection('testeusuarios');
 
 class TableGenerator extends StatefulWidget {
   const TableGenerator({Key? key}) : super(key: key);
@@ -23,8 +27,22 @@ class TableGenerator extends StatefulWidget {
 class _TableGenerator extends State<TableGenerator> {
 
 
+  Future<String> getUserName() async{
+      var usuario = FirebaseAuth.instance.currentUser?.email;
+// Create the query
+      Query query =
+      colecaoUsuarios.where('email', isEqualTo: '$usuario');
+// Get the query snapshot
+      QuerySnapshot snapshot = await query.get();
+    for (DocumentSnapshot doc in snapshot.docs) {
+      // Retrieve the data from the document
+      Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
+      return (data['nome']);
+    }
+    return 'SemID';
+  }
 
-  Future<String> generateCsv(input) async {
+  Future<String> generateCsv(input,DocumentSnapshot document) async {
 
     List<List<dynamic>?>? data = input;
 
@@ -32,15 +50,27 @@ class _TableGenerator extends State<TableGenerator> {
     csvData = csvData.replaceAll("\"\"\"", "\"\"");
     csvData = csvData.replaceAll(", ", ",");
 
-    final String? directory = (await getExternalStorageDirectory())?.path;
-    final path = "$directory/csv-${DateTime.now()}.csv";
-    final File file = File(path);
-    await file.writeAsString(csvData);
+    print(csvData);
 
-    return path;
+    final user = await getUserName();
+
+    final String? directory = (await getExternalStorageDirectory())?.path;
+    Directory generalDownloadDir = Directory('/storage/emulated/0/Download'); //! THIS WORKS for android only !!!!!!
+
+    var day = "${DateTime.now().day}" ; if (day.length != 2) {day = '0$day';}
+    var month = "${DateTime.now().month}" ; if (month.length != 2) {month = '0$month';}
+
+    final date = "$day$month${DateTime.now().year}";
+    final fileName = "${user}_${date}_${document['Nome_Formulário'].replaceAll(" ","_")}"; // Salva Arquivo no formato usuario_data_nomeformulário
+    final path2 = "${generalDownloadDir.path}/$fileName.csv";
+
+    final File file = File(path2);
+    await file.writeAsString(csvData, encoding: utf8);
+
+    return path2;
   }
 
-  Future<String> buildCsv(DocumentSnapshot document) async {
+  Future<String> buildData(DocumentSnapshot document) async {
     List<dynamic> listaEnunciados = [];
     List<dynamic> respostasEnunciados = [];
     var value;
@@ -153,7 +183,7 @@ class _TableGenerator extends State<TableGenerator> {
     List<List<dynamic>> newList = List.from(listaRespostas);
     newList.insert(0, listaEnunciados);
 
-    Future<String> csvPath = generateCsv(newList);
+    Future<String> csvPath = generateCsv(newList,document);
 
     return csvPath;
   }
@@ -222,7 +252,7 @@ class _TableGenerator extends State<TableGenerator> {
                       onTap: () async {
 
                         String csvPath = "";
-                        Future<String> csvPathFuture = buildCsv(document);
+                        Future<String> csvPathFuture = buildData(document);
                         csvPath = await csvPathFuture;
 
                         if (csvPath != ""){
@@ -271,14 +301,9 @@ class _TableGenerator extends State<TableGenerator> {
                       trailing: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () {},
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.edit),
-                            onPressed: () {},
-                          ),
+                          LayoutBuilder(builder: (context, constraint) {
+                            return new Icon(Icons.download, size: constraint.biggest.height);
+                          }),
                         ],
                       ),
                     );

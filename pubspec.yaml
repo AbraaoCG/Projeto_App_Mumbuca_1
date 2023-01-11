@@ -46,8 +46,10 @@ dependencies:
   csv: ^5.0.1
   matrix2d: ^1.0.4
   path_provider: ^2.0.11
-  file_picker: ^5.0.1
-  open_file: ^2.1.1
+
+  open_file: ^3.2.1
+  fast_csv: ^0.1.44
+  syncfusion_flutter_xlsio: ^20.4.43-beta
 
 dev_dependencies:
   flutter_launcher_icons: "^0.11.0"
