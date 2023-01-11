@@ -29,15 +29,26 @@ class _TableGenerator extends State<TableGenerator> {
 
   generateCsv(input) async {
 
-    List<List<dynamic>?>? data = [input];
+    List<List<dynamic>?>? data = input;
+
+    print('data VEIO ASSIM:');
+    print(data);
+    print('');
+
+    print('MODELO CORRETO:');
+    print('[["pergunta multipla escolha", "pergunta escala linear", "pergunta caixas selecao"],["opcao2", "3", "caixa1"],["opcao1", "5", "caixa1, caixa2"]]');
+    print('');
+
     String csvData = ListToCsvConverter().convert(data);
+
+    print('E TRANSFORMOU ASSIM:');
+    print(csvData);
+
     final String directory = (await getApplicationSupportDirectory()).path;
     final path = "$directory/csv-${DateTime.now()}.csv";
     print(path);
     final File file = File(path);
     await file.writeAsString(csvData);
-
-
 
   }
 
@@ -87,9 +98,10 @@ class _TableGenerator extends State<TableGenerator> {
         value = docResposta['CD_resposta'];
 
 
-        //print(value);
-        //print("tipo pergunta :" + doc['CD_tipo_pergunta']);
-        //print('');
+        print(value);
+        //print(value.runtimeType);
+        print("tipo pergunta :" + doc['CD_tipo_pergunta']);
+        print('');
 
         switch (doc['CD_tipo_pergunta']) {
           case '1': {
@@ -106,7 +118,7 @@ class _TableGenerator extends State<TableGenerator> {
                 Map<String, dynamic> mapOpcoes_escolha = docOpcoes_escolha
                     .data() as Map<String, dynamic>;
                 if (mapOpcoes_escolha.containsKey('Nm_escolha') && docOpcoes_escolha.id == value) {
-                  value = '"'+mapOpcoes_escolha['Nm_escolha']+'"';
+                  value = mapOpcoes_escolha['Nm_escolha'];
                 }
               });
 
@@ -137,8 +149,9 @@ class _TableGenerator extends State<TableGenerator> {
                 if (mapOpcoes_selecao.containsKey('Nm_selecao')) {
                   for (int k = 0; k < value.length; k++) {
                     if (docOpcoes_selecao.id == value[k]) {
-                      value[k] = '"'+mapOpcoes_selecao['Nm_selecao']+'"';
+                      value[k] = mapOpcoes_selecao['Nm_selecao'];
                     }
+
                   }
                 }
               });
@@ -150,19 +163,34 @@ class _TableGenerator extends State<TableGenerator> {
           } break;
           case '3': {
             // Define the mapping from numbers to text
-            Map<int, String> numberToText = {
-              1: 'Péssimo',
-              2: 'Ruim',
-              3: 'Normal',
-              4: 'Bom',
-              5: 'Excelente'
+            Map<String, String> numberToText = {
+              '1': 'Péssimo',
+              '2': 'Ruim',
+              '3': 'Normal',
+              '4': 'Bom',
+              '5': 'Excelente'
             };
-          } break;
+            value = numberToText[value.toString()];
+          }
+          break;
         }
 
         respostas.add(value);
 
-        respostasEnunciados.add(respostas);
+        print('respostas : ${respostas}');
+        print('tamanho respostas : ${respostas.length}');
+        //print(respostas.runtimeType);
+
+        dynamic removeBrackets(List<dynamic> list) {
+          return list.join(',').replaceAll('[','').replaceAll(']','');
+        }
+
+        print(removeBrackets(respostas));
+        print('--------------');
+
+        respostasEnunciados.add('"' + removeBrackets(respostas) + '"');
+
+        //print('respostasEnunciados : $respostasEnunciados');
 
       }
 
@@ -175,29 +203,19 @@ class _TableGenerator extends State<TableGenerator> {
 
           }
 
-    listaEnunciados = [enunciados.toList()];
+    listaEnunciados = enunciados.toList();
 
-    //print(linhasCSV);
+    print('listaEnunciados = $listaEnunciados');
+    var listaRespostas = linhasCSV.transpose;
+    print('listaRespostas = $listaRespostas');
+
+    List<List<dynamic>> newList = List.from(listaRespostas);
+    newList.insert(0, listaEnunciados);
+    print(newList);
 
 
 
-    /**print("result");
-    print(listaEnunciados);
-    print('');
-    print(linhasCSV);
-    print('');**/
-
-    var exportar = (listaEnunciados + (linhasCSV.transpose));
-
-    //List<List<String>> exportar = listaEnunciados + (linhasCSV.transpose);
-
-    //print(exportar); // essa é a versão final antes de entrar na funcao
-    //print(exportar.runtimeType);
-    print('');
-
-    //final csv = const ListToCsvConverter().convert(exportar);
-
-    generateCsv(exportar);
+    generateCsv(newList);
 
   }
 
