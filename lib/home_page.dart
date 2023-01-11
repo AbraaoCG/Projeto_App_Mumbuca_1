@@ -474,28 +474,32 @@ class _HomePage extends State<HomePage> {
     floatingActionButton: StreamBuilder(
       stream: Forms_collection.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return Container(
-          //color: Colors.redAccent,
+        return Offstage(
+          offstage: _acessoUsuario != 'Administrador',
           child: IconButton(
-            onPressed: () {
-              var data = {
-                "Nome_Formulário": "Novo Formulário",
-                "Data_Criação": DateTime.now().day.toString() +
-                    "/" +
-                    DateTime.now().month.toString() +
-                    "/" +
-                    DateTime.now().year.toString(),
-              };
-              var doc1 =
-              FirebaseFirestore.instance.collection("Formulários").doc();
-              doc1.set(data);
-              var doc1id = doc1.id;
-              var doc2 = FirebaseFirestore.instance
-                  .collection("Formulários")
-                  .doc(doc1id.toString())
-                  .collection("Perguntas")
-                  .doc();
-              doc2.set({"Nm_Enunciado": "Nova Pergunta", "CD_tipo_pergunta": "1"});
+            onPressed: () async {
+              if (await verifyRegisterFirestore()){
+                var data = {
+                  "Nome_Formulário": "Novo Formulário",
+                  "Data_Criação": DateTime.now().day.toString() +
+                      "/" +
+                      DateTime.now().month.toString() +
+                      "/" +
+                      DateTime.now().year.toString(),
+                };
+                var doc1 =
+                FirebaseFirestore.instance.collection("Formulários").doc();
+                doc1.set(data);
+                var doc1id = doc1.id;
+                var doc2 = FirebaseFirestore.instance
+                    .collection("Formulários")
+                    .doc(doc1id.toString())
+                    .collection("Perguntas")
+                    .doc();
+                doc2.set({"Nm_Enunciado": "Nova Pergunta", "CD_tipo_pergunta": "1"});
+              } else{
+                noCredentialAlert();
+              }
             },
             color: Colors.red,
             iconSize: 100,
