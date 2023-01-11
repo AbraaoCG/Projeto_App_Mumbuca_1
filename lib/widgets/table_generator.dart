@@ -2,15 +2,10 @@
 // ignore_for_file: non_constant_identifier_names
 // import 'dart:html';
 
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:appmumbuca/packages/firebase_options.dart';
-import 'package:appmumbuca/form_page.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:csv/csv.dart';
 import 'package:matrix2d/matrix2d.dart';
 import 'package:path_provider/path_provider.dart';
@@ -29,36 +24,23 @@ class _TableGenerator extends State<TableGenerator> {
 
 
 
-  generateCsv(input) async {
+  Future<String> generateCsv(input) async {
 
     List<List<dynamic>?>? data = input;
 
-    print('data VEIO ASSIM:');
-    print(data);
-    print('');
-
-    print('MODELO CORRETO:');
-    print('[["pergunta multipla escolha", "pergunta escala linear", "pergunta caixas selecao"],["opcao2", "3", "caixa1"],["opcao1", "5", "caixa1, caixa2"]]');
-    print('');
-
     String csvData = ListToCsvConverter().convert(data);
+    csvData = csvData.replaceAll("\"\"\"", "\"\"");
+    csvData = csvData.replaceAll(", ", ",");
 
-    print('E TRANSFORMOU ASSIM:');
-    print(csvData);
-
-    print('printando tipo e valor de csvData');
-    print(csvData.runtimeType);
-    print(csvData);
-
-    final String directory = (await getApplicationSupportDirectory()).path;
+    final String? directory = (await getExternalStorageDirectory())?.path;
     final path = "$directory/csv-${DateTime.now()}.csv";
-    print(path);
     final File file = File(path);
     await file.writeAsString(csvData);
 
+    return path;
   }
 
-  CD_resposta_pesquisas(DocumentSnapshot document) async {
+  Future<String> buildCsv(DocumentSnapshot document) async {
     List<dynamic> listaEnunciados = [];
     List<dynamic> respostasEnunciados = [];
     var value;
@@ -66,24 +48,18 @@ class _TableGenerator extends State<TableGenerator> {
     List<dynamic> enunciados = [];
 
     List<dynamic> linhasCSV = [];
-
-    //print(document.reference); // Path do documento
-
     // Acessando Perguntas
     CollectionReference collPerguntas = document.reference.collection('Perguntas');
     // Acessando documentos de Perguntas
     QuerySnapshot snapshot = await collPerguntas.get();
-
     int len_collPerguntas = snapshot.size;
-
-    //print("numm perguntas: $len_collPerguntas");
 
     for (int j = 0; j < len_collPerguntas; j++) { // qtd perguntas
 
       // Acessa j-ésimo documento de pergunta.
       var doc = snapshot.docs[j];
       var enunciado = doc['Nm_Enunciado'];
-      enunciados.add('"'+enunciado+'"');
+      enunciados.add(enunciado);
 
       // Accessa coleção 'Respostas'.
       CollectionReference collRespostas = doc.reference.collection('Respostas');
@@ -92,23 +68,11 @@ class _TableGenerator extends State<TableGenerator> {
 
       int len_collRES = snapshotRespostas.size;
 
-      //print("numm respostas: $len_collRES" );
-
-      //print('');
-
       for (int i = 0; i < len_collRES; i++) { // qtd respostas
 
         List<dynamic> respostas = [];
         docResposta = snapshotRespostas.docs[i]; // acessa os documentos de Respostas
-
         value = docResposta['CD_resposta'];
-
-
-        print(value);
-        //print(value.runtimeType);
-        print("tipo pergunta :" + doc['CD_tipo_pergunta']);
-        print('');
-
         switch (doc['CD_tipo_pergunta']) {
           case '1': {
 
@@ -117,10 +81,6 @@ class _TableGenerator extends State<TableGenerator> {
 
             try {
               snapshotOpcoes_escolha.docs.forEach((docOpcoes_escolha) {
-                //print('docOpcoes_selecao.data() : ${docOpcoes_escolha.data()}');
-                //print('docOpcoes_selecao.id() : ${docOpcoes_escolha.id}');
-                //print('value: $value');
-
                 Map<String, dynamic> mapOpcoes_escolha = docOpcoes_escolha
                     .data() as Map<String, dynamic>;
                 if (mapOpcoes_escolha.containsKey('Nm_escolha') && docOpcoes_escolha.id == value) {
@@ -140,17 +100,8 @@ class _TableGenerator extends State<TableGenerator> {
             try {
 
               snapshotOpcoes_selecao.docs.forEach((docOpcoes_selecao) {
-                //print('docOpcoes_selecao.data() : ${docOpcoes_selecao.data()}');
-                //print('docOpcoes_selecao.id() : ${docOpcoes_selecao.id}');
-                //print('value: $value');
-
-
                 Map<String, dynamic> mapOpcoes_selecao = docOpcoes_selecao
                     .data() as Map<String, dynamic>;
-
-
-                //print(docOpcoes_selecao['Nm_selecao']);
-                //print("value: $value");
 
                 if (mapOpcoes_selecao.containsKey('Nm_selecao')) {
                   for (int k = 0; k < value.length; k++) {
@@ -182,47 +133,29 @@ class _TableGenerator extends State<TableGenerator> {
         }
 
         respostas.add(value);
-
-        print('respostas : ${respostas}');
-        print('tamanho respostas : ${respostas.length}');
-        //print(respostas.runtimeType);
-
         dynamic removeBrackets(List<dynamic> list) {
           return list.join(',').replaceAll('[','').replaceAll(']','');
         }
 
-        //print(removeBrackets(respostas));
-        //print('--------------');
-
-        respostasEnunciados.add('"' + removeBrackets(respostas) + '"');
-
-        //print('respostasEnunciados : $respostasEnunciados');
-
+        if (doc['CD_tipo_pergunta'] == '2'){ // Se for de seleçao, adiciono [] para ser identificado
+          respostasEnunciados.add('${'[' + removeBrackets(respostas)}]');
+        } else {
+          respostasEnunciados.add('${removeBrackets(respostas)}');
+        }
       }
-
       linhasCSV.add(respostasEnunciados);
-      //print('adicionou $respostasEnunciados em linhasCSV');
-      //print('');
       respostasEnunciados = [];
-      //print('linhasCSV: $linhasCSV');
-      //print('');
-
           }
 
     listaEnunciados = enunciados.toList();
 
-    print('listaEnunciados = $listaEnunciados');
     var listaRespostas = linhasCSV.transpose;
-    print('listaRespostas = $listaRespostas');
-
     List<List<dynamic>> newList = List.from(listaRespostas);
     newList.insert(0, listaEnunciados);
-    print(newList);
 
+    Future<String> csvPath = generateCsv(newList);
 
-
-    generateCsv(newList);
-
+    return csvPath;
   }
 
 
@@ -286,11 +219,53 @@ class _TableGenerator extends State<TableGenerator> {
                               fontSize: 30,
                               fontFamily: 'Montserrat',
                               fontWeight: FontWeight.normal)),
-                      onTap: () {
+                      onTap: () async {
 
-                        CD_resposta_pesquisas(document);
+                        String csvPath = "";
+                        Future<String> csvPathFuture = buildCsv(document);
+                        csvPath = await csvPathFuture;
 
-
+                        if (csvPath != ""){
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text(
+                                    'Tabela Csv Gerada!' ,
+                                    style: TextStyle(
+                                    fontSize: 30,
+                                    fontFamily: 'Montserrat',
+                                    fontWeight: FontWeight.bold)),
+                                content: Column(
+                                  children: [
+                                    Text(
+                                      'A tabela para o formulário desejado foi gerada e está localizada em: ',
+                                        style: TextStyle(
+                                            fontSize: 30,
+                                            fontFamily: 'Montserrat',
+                                            fontWeight: FontWeight.normal),
+                                    ),
+                                    Divider(),
+                                    Text(
+                                      csvPath,
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            fontFamily: 'Montserrat',
+                                            fontWeight: FontWeight.normal),
+                                    ),
+                                  ],
+                                ),
+                                actions: <Widget>[
+                                  FloatingActionButton(
+                                      child: const Icon(Icons.check),
+                                      onPressed: (){
+                                        Navigator.pop(context);
+                                      }),
+                                ],
+                              );
+                            },
+                          );
+                        }
 
                       },
                       trailing: Row(

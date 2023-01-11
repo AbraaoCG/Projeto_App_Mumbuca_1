@@ -22,7 +22,6 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key, this.emailUsuario})
       : super(key: key); // Importando email do login_page
 
-
   @override
   State<HomePage> createState() => _HomePage();
 }
@@ -83,6 +82,34 @@ class _HomePage extends State<HomePage> {
       snapshot.docs.forEach((DocumentSnapshot doc) {
       })
     });
+  }
+  Future<bool> verifyRegisterFirestore() async {
+    // Verifica-se se o usuário autenticado está na base de dados do firestore, se sim retorna true, senão false.
+    var usuario = FirebaseAuth.instance.currentUser?.email;
+    Query query = usersCollection.where('email', isEqualTo: '$usuario');
+    QuerySnapshot querySnapshot = await query.get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
+  noCredentialAlert(){
+    return showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: const Text("Bloqueio de Segurança" , style: TextStyle(color: Color(0xB1B71717),fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+            content: Text(
+              "Sua credencial foi desabilitada por um dos administradores. Entre em contato para regularizar seu cadastro!",
+              style: const TextStyle(color: Colors.black, fontSize: 25, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+            ),
+            actions: <Widget>[
+              CloseButton(onPressed: (){
+                Navigator.pop(context);
+                logout();
+              }),
+            ],
+          );
+        }
+    );
   }
 
   @override
@@ -227,12 +254,17 @@ class _HomePage extends State<HomePage> {
                                 scale: 2, child: Icon(Icons.add)),
                           ),
                         ),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => CreateUserPage(),
-                            ),
-                          );
+                        onTap: () async {
+                          if ( await verifyRegisterFirestore() ){
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => CreateUserPage(),
+                              ),
+                            );
+                          } else {
+                            noCredentialAlert();
+                          }
+
                         },
                       ),
                       Divider(),
@@ -248,12 +280,16 @@ class _HomePage extends State<HomePage> {
                                 scale: 2, child: Icon(Icons.list)),
                           ),
                         ),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => UserEditor(),
-                            ),
-                          );
+                        onTap: () async {
+                          if (await verifyRegisterFirestore() ){
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => UserEditor(),
+                              ),
+                            );
+                          } else{
+                            noCredentialAlert();
+                          }
                         },
                       ),
                       Divider(),
@@ -364,8 +400,13 @@ class _HomePage extends State<HomePage> {
                                         width: 200,
                                         height: 50,
                                         child: ElevatedButton(
-                                          onPressed: () {
-                                            FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
+                                          onPressed: () async {
+                                            if (await verifyRegisterFirestore()){
+                                              FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
+                                            }
+                                            else{
+                                              noCredentialAlert();
+                                            }
                                           },
                                           child: Text("Deletar Formulário", textScaleFactor: 1.4),
 
@@ -378,12 +419,17 @@ class _HomePage extends State<HomePage> {
                                         width: 200,
                                         height: 50,
                                         child: ElevatedButton(
-                                          onPressed: () {
+                                          onPressed: () async {
                                             DefaultFirebaseOptions.documento = document.id;
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (context) => const FormPage()),
-                                            );
+                                            if (await verifyRegisterFirestore()){
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => const FormPage()),
+                                              );
+                                            } else{
+                                              noCredentialAlert();
+                                            }
+
                                           },
                                           child: Text("Editar Formulário", textScaleFactor: 1.5),
 
@@ -399,12 +445,16 @@ class _HomePage extends State<HomePage> {
                                 width: 300,
                                 height: 50,
                                 child: ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     DefaultFirebaseOptions.documento = document.id;
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const FormResp()),
-                                    );
+                                    if (await verifyRegisterFirestore()){
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => const FormResp()),
+                                      );
+                                    } else {
+                                      noCredentialAlert();
+                                    }
                                   },
                                   child: Text("Responder Formulário", textScaleFactor: 1.4),
 

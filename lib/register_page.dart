@@ -56,15 +56,28 @@ class _CreateUserPage extends State<CreateUserPage> {
 
   createUser(BuildContext context) async {
     try {
+      bool recadastro;
       if (nameController.text == "") {throw "O Campo nome do usuário não pode estar vazio.";}
-      await context.read<AuthService>().registrar(emailController.text, passwordController.text);
+      recadastro = await context.read<AuthService>().registrar(emailController.text, passwordController.text, _selectedOption!, nameController.text);
       showDialog(
         context: context,
           builder: (BuildContext context) {
+            String message1 = "Erro";
+            String message2 = "Erro";
+            switch (recadastro) {
+              case false: {
+                message1 = 'Bem sucedido';
+                message2 = 'Cadastro feito com sucesso';
+              }break;
+              case true: {
+                message1 = 'Bem sucedido';
+                message2 = 'Recadastro feito com sucesso';
+              }
+            }
             return AlertDialog(
-              title: Text('bem sucedido'),
+              title: Text(message1),
               content: Text(
-                'Cadastro feito com sucesso',
+                message2,
               ),
               actions: <Widget>[
                 ElevatedButton(

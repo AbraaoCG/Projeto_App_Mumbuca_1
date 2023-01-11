@@ -44,7 +44,7 @@ class _FormPage extends State<FormPage> {
           stream: document.reference.collection('opcoes_escolha').snapshots(),
           builder:  (context, snapshot){
             if (!snapshot.hasData) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }
