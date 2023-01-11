@@ -27,6 +27,8 @@ class TableGenerator extends StatefulWidget {
 
 class _TableGenerator extends State<TableGenerator> {
 
+
+
   generateCsv(input) async {
 
     List<List<dynamic>?>? data = input;
@@ -42,6 +44,10 @@ class _TableGenerator extends State<TableGenerator> {
     String csvData = ListToCsvConverter().convert(data);
 
     print('E TRANSFORMOU ASSIM:');
+    print(csvData);
+
+    print('printando tipo e valor de csvData');
+    print(csvData.runtimeType);
     print(csvData);
 
     final String directory = (await getApplicationSupportDirectory()).path;
@@ -185,8 +191,8 @@ class _TableGenerator extends State<TableGenerator> {
           return list.join(',').replaceAll('[','').replaceAll(']','');
         }
 
-        print(removeBrackets(respostas));
-        print('--------------');
+        //print(removeBrackets(respostas));
+        //print('--------------');
 
         respostasEnunciados.add('"' + removeBrackets(respostas) + '"');
 
