@@ -1,13 +1,13 @@
 // ignore_for_file: prefer_const_constructors
 // ignore_for_file: non_constant_identifier_names
 // import 'dart:html';
+import 'package:appmumbuca/widgets/table_generator.dart';
+import 'package:appmumbuca/widgets/user_editor.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:appmumbuca/services/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
-import 'package:appmumbuca/account_page.dart';
 import 'package:appmumbuca/login_page.dart';
 import 'form_resp.dart';
 import 'register_page.dart';
@@ -22,7 +22,6 @@ class HomePage extends StatefulWidget {
   const HomePage({Key? key, this.emailUsuario})
       : super(key: key); // Importando email do login_page
 
-
   @override
   State<HomePage> createState() => _HomePage();
 }
@@ -34,11 +33,9 @@ class _HomePage extends State<HomePage> {
 
   void dadosUsuario() async {
     var usuario = FirebaseAuth.instance.currentUser?.email;
-
 // Create the query
     Query query =
     colecaoUsuarios.where('email', isEqualTo: '$usuario');
-
 // Get the query snapshot
     QuerySnapshot snapshot = await query.get();
 
@@ -80,12 +77,39 @@ class _HomePage extends State<HomePage> {
   }
 
   getForms() {
-    final Form_List = [];
     Forms_collection.get().then((QuerySnapshot snapshot) =>
     {
       snapshot.docs.forEach((DocumentSnapshot doc) {
       })
     });
+  }
+  Future<bool> verifyRegisterFirestore() async {
+    // Verifica-se se o usuário autenticado está na base de dados do firestore, se sim retorna true, senão false.
+    var usuario = FirebaseAuth.instance.currentUser?.email;
+    Query query = usersCollection.where('email', isEqualTo: '$usuario');
+    QuerySnapshot querySnapshot = await query.get();
+
+    return querySnapshot.docs.isNotEmpty;
+  }
+  noCredentialAlert(){
+    return showDialog(
+        context: context,
+        builder: (context){
+          return AlertDialog(
+            title: const Text("Bloqueio de Segurança" , style: TextStyle(color: Color(0xB1B71717),fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+            content: Text(
+              "Sua credencial foi desabilitada por um dos administradores. Entre em contato para regularizar seu cadastro!",
+              style: const TextStyle(color: Colors.black, fontSize: 25, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+            ),
+            actions: <Widget>[
+              CloseButton(onPressed: (){
+                Navigator.pop(context);
+                logout();
+              }),
+            ],
+          );
+        }
+    );
   }
 
   @override
@@ -118,25 +142,8 @@ class _HomePage extends State<HomePage> {
             )
           ]),
           actions: <Widget>[
-            IconButton(
-              iconSize: 60,
-              icon: Icon(Icons.account_circle_rounded),
-              onPressed: () {
-                // Abrir Tela de conta
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AccountPage()),
-                );
-              },
-            ),
-            IconButton(
-              iconSize: 60,
-              icon: Icon(Icons.settings),
-              onPressed: () {
-                // código para abrir tela de configurações
-              },
-            ),
           ]),
+
 
       drawer: Drawer(
         width: MediaQuery.of(context).size.width * 0.7,
@@ -252,12 +259,17 @@ class _HomePage extends State<HomePage> {
                                 scale: 2, child: Icon(Icons.add)),
                           ),
                         ),
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => CreateUserPage(),
-                            ),
-                          );
+                        onTap: () async {
+                          if ( await verifyRegisterFirestore() ){
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => CreateUserPage(),
+                              ),
+                            );
+                          } else {
+                            noCredentialAlert();
+                          }
+
                         },
                       ),
                       Divider(),
@@ -273,7 +285,38 @@ class _HomePage extends State<HomePage> {
                                 scale: 2, child: Icon(Icons.list)),
                           ),
                         ),
-                        onTap: () {},
+                        onTap: () async {
+                          if (await verifyRegisterFirestore() ){
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => UserEditor(),
+                              ),
+                            );
+                          } else{
+                            noCredentialAlert();
+                          }
+                        },
+                      ),
+                      Divider(),
+                      ListTile(
+                        title: Text(
+                          'Gerar tabela com respostas',
+                          style: TextStyle(fontSize: 30),
+                        ),
+                        leading: Padding(
+                          padding: const EdgeInsets.only(left: 8.0),
+                          child: SizedBox(
+                            child: Transform.scale(
+                                scale: 2, child: Icon(Icons.restore_page)),
+                          ),
+                        ),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => TableGenerator(),
+                            ),
+                          );
+                        },
                       ),
                       Divider(),
                     ],
@@ -362,8 +405,13 @@ class _HomePage extends State<HomePage> {
                                         width: 200,
                                         height: 50,
                                         child: ElevatedButton(
-                                          onPressed: () {
-                                            FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
+                                          onPressed: () async {
+                                            if (await verifyRegisterFirestore()){
+                                              FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
+                                            }
+                                            else{
+                                              noCredentialAlert();
+                                            }
                                           },
                                           child: Text("Deletar Formulário", textScaleFactor: 1.4),
 
@@ -376,12 +424,17 @@ class _HomePage extends State<HomePage> {
                                         width: 200,
                                         height: 50,
                                         child: ElevatedButton(
-                                          onPressed: () {
+                                          onPressed: () async {
                                             DefaultFirebaseOptions.documento = document.id;
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(builder: (context) => const FormPage()),
-                                            );
+                                            if (await verifyRegisterFirestore()){
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => const FormPage()),
+                                              );
+                                            } else{
+                                              noCredentialAlert();
+                                            }
+
                                           },
                                           child: Text("Editar Formulário", textScaleFactor: 1.5),
 
@@ -397,12 +450,16 @@ class _HomePage extends State<HomePage> {
                                 width: 300,
                                 height: 50,
                                 child: ElevatedButton(
-                                  onPressed: () {
+                                  onPressed: () async {
                                     DefaultFirebaseOptions.documento = document.id;
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const FormResp()),
-                                    );
+                                    if (await verifyRegisterFirestore()){
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => const FormResp()),
+                                      );
+                                    } else {
+                                      noCredentialAlert();
+                                    }
                                   },
                                   child: Text("Responder Formulário", textScaleFactor: 1.4),
 
@@ -422,28 +479,32 @@ class _HomePage extends State<HomePage> {
     floatingActionButton: StreamBuilder(
       stream: Forms_collection.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-        return Container(
-          //color: Colors.redAccent,
+        return Offstage(
+          offstage: _acessoUsuario != 'Administrador',
           child: IconButton(
-            onPressed: () {
-              var data = {
-                "Nome_Formulário": "Novo Formulário",
-                "Data_Criação": DateTime.now().day.toString() +
-                    "/" +
-                    DateTime.now().month.toString() +
-                    "/" +
-                    DateTime.now().year.toString(),
-              };
-              var doc1 =
-              FirebaseFirestore.instance.collection("Formulários").doc();
-              doc1.set(data);
-              var doc1id = doc1.id;
-              var doc2 = FirebaseFirestore.instance
-                  .collection("Formulários")
-                  .doc(doc1id.toString())
-                  .collection("Perguntas")
-                  .doc();
-              doc2.set({"Nm_Enunciado": "Nova Pergunta", "CD_tipo_pergunta": "1"});
+            onPressed: () async {
+              if (await verifyRegisterFirestore()){
+                var data = {
+                  "Nome_Formulário": "Novo Formulário",
+                  "Data_Criação": DateTime.now().day.toString() +
+                      "/" +
+                      DateTime.now().month.toString() +
+                      "/" +
+                      DateTime.now().year.toString(),
+                };
+                var doc1 =
+                FirebaseFirestore.instance.collection("Formulários").doc();
+                doc1.set(data);
+                var doc1id = doc1.id;
+                var doc2 = FirebaseFirestore.instance
+                    .collection("Formulários")
+                    .doc(doc1id.toString())
+                    .collection("Perguntas")
+                    .doc();
+                doc2.set({"Nm_Enunciado": "Nova Pergunta", "CD_tipo_pergunta": "1"});
+              } else{
+                noCredentialAlert();
+              }
             },
             color: Colors.red,
             iconSize: 100,
@@ -452,62 +513,6 @@ class _HomePage extends State<HomePage> {
         );
       },
     ),
-    );
-  }
-}
-
-
-class _Survey extends StatelessWidget {
-  const _Survey({required this.surveyName, required this.surveyCreationDate});
-  final String surveyName;
-  final String surveyCreationDate;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        child: Column(
-      children: [
-        Text(
-          "",
-          style: TextStyle(
-            fontSize: 30,
-            fontFamily: 'Montserrat',
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
-    ));
-  }
-}
-
-class GradientAppBar extends StatelessWidget {
-  final String title;
-  final double barHeight = 50.0;
-
-  const GradientAppBar(this.title, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final double statusbarHeight = MediaQuery.of(context).padding.top;
-
-    return Container(
-      padding: EdgeInsets.only(top: statusbarHeight),
-      height: statusbarHeight + barHeight,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-            colors: const [Colors.red, Colors.blue],
-            begin: const FractionalOffset(0.0, 0.0),
-            end: const FractionalOffset(0.5, 0.0),
-            stops: const [0.0, 1.0],
-            tileMode: TileMode.clamp),
-      ),
-      child: Center(
-        child: Text(
-          title,
-          style: TextStyle(
-              fontSize: 20.0, color: Colors.white, fontWeight: FontWeight.bold),
-        ),
-      ),
     );
   }
 }

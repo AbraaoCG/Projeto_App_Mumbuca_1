@@ -1,13 +1,14 @@
 import 'dart:async';
 
-import 'package:appmumbuca/account_page.dart';
+
 import 'package:appmumbuca/home_page.dart';
 import 'package:appmumbuca/packages/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 final formsCollection = FirebaseFirestore.instance.collection('Formulários');
+final usersCollection = FirebaseFirestore.instance.collection('testeusuarios');
 
 class FormResp extends StatefulWidget{
   const FormResp({Key? key}) : super(key: key);
@@ -19,6 +20,7 @@ class FormResp extends StatefulWidget{
 class _FormResp extends State<FormResp> {
   var enderecos = [];
   var respostas = [];
+
   var value = 0;
   var quest = [];
 
@@ -38,7 +40,8 @@ class _FormResp extends State<FormResp> {
     return resposta;
   }
   changeFormName(newFormName) {
-    print(newFormName);
+
+
     Forms_collection.doc(DefaultFirebaseOptions.documento).update(
         {'Nome_Formulário': newFormName});
     // DefaultFirebaseOptions.DATA['Nome_Formulário'] = newFormName;
@@ -57,12 +60,15 @@ class _FormResp extends State<FormResp> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(microseconds: 500), () => setState(() {}));
+
+    Timer(Duration(microseconds: 200), () => setState(() {}));
     getForms();
   }
 
+  @override
   Widget build(BuildContext context) {
-    Timer(Duration(microseconds: 500), () => setState(() {}));
+    Timer(Duration(microseconds: 200), () => setState(() {}));
+
     getForms();
     return Scaffold(
       appBar: AppBar(
@@ -75,23 +81,8 @@ class _FormResp extends State<FormResp> {
             );}, icon: Icon(Icons.arrow_back)),
           title: Text(DefaultFirebaseOptions.DATA["Nome_Formulário"], textAlign: TextAlign.center, textScaleFactor: 1.7),
           actions:
-          <Widget>[
-            IconButton(
-              iconSize: 60,
-              icon: Icon(Icons.account_circle_rounded),
-              onPressed: () { // Abrir Tela de conta
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AccountPage()),
-                );
-              },
-            ),
-            IconButton(
-              iconSize: 60,
-              icon: Icon(Icons.settings),
-              onPressed: () { // código para abrir tela de configurações
-              },
-            ),
+
+          const <Widget>[
           ]
       ),
         body: StreamBuilder(
@@ -112,6 +103,7 @@ class _FormResp extends State<FormResp> {
                     return Center(
                       child: Container(
                         padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+
                         margin: EdgeInsets.symmetric(vertical: 25, horizontal: 10),
                         decoration: const BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(35.0)),
@@ -125,13 +117,15 @@ class _FormResp extends State<FormResp> {
                     child: Column(
                           children: [
                             Text(document['Nm_Enunciado'], style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+
                             Text("Tipo de Pergunta: " +obterTipoPergunta(document['CD_tipo_pergunta']), style: TextStyle(fontSize: 30, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
                             Offstage(
                             offstage: document['CD_tipo_pergunta'] != '1',
                               child: StreamBuilder(
                                 stream: Forms_collection.doc(DefaultFirebaseOptions.documento).collection("Perguntas").doc(document.id).collection('opcoes_escolha').snapshots(),
                                 builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshota){
-                                  var icon = null;
+
+                                  var icon = const Icon(Icons.bug_report, size: 35,);
                                   if (!snapshota.hasData){
                                     return Center(
                                       child: CircularProgressIndicator(),
@@ -146,6 +140,7 @@ class _FormResp extends State<FormResp> {
                                           clipBehavior: Clip.hardEdge,
                                           physics: ClampingScrollPhysics(),
                                           children: snapshota.data!.docs.map((document2){
+
                                             if(!quest.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
                                               value += 1;
                                               quest.add(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
@@ -164,32 +159,41 @@ class _FormResp extends State<FormResp> {
                                              //   height: MediaQuery.of(context).size.height / 6,
                                                 child: Row(
                                                   children: [
-                                                    Text(document2['Nm_escolha'], textScaleFactor: 2,style: TextStyle(color: Colors.white70, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
-                                                    IconButton(onPressed: (){
-                                                      if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
-                                                        var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
-                                                        enderecos.removeAt(local);
-                                                        respostas.removeAt(local);
-                                                      }else {
-                                                        enderecos.add(
-                                                            formsCollection.doc(
-                                                                DefaultFirebaseOptions
-                                                                    .documento)
-                                                                .collection(
-                                                                'Perguntas')
-                                                                .doc(
-                                                                document.id)
-                                                                .collection(
-                                                                'Respostas'));
-                                                        respostas.add(
-                                                            document2.id);
-                                                      }
-                                                      },
-                                                        icon: icon,style: IconButton.styleFrom(
-                                                        focusColor: Colors.red,
-                                                        highlightColor: Colors.blue,
-                                                          foregroundColor: Colors.black,
-                                                    ))
+                                                    Expanded(
+                                                        child: SingleChildScrollView(
+                                                          scrollDirection: Axis.horizontal,
+                                                          child: Row(
+                                                            children: [
+                                                              Text(document2['Nm_escolha'], textScaleFactor: 2,style: TextStyle(color: Colors.white70, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
+                                                              IconButton(onPressed: (){
+                                                                if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
+                                                                  var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                                                  enderecos.removeAt(local);
+                                                                  respostas.removeAt(local);
+                                                                }else {
+                                                                  enderecos.add(
+                                                                      formsCollection.doc(
+                                                                          DefaultFirebaseOptions
+                                                                              .documento)
+                                                                          .collection(
+                                                                          'Perguntas')
+                                                                          .doc(
+                                                                          document.id)
+                                                                          .collection(
+                                                                          'Respostas'));
+                                                                  respostas.add(
+                                                                      document2.id);
+                                                                }
+                                                              },
+                                                                  icon: icon,style: IconButton.styleFrom(
+                                                                    focusColor: Colors.red,
+                                                                    highlightColor: Colors.blue,
+                                                                    foregroundColor: Colors.black,
+                                                                  ))
+                                                            ],
+                                                          ),
+                                                    )
+                                                    )
                                                   ],
                                                 ),
                                              // ),
@@ -220,8 +224,9 @@ class _FormResp extends State<FormResp> {
                                           Flexible(
                                             child: ListView(
                                               shrinkWrap: true,
-                                              physics: ClampingScrollPhysics(),
+                                              physics: const ClampingScrollPhysics(),
                                               children: snapshota.data!.docs.map((document2){
+
                                                 if(!quest.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
                                                   value += 1;
                                                   quest.add(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
@@ -241,35 +246,48 @@ class _FormResp extends State<FormResp> {
                                                   //   height: MediaQuery.of(context).size.height / 6,
                                                   child: Row(
                                                     children: [
-                                                      Text(document2['Nm_selecao'], textScaleFactor: 2,style: TextStyle(color: Colors.white70, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
-                                                      IconButton(onPressed: (){
-                                                        if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
-                                                          var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
-                                                          if (respostas[local].contains(document2.id)){
-                                                            respostas[local].remove(document2.id);
-                                                          }else{
-                                                            respostas[local].add(document2.id);
-                                                          }
-                                                        }else {
-                                                          enderecos.add(
-                                                              formsCollection.doc(
-                                                                  DefaultFirebaseOptions
-                                                                      .documento)
-                                                                  .collection(
-                                                                  'Perguntas')
-                                                                  .doc(
-                                                                  document.id)
-                                                                  .collection(
-                                                                  'Respostas'));
-                                                          respostas.add(
-                                                              [document2.id]);
-                                                        }
-                                                      },
-                                                          icon: icon,style: IconButton.styleFrom(
-                                                            focusColor: Colors.red,
-                                                            highlightColor: Colors.blue,
-                                                            foregroundColor: Colors.black,
-                                                          ))
+                                                      Expanded(
+                                                          child: SingleChildScrollView(
+                                                            child: Row(
+                                                              children: [
+                                                                Text(document2['Nm_selecao'], textScaleFactor: 2,style: TextStyle(color: Colors.white70, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),),
+                                                                IconButton(onPressed: (){
+                                                                  if (enderecos.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
+                                                                    var local = enderecos.indexOf(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
+                                                                    if (respostas[local].contains(document2.id)){
+                                                                      respostas[local].remove(document2.id);
+                                                                    }else{
+                                                                      respostas[local].add(document2.id);
+                                                                    }
+                                                                    if (respostas[local].isEmpty) {
+                                                                      respostas.removeAt(local);
+                                                                      enderecos.removeAt(local);
+                                                                    }
+                                                                  }else {
+                                                                    enderecos.add(
+                                                                        formsCollection.doc(
+                                                                            DefaultFirebaseOptions
+                                                                                .documento)
+                                                                            .collection(
+                                                                            'Perguntas')
+                                                                            .doc(
+                                                                            document.id)
+                                                                            .collection(
+                                                                            'Respostas'));
+                                                                    respostas.add(
+                                                                        [document2.id]);
+                                                                  }
+                                                                },
+                                                                    icon: icon,style: IconButton.styleFrom(
+                                                                      focusColor: Colors.red,
+                                                                      highlightColor: Colors.blue,
+                                                                      foregroundColor: Colors.black,
+                                                                    ))
+                                                              ],
+                                                            ),
+                                                            scrollDirection: Axis.horizontal,
+                                                          )
+                                                      )
                                                     ],
                                                   ),
                                                   // ),
@@ -286,6 +304,7 @@ class _FormResp extends State<FormResp> {
                             Offstage(
                               offstage: document['CD_tipo_pergunta'] != '3',
                               child: Builder(builder: (context){
+
                                 if(!quest.contains(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'))){
                                   value += 1;
                                   quest.add(formsCollection.doc(DefaultFirebaseOptions.documento).collection('Perguntas').doc(document.id).collection('Respostas'));
@@ -339,6 +358,7 @@ class _FormResp extends State<FormResp> {
                                   icon4 = 0;
                                   icon5 = 0;
                                 }
+
                                 return Builder(builder: (context){
                                   return Column(
                                     mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -440,13 +460,11 @@ class _FormResp extends State<FormResp> {
 
         ),
       floatingActionButton: IconButton(
-          onPressed: (){
+          onPressed: () async {
+
             if(respostas.length == value) {
               for (int i = 0; i != respostas.length; i++) {
-                print(respostas.length);
-                print(i);
                 var enderec = enderecos[i];
-                print(enderec.runtimeType);
                 enderec.add({'CD_resposta': respostas[i]});
                 //formsCollection.doc(enderec[1]).collection(enderec[2]).doc(enderec[3]).collection(enderec[4]).add({'CD_resposta' : respostas[i]});
               }

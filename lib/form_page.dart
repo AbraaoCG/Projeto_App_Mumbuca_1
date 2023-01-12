@@ -1,10 +1,7 @@
 import 'dart:async';
-
-import 'package:appmumbuca/account_page.dart';
 import 'package:appmumbuca/home_page.dart';
 import 'package:appmumbuca/packages/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 
@@ -17,7 +14,7 @@ class FormPage extends StatefulWidget{
   State<FormPage> createState() => _FormPage();
 }
 
-class _FormPage extends State<FormPage> {
+class _FormPage extends State<FormPage> { // Pagina de edição de formulários
   TextEditingController newFormNameController = TextEditingController();
   final _tiposPerguntas = ["Múltipla Escolha","Caixas de Seleção","Escala Linear"];
   String? _tipoPerguntaEscolhido;
@@ -46,70 +43,78 @@ class _FormPage extends State<FormPage> {
           stream: document.reference.collection('opcoes_escolha').snapshots(),
           builder:  (context, snapshot){
             if (!snapshot.hasData) {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }
 
             return SizedBox(
-              height: 200,
+              height: 250,
               child: Scrollbar(
                 child: ListView(
                   children: snapshot.data!.docs.map((optionSnapshot) {
                     return Container(
                       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-
                       child: Row(
                           children: [
-                            const Icon(Icons.mode_edit, color: Colors.grey,size: 35 ,),
-                            InkWell(
-                              splashColor: Colors.red,
-                              onTap: (){
-                                showDialog(
-                                  context: context,
-                                  builder: (context) {
-                                    String novoNomeOpcao = "";
-                                    return AlertDialog(
-                                      title: const Text("Alterar nome de opção" , style: TextStyle(color: Color(0xB1B71717),fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                      content: TextField(
-                                        autofocus: true,
-                                        onChanged: (value){
-                                          novoNomeOpcao = value;
+                            Expanded(
+                                child: SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.mode_edit, color: Colors.grey,size: 35 ,),
+                                      InkWell(
+                                        splashColor: Colors.red,
+                                        onTap: (){
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              String novoNomeOpcao = "";
+                                              return AlertDialog(
+                                                title: const Text("Alterar nome de opção" , style: TextStyle(color: Color(0xB1B71717),fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                                content: TextField(
+                                                  style: const TextStyle(color: Colors.black, fontSize: 25, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                                  autofocus: true,
+                                                  onChanged: (value){
+                                                    novoNomeOpcao = value;
+                                                  },
+                                                ),
+                                                actions: <Widget>[
+                                                  CloseButton(onPressed: (){
+                                                    Navigator.pop(context);
+                                                  }),
+                                                  FloatingActionButton(
+                                                      child: const Icon(Icons.send),
+                                                      onPressed: (){
+                                                        if (novoNomeOpcao != ""){
+                                                          optionSnapshot.reference.update({ 'Nm_escolha' : novoNomeOpcao });
+                                                          Navigator.pop(context);
+                                                        } else{
+                                                          ScaffoldMessenger.of(context)
+                                                              .showSnackBar(SnackBar(content: Text("Insira um novo nome de opção válido:" , style: TextStyle(color: Colors.white,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
+                                                        }
+                                                      }),
+                                                ],
+                                              );
+                                            },
+                                          );
                                         },
+                                        child: Text(optionSnapshot['Nm_escolha'] , style: TextStyle(color: Colors.white70,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
                                       ),
-                                      actions: <Widget>[
-                                        CloseButton(onPressed: (){
-                                          Navigator.pop(context);
-                                        }),
-                                        FloatingActionButton(
-                                            child: const Icon(Icons.send),
-                                            onPressed: (){
-                                              if (novoNomeOpcao != ""){
-                                                optionSnapshot.reference.update({ 'Nm_escolha' : novoNomeOpcao });
-                                                Navigator.pop(context);
-                                              } else{
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(SnackBar(content: Text("Insira um novo nome de opção válido:" , style: TextStyle(color: Colors.white,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
-                                              }
-                                            }),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                              child: Container( //optionSnapshot['Nm_escolha']
-                                child:Text(optionSnapshot['Nm_escolha'] , style: TextStyle(color: Colors.white70,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                              ),
-                            ),
-                            const VerticalDivider(),
-                            IconButton(
-                              onPressed:() {
-                                optionSnapshot.reference.delete();
-                              },
-                              iconSize: 30,
-                              color: Colors.black,
-                              icon: const Icon(Icons.delete),
-                            ),
+                                      const VerticalDivider(),
+                                      IconButton(
+                                        onPressed:() {
+                                          optionSnapshot.reference.delete();
+                                        },
+                                        iconSize: 30,
+                                        color: Colors.black,
+                                        icon: const Icon(Icons.delete),
+                                      ),
+
+                                    ],
+                                  ),
+                                )
+                            )
                           ]
                       ),
                     );
@@ -122,15 +127,15 @@ class _FormPage extends State<FormPage> {
       }
       case "2": {
         return StreamBuilder(
-          stream: document.reference.collection('opcoes_selecao').snapshots(),
-          builder:  (context, snapshot) {
-            if (!snapshot.hasData) {
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-            return SizedBox(
-              height: 200,
+            stream: document.reference.collection('opcoes_selecao').snapshots(),
+            builder:  (context, snapshot) {
+              if (!snapshot.hasData) {
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+              return SizedBox(
+                height: 250,
                 child: Scrollbar(
                   child: ListView(
                     children: snapshot.data!.docs.map((optionSnapshot) {
@@ -139,54 +144,65 @@ class _FormPage extends State<FormPage> {
 
                         child: Row(
                             children: [
-                              const Icon(Icons.mode_edit, color: Colors.grey,size: 35 ,),
-                              InkWell(
-                                splashColor: Colors.red,
-                                onTap: (){
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) {
-                                      String novoNomeOpcao = "";
-                                      return AlertDialog(
-                                        title: const Text("Novo nome da opção:" , style: TextStyle(color: Color(0xB1B71717),fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
-                                        content: TextField(
-                                          autofocus: true,
-                                          onChanged: (value){
-                                            novoNomeOpcao = value;
+                              Expanded(
+                                  child: SingleChildScrollView(
+                                    scrollDirection: Axis.horizontal,
+                                    child: Row(
+                                      children: [
+
+                                        const Icon(Icons.mode_edit, color: Colors.grey,size: 35 ,),
+                                        InkWell(
+                                          splashColor: Colors.red,
+                                          onTap: (){
+                                            showDialog(
+                                              context: context,
+                                              builder: (context) {
+                                                String novoNomeOpcao = "";
+                                                return AlertDialog(
+                                                  title: const Text("Novo nome da opção:" , style: TextStyle(color: Color(0xB1B71717),fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
+                                                  content: TextField(
+                                                    style: const TextStyle(color: Colors.black, fontSize: 25, fontFamily: 'Montserrat', fontWeight: FontWeight.normal),
+                                                    autofocus: true,
+                                                    onChanged: (value){
+                                                      novoNomeOpcao = value;
+                                                    },
+                                                  ),
+                                                  actions: <Widget>[
+                                                    CloseButton(onPressed: (){
+                                                      Navigator.pop(context);
+                                                    }),
+                                                    FloatingActionButton(
+                                                        child: const Icon(Icons.send),
+                                                        onPressed: (){
+                                                          if (novoNomeOpcao != ""){
+                                                            optionSnapshot.reference.update({ 'Nm_selecao' : novoNomeOpcao });
+                                                            Navigator.pop(context);
+                                                          } else{
+                                                            ScaffoldMessenger.of(context)
+                                                                .showSnackBar(SnackBar(content: Text("Insira um novo nome de opção válido:" , style: TextStyle(color: Colors.red,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
+                                                          }
+                                                        }),
+                                                  ],
+                                                );
+                                              },
+                                            );
                                           },
+                                          child: Container(
+                                            child:Text(optionSnapshot['Nm_selecao'] , style: TextStyle(color: Colors.white70,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
+                                          ),
                                         ),
-                                        actions: <Widget>[
-                                          CloseButton(onPressed: (){
-                                            Navigator.pop(context);
-                                          }),
-                                          FloatingActionButton(
-                                              child: const Icon(Icons.send),
-                                              onPressed: (){
-                                                if (novoNomeOpcao != ""){
-                                                  optionSnapshot.reference.update({ 'Nm_selecao' : novoNomeOpcao });
-                                                  Navigator.pop(context);
-                                                } else{
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(SnackBar(content: Text("Insira um novo nome de opção válido:" , style: TextStyle(color: Colors.red,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
-                                                }
-                                              }),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                                child: Container(
-                                  child:Text(optionSnapshot['Nm_selecao'] , style: TextStyle(color: Colors.white70,fontSize: 28, fontFamily: 'Montserrat', fontWeight: FontWeight.normal)),
-                                ),
-                              ),
-                              IconButton(
-                                onPressed:() {
-                                  optionSnapshot.reference.delete();
-                                },
-                                iconSize: 30,
-                                color: Colors.black,
-                                icon: const Icon(Icons.delete),
-                              ),
+                                        IconButton(
+                                          onPressed:() {
+                                            optionSnapshot.reference.delete();
+                                          },
+                                          iconSize: 30,
+                                          color: Colors.black,
+                                          icon: const Icon(Icons.delete),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                              )
                             ]
                         ),
                       );
@@ -194,26 +210,23 @@ class _FormPage extends State<FormPage> {
                     }).toList(),
                   ),
                 ),
-            );
-          }
+              );
+            }
         );
       }
       case "3": {
         return Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children:[
-            Container(height: 70,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Image.asset("assets/Escala_Linear.png", scale: 1.8,),
-              ],
-            ),
-            Container(height: 70,),
-
-    ]
+            children:[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Image.asset("assets/Escala_Linear.png", scale: 1.8,),
+                ],
+              ),
+            ]
         );
-      } 
+      }
     }
 
   }
@@ -234,12 +247,12 @@ class _FormPage extends State<FormPage> {
                   case "1": {
                     nomeColecao = "opcoes_escolha";
                     nomeCampo = 'Nm_escolha';
-                    nomeExemplo = 'Exemplo de caixa de escolha';
+                    nomeExemplo = 'Nenhuma das outras opções';
                   } break;
                   case "2": {
                     nomeColecao = "opcoes_selecao";
                     nomeCampo = 'Nm_selecao';
-                    nomeExemplo = 'Exemplo de caixa de selecao';
+                    nomeExemplo = 'Nenhuma das outras opções';
                   } break;
                 }
                 var colecaoOpcoes = document.reference.collection(nomeColecao);
@@ -249,10 +262,10 @@ class _FormPage extends State<FormPage> {
               },
               child: Row(
                   children: const [
-                Icon(Icons.add_circle_rounded, color: Colors.grey,size: 30 ,),
+                    Icon(Icons.add_circle_rounded, color: Colors.grey,size: 30 ,),
                     Text("Adicionar Opção", style: TextStyle(color: Colors.grey,fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold)),
                   ]
-            ),
+              ),
             )
           ],
         ),
@@ -304,7 +317,7 @@ class _FormPage extends State<FormPage> {
 
         ],
       );
-  } else { return Container(); }
+    } else { return Container(); }
   }
   changeFormName(newFormName){
     Forms_collection.doc(DefaultFirebaseOptions.documento).update({'Nome_Formulário' : newFormName});
@@ -316,18 +329,15 @@ class _FormPage extends State<FormPage> {
     });
   }
 
-  addPergunta(){
-    // print(DefaultFirebaseOptions.documento);
-  }
   @override
   void initState(){
     super.initState();
     _tipoPerguntaEscolhido = _tiposPerguntas[0];
-    Timer(const Duration(microseconds: 300), () => setState(() {}));
+    Timer(const Duration(microseconds: 200), () => setState(() {}));
     getForms();
   }
   Widget build(BuildContext context) {
-    Timer(const Duration(microseconds: 100), () => setState(() {}));
+    Timer(const Duration(microseconds: 200), () => setState(() {}));
     getForms();
     return Scaffold(
       backgroundColor: Colors.white,
@@ -335,29 +345,13 @@ class _FormPage extends State<FormPage> {
           backgroundColor: Color(0XFFB71717),
           toolbarHeight: 100,
           leading: IconButton(onPressed: (){
-        Navigator.pop(
-            context,
-            MaterialPageRoute(builder: (context) => const HomePage()),
+            Navigator.pop(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
             );}, icon: Icon(Icons.arrow_back)),
-      title: Text(DefaultFirebaseOptions.DATA["Nome_Formulário"], textAlign: TextAlign.center, textScaleFactor: 1.7), 
+          title: Text(DefaultFirebaseOptions.DATA["Nome_Formulário"], textAlign: TextAlign.center, textScaleFactor: 1.7),
           actions:
           <Widget>[
-            IconButton(
-              iconSize: 60,
-              icon: Icon(Icons.account_circle_rounded),
-              onPressed: () { // Abrir Tela de conta
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AccountPage()),
-                );
-              },
-            ),
-            IconButton(
-              iconSize: 60,
-              icon: Icon(Icons.settings),
-              onPressed: () { // código para abrir tela de configurações
-              },
-            ),
           ]
       ),
       body: StreamBuilder(
@@ -370,7 +364,7 @@ class _FormPage extends State<FormPage> {
             }
             return Column(
               children: [
-                 Padding(padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 24),
+                Padding(padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 24),
                   child: Row(
                     children: [
                       Container(
@@ -444,11 +438,11 @@ class _FormPage extends State<FormPage> {
                               switch (_tipoPerguntaEscolhido){
                                 case "Múltipla Escolha": {
                                   tipoPerguntaInteiro = '1';
-                                  doc2.collection("opcoes_escolha").doc().set({'Nm_escolha' : 'Exemplo de caixa de escolha'});
+                                  doc2.collection("opcoes_escolha").doc().set({'Nm_escolha' : 'Nenhuma das opções'});
                                 } break;
                                 case "Caixas de Seleção": {
                                   tipoPerguntaInteiro = '2';
-                                  doc2.collection("opcoes_selecao").doc().set({'Nm_selecao' : 'Exemplo de caixa de seleção' });
+                                  doc2.collection("opcoes_selecao").doc().set({'Nm_selecao' : 'Nenhuma das opções' });
                                 } break;
                                 case "Escala Linear": {
                                   tipoPerguntaInteiro = '3';
@@ -480,7 +474,7 @@ class _FormPage extends State<FormPage> {
                                 color: Color(0xFFB71717),
                               ),
                               width: MediaQuery.of(context).size.width / 1,
-                              height: MediaQuery.of(context).size.height / 2.6,
+                              height: MediaQuery.of(context).size.height / 1.8,
                               child: Column(
                                   children: [
                                     Align(
@@ -530,7 +524,8 @@ class _FormPage extends State<FormPage> {
                                                                       } else {
                                                                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Insira um novo nome de Enunciado válido:", style: TextStyle(color: Colors.red, fontSize: 20, fontFamily: 'Montserrat', fontWeight: FontWeight.bold))));
                                                                       }
-                                                                    }),
+                                                                    }
+                                                                    ),
                                                               ],
                                                             );
                                                           }

@@ -9,7 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 bool validateName(String name) {
-  final RegExp nameExp = RegExp(r'^([a-zA-Zà-úÀ-Ú]|-|_|\s)+$');
+  final RegExp nameExp = RegExp(r'^([a-zA-Zà-úÀ-Ú-\s])+$');
   return name.length >= 1 && nameExp.hasMatch(name);
 }
 
@@ -19,6 +19,12 @@ bool validateName(String name) {
 
 bool validatePassword(String password) {
   return password.length >= 6; // verifica se a senha tem pelo menos 6 caracteres.
+}
+
+// Custom exception class
+class ValidationException implements Exception {
+  final String message;
+  ValidationException(this.message);
 }
 
 class CreateUserPage extends StatefulWidget {
@@ -50,15 +56,28 @@ class _CreateUserPage extends State<CreateUserPage> {
 
   createUser(BuildContext context) async {
     try {
+      bool recadastro;
       if (nameController.text == "") {throw "O Campo nome do usuário não pode estar vazio.";}
-      await context.read<AuthService>().registrar(emailController.text, passwordController.text);
+      recadastro = await context.read<AuthService>().registrar(emailController.text, passwordController.text, _selectedOption!, nameController.text);
       showDialog(
         context: context,
           builder: (BuildContext context) {
+            String message1 = "Erro";
+            String message2 = "Erro";
+            switch (recadastro) {
+              case false: {
+                message1 = 'Bem sucedido';
+                message2 = 'Cadastro feito com sucesso';
+              }break;
+              case true: {
+                message1 = 'Bem sucedido';
+                message2 = 'Recadastro feito com sucesso';
+              }
+            }
             return AlertDialog(
-              title: Text('titulo'),
+              title: Text(message1),
               content: Text(
-                'texto',
+                message2,
               ),
               actions: <Widget>[
                 ElevatedButton(
@@ -75,8 +94,26 @@ class _CreateUserPage extends State<CreateUserPage> {
         addDataToFirestore();
 
     } on AuthException catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(e.message)));
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text('Erro'),
+            content: Text(e.message),
+            actions: [
+              ElevatedButton(
+                child: Text('Ok'),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+          style: ElevatedButton.styleFrom(
+          backgroundColor: Color(0xffb71717),
+              ),
+              ),
+            ],
+          );
+        },
+      );
     }
   }
 
@@ -106,7 +143,7 @@ class _CreateUserPage extends State<CreateUserPage> {
             height: 20,
           ),
           Text(
-            "titulo",
+            "Cadastro de Usuários",
             style: TextStyle(
               fontSize: 28,
               fontWeight: FontWeight.w500,
@@ -117,7 +154,7 @@ class _CreateUserPage extends State<CreateUserPage> {
             height: 30,
           ),
           Text(
-            "texto",
+            "Por favor, escreva o nome, e-mail e senha do usuário a ser criado e selecione o nível de acesso.",
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w400,
@@ -145,10 +182,18 @@ class _CreateUserPage extends State<CreateUserPage> {
                 ),
               ),
               autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (nome) =>
-              nome != null && !validateName(nome)
-                  ? 'O nome não pode estar vazio e deve conter apenas letras. O uso de caracteres especiais ou números também não é permitido.'
-                  : null,
+              validator: (nome) {
+                try {
+                  if (nome == null || nome == '') {
+                    throw ValidationException('O nome não pode ficar em branco.');
+                  } else if (!validateName(nome)) {
+                    throw ValidationException('O nome não pode conter números ou símbolos.');
+                  }
+                } on ValidationException catch(e) {
+                  return e.message;
+                }
+              },
+
               style: TextStyle(fontSize: 20),
             ),
           ),
