@@ -13,6 +13,7 @@ import 'form_resp.dart';
 import 'register_page.dart';
 import 'package:appmumbuca/packages/firebase_options.dart';
 import 'package:appmumbuca/form_page.dart';
+import 'account_page.dart';
 
 final Forms_collection = FirebaseFirestore.instance.collection('Formulários');
 final colecaoUsuarios = FirebaseFirestore.instance.collection('testeusuarios');
@@ -407,9 +408,31 @@ class _HomePage extends State<HomePage> {
                                         child: ElevatedButton(
                                           onPressed: () async {
                                             if (await verifyRegisterFirestore()){
-                                              FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
-                                            }
-                                            else{
+                                              showDialog(
+                                                context: context,
+                                                builder: (BuildContext context) {
+                                                  return AlertDialog(
+                                                    title: Text('Confirmar exclusão'),
+                                                      content: Text('Tem certeza que quer deletar o formulário abaixo? \n\n${document['Nome_Formulário']} \n\nATENÇÃO: Não será mais possível recuperá-lo após a exclusão.'),
+                                                      actions: <Widget>[
+                                                        ElevatedButton(
+                                                  child: Text('CANCELAR OPERAÇÃO'),
+                                                  onPressed: () {
+                                                  Navigator.of(context).pop();
+                                                  },
+                                                  ),
+                                                        ElevatedButton(
+                                                          child: Text('Deletar'),
+                                                          onPressed: () {
+                                                            FirebaseFirestore.instance.collection("Formulários").doc(document.id).delete();
+                                                            Navigator.of(context).pop();
+                                                          },
+                                                        ),
+                                                      ],
+                                                  );
+                                                },
+                                              );
+                                            } else {
                                               noCredentialAlert();
                                             }
                                           },

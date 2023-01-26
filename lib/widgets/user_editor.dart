@@ -28,7 +28,6 @@ class _UserEditor extends State<UserEditor> {
 
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,6 +68,12 @@ class _UserEditor extends State<UserEditor> {
               itemCount: snapshot.data!.docs.length,
               itemBuilder: (context, index) {
                 DocumentSnapshot document = snapshot.data!.docs[index];
+
+                String email = document['email'];
+                List<String> partesEmail = email.split("@");
+                String emailAntesArroba = partesEmail[0];
+                String emailDepoisArroba = "@" + partesEmail[1];
+
                 return ListTile(
                   title: Text(document['nome'],
                       style: TextStyle(
@@ -78,7 +83,7 @@ class _UserEditor extends State<UserEditor> {
                   subtitle: Column(
                     children: [
                       Text(
-                          "Email: " + document['email'],
+                          "Email: ${emailAntesArroba.substring(0,1)}***$emailDepoisArroba" ,
                           style: TextStyle(
                               fontSize: 20,
                               fontFamily: 'Montserrat',
@@ -101,11 +106,34 @@ class _UserEditor extends State<UserEditor> {
                       IconButton(
                         icon: Icon(Icons.delete),
                         onPressed: () {
-                          deleteUserAuth(document);
-                          document.reference.delete(); // Deleção de usuário.
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: Text('Confirmar exclusão'),
+                                content: Text('Tem certeza que quer deletar o usuário abaixo? \n\n${document['nome']} \n\nATENÇÃO: Não será mais possível recuperá-lo após a exclusão.'),
+                                actions: <Widget>[
+                                  ElevatedButton(
+                                    child: Text('CANCELAR OPERAÇÃO'),
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                  ElevatedButton(
+                                    child: Text('Deletar'),
+                                    onPressed: () async {
+                                      await deleteUserAuth(document);
+                                      await document.reference.delete();
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                ],
+                              );
+                            },
+                          );
                         },
                       ),
-                      IconButton(
+                  IconButton(
                         icon: Icon(Icons.edit),
                         onPressed: () {
                           String novoNome = "";
